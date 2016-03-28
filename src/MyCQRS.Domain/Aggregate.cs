@@ -7,7 +7,7 @@ namespace MyCQRS.Domain
     public class Aggregate
     {
         private readonly List<IEvent> _uncommitedEvents = new List<IEvent>();
-        private readonly Dictionary<Type, Action<IEvent>> _routes = new Dictionary<Type, Action<IEvent>>();
+        private readonly Route<IEvent> _routeEvents = new Route<IEvent>();
 
         public IReadOnlyCollection<IEvent> UncommitedEvents => _uncommitedEvents.AsReadOnly();
         public int Version { get; protected set; } = -1;
@@ -15,7 +15,7 @@ namespace MyCQRS.Domain
         protected void On<T>(Action<T> action)
             where T : class 
         {
-            _routes.Add(typeof(T), o => action(o as T));
+            _routeEvents.Add(typeof(T), o => action(o as T));
         }
 
         protected void Raise(IEvent @event)
@@ -26,11 +26,7 @@ namespace MyCQRS.Domain
 
         public void ApplyEvent(IEvent @event)
         {
-            var eventType = @event.GetType();
-            if (_routes.ContainsKey(eventType))
-            {
-                _routes[eventType](@event);
-            }
+            _routeEvents.Handle(@event);
 
             Version++;
         }
