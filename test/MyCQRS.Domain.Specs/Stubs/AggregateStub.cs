@@ -1,4 +1,6 @@
-﻿namespace MyCQRS.Domain.Specs.Stubs
+﻿using System;
+
+namespace MyCQRS.Domain.Specs.Stubs
 {
     public class AggregateStub : Aggregate
     {
@@ -29,6 +31,11 @@
         public void Activate()
         {
             Raise(new ActivatedEvent());
+        }
+
+        public void Deactivate()
+        {
+            Raise(new DeactivatedEvent());
         }
     }
 }

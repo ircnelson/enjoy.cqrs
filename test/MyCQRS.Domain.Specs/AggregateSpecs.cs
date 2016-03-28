@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using MyCQRS.Domain.Specs.Stubs;
 using Xunit;
 
@@ -56,6 +57,14 @@ namespace MyCQRS.Domain.Specs
             Subject.ClearUncommitedEvents();
 
             Subject.UncommitedEvents.Should().HaveCount(0);
+        }
+
+        [Fact]
+        public void Throws_an_exception_if_not_event_handler_in_aggregate()
+        {
+            Action action = () => Subject.Deactivate();
+
+            action.ShouldThrow<Exception>();
         }
     }
 }

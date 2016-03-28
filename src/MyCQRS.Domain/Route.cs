@@ -9,7 +9,7 @@ namespace MyCQRS.Domain
         {
             var eventType = @event.GetType();
 
-            if (!ContainsKey(eventType)) return;
+            if (!ContainsKey(eventType)) throw new Exception();
 
             this[eventType](@event);
         }
