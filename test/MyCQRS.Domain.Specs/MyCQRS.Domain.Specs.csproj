@@ -71,10 +71,27 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AggregateSpecs.cs" />
+    <Compile Include="Stubs\ActivatedEvent.cs" />
+    <Compile Include="Stubs\AggregateStub.cs" />
+    <Compile Include="Stubs\ChangedNameEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\MyCQRS.Domain\MyCQRS.Domain.csproj">
+      <Project>{99E149F7-A606-45F7-BB41-91F0D499D1DC}</Project>
+      <Name>MyCQRS.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\MyCQRS.Events\MyCQRS.Events.csproj">
+      <Project>{5512AF07-A3BB-4A41-A0B4-28C930C57145}</Project>
+      <Name>MyCQRS.Events</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
