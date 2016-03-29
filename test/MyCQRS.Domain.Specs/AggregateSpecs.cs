@@ -1,6 +1,6 @@
 ﻿using System;
 using FluentAssertions;
-using MyCQRS.Domain.Specs.Stubs;
+using MyCQRS.Domain.StubBoundedContext;
 using Xunit;
 
 namespace MyCQRS.Domain.Specs

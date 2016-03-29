@@ -1,6 +1,6 @@
-﻿using System;
+﻿using MyCQRS.Domain.StubBoundedContext.Events;
 
-namespace MyCQRS.Domain.Specs.Stubs
+namespace MyCQRS.Domain.StubBoundedContext
 {
     public class AggregateStub : Aggregate
     {

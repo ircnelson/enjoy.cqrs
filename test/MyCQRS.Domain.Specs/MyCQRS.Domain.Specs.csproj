@@ -72,16 +72,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AggregateSpecs.cs" />
-    <Compile Include="Stubs\ActivatedEvent.cs" />
-    <Compile Include="Stubs\AggregateStub.cs" />
-    <Compile Include="Stubs\ChangedNameEvent.cs" />
+    <Compile Include="Commands\ChangeNameCommandTest.cs" />
+    <Compile Include="Commands\CommandTestFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Stubs\DeactivatedEvent.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\MyCQRS.CommandHandlers\MyCQRS.CommandHandlers.csproj">
+      <Project>{D605A99F-F3D3-4BE3-89AA-CE3F73B9F91C}</Project>
+      <Name>MyCQRS.CommandHandlers</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\MyCQRS.Commands\MyCQRS.Commands.csproj">
+      <Project>{D210D6B3-0DAA-4CB1-A65E-D7DF9A42B0A6}</Project>
+      <Name>MyCQRS.Commands</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\MyCQRS.Domain\MyCQRS.Domain.csproj">
       <Project>{99E149F7-A606-45F7-BB41-91F0D499D1DC}</Project>
       <Name>MyCQRS.Domain</Name>
