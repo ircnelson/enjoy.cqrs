@@ -10,6 +10,7 @@ namespace MyCQRS.EventStore.Storage
         private readonly IDomainEventStore<IDomainEvent> _domainEventStore;
         private readonly List<IAggregate> _aggregates = new List<IAggregate>();
 
+        //TODO: Need inject Bus service
         public EventStoreUnitOfWork(IAggregateCache aggregateCache, IDomainEventStore<IDomainEvent> domainEventStore)
         {
             _aggregateCache = aggregateCache;
@@ -18,19 +19,20 @@ namespace MyCQRS.EventStore.Storage
         
         public TAggregate GetById<TAggregate>(Guid id) where TAggregate : class, IAggregate, new()
         {
-            var aggregateRoot = new TAggregate();
+            var aggregate = new TAggregate();
 
             var events = _domainEventStore.GetAllEvents(id);
 
-            aggregateRoot.LoadFromHistory(events);
+            aggregate.LoadFromHistory(events);
 
-            return aggregateRoot;
+            RegisterForTracking(aggregate);
+
+            return aggregate;
         }
 
-        public void Add<TAggregate>(TAggregate aggregate) where TAggregate : class, IAggregate
+        public void Add<TAggregate>(TAggregate aggregate) where TAggregate : class, IAggregate, new()
         {
-            _aggregates.Add(aggregate);
-            _aggregateCache.Add(aggregate);
+            RegisterForTracking(aggregate);
         }
 
         public void Commit()
@@ -40,19 +42,19 @@ namespace MyCQRS.EventStore.Storage
             foreach (var aggregate in _aggregates)
             {
                 _domainEventStore.Save(aggregate);
-                // Queue events to publish further
+                //TODO: Queue events to publish further
                 aggregate.ClearUncommitedEvents();
             }
 
             _aggregates.Clear();
 
-            // Publish queued messages
+            //TODO: Publish queued messages
             _domainEventStore.Commit();
         }
 
         public void Rollback()
         {
-            // Dequeue messages!
+            //TODO: Dequeue messages!
 
             _domainEventStore.Rollback();
 
@@ -62,6 +64,12 @@ namespace MyCQRS.EventStore.Storage
             }
 
             _aggregates.Clear();
+        }
+
+        private void RegisterForTracking<TAggregate>(TAggregate aggregateRoot) where TAggregate : class, IAggregate, new()
+        {
+            _aggregates.Add(aggregateRoot);
+            _aggregateCache.Add(aggregateRoot);
         }
     }
 }

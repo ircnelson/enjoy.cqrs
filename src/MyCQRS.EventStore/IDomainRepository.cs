@@ -20,6 +20,6 @@ namespace MyCQRS.EventStore
         /// </summary>
         /// <typeparam name="TAggregate"></typeparam>
         /// <param name="aggregate"></param>
-        void Add<TAggregate>(TAggregate aggregate) where TAggregate : class, IAggregate;
+        void Add<TAggregate>(TAggregate aggregate) where TAggregate : class, IAggregate, new();
     }
 }

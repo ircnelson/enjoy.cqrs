@@ -36,13 +36,13 @@ namespace MyCQRS.EventStore.Storage
             aggregates.Add(aggregateRoot.Id, aggregateRoot);
         }
 
-        public void Remove(Type aggregateRootType, Guid aggregateRootId)
+        public void Remove(Type aggregateType, Guid aggregateId)
         {
             Dictionary<Guid, object> aggregates;
-            if (!_cache.TryGetValue(aggregateRootType, out aggregates))
+            if (!_cache.TryGetValue(aggregateType, out aggregates))
                 return;
 
-            aggregates.Remove(aggregateRootId);
+            aggregates.Remove(aggregateId);
         }
     }
 }

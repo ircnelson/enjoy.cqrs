@@ -14,7 +14,7 @@ namespace MyCQRS.EventStore
             _aggregateCache = aggregateCache;
         }
 
-        public void Add<TAggregate>(TAggregate aggregate) where TAggregate : class, IAggregate
+        public void Add<TAggregate>(TAggregate aggregate) where TAggregate : class, IAggregate, new()
         {
             _eventStoreUnitOfWork.Add(aggregate);
         }
@@ -28,7 +28,7 @@ namespace MyCQRS.EventStore
         private TAggregate RegisterForTracking<TAggregate>(TAggregate aggregateRoot) where TAggregate : class, IAggregate, new()
         {
             if (aggregateRoot == null)
-                return aggregateRoot;
+                return null;
 
             _eventStoreUnitOfWork.Add(aggregateRoot);
 
