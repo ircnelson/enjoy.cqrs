@@ -1,15 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MyCQRS.EventStore.Storage
+﻿namespace MyCQRS.EventStore.Storage
 {
+    /// <summary>
+    /// This abstraction used on <see cref="EventStoreUnitOfWork"/> to garantee atomicity.
+    /// </summary>
     public interface ITransactional
     {
+        /// <summary>
+        /// Start the transaction.
+        /// </summary>
         void BeginTransaction();
+
+        /// <summary>
+        /// Confirm modifications.
+        /// </summary>
         void Commit();
+
+        /// <summary>
+        /// Revert modifications.
+        /// </summary>
         void Rollback();
     }
 }
