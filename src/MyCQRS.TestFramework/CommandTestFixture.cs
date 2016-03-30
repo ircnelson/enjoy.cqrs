@@ -11,7 +11,7 @@ namespace MyCQRS.TestFramework
     public abstract class CommandTestFixture<TCommand, TCommandHandler, TAggregateRoot>
         where TCommand : class, ICommand
         where TCommandHandler : class, ICommandHandler<TCommand>
-        where TAggregateRoot : Aggregate, new()
+        where TAggregateRoot : class, IAggregate, new()
     {
         private readonly IDictionary<Type, object> _mocks;
 
