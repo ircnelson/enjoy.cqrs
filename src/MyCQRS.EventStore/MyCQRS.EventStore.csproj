@@ -41,10 +41,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Aggregate.cs" />
+    <Compile Include="DomainRepository.cs" />
     <Compile Include="IAggregate.cs" />
     <Compile Include="IDomainRepository.cs" />
+    <Compile Include="IUnitOfWork.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Route.cs" />
+    <Compile Include="Storage\AggregateCache.cs" />
+    <Compile Include="Storage\EventStoreUnitOfWork.cs" />
+    <Compile Include="Storage\IAggregateCache.cs" />
+    <Compile Include="Storage\IDomainEventStore.cs" />
+    <Compile Include="Storage\IEventStoreUnitOfWork.cs" />
+    <Compile Include="Storage\ITransactional.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MyCQRS.Events\MyCQRS.Events.csproj">
