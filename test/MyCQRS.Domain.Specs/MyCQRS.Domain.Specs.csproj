@@ -71,26 +71,66 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AggregateSpecs.cs" />
-    <Compile Include="Commands\ChangeNameCommandTest.cs" />
-    <Compile Include="Commands\CommandTestFixture.cs" />
+    <Compile Include="Commands\CanCloseTabByPayingExactAmount.cs" />
+    <Compile Include="Commands\CanCloseTabWithTip.cs" />
+    <Compile Include="Commands\CanNotCloseTabTwice.cs" />
+    <Compile Include="Commands\CanNotCloseTabWithUnpreparedFoodItems.cs" />
+    <Compile Include="Commands\CanNotCloseTabWithUnservedDrinksItems.cs" />
+    <Compile Include="Commands\CanNotCloseTabWithUnservedFoodItems.cs" />
+    <Compile Include="Commands\CanNotMarkFoodAsPreparedTwice.cs" />
+    <Compile Include="Commands\CanNotOrderWithUnopenedTab.cs" />
+    <Compile Include="Commands\CanNotServeAnOrderedDrinkTwice.cs" />
+    <Compile Include="Commands\CanNotServeAnUnorderedDrink.cs" />
+    <Compile Include="Commands\CanNotServeOrderedButUnpreparedFood.cs" />
+    <Compile Include="Commands\CanNotServePreparedFoodTwice.cs" />
+    <Compile Include="Commands\CanNotServeUnorderedFood.cs" />
+    <Compile Include="Commands\CanOpenANewTab.cs" />
+    <Compile Include="Commands\CanPlaceDrinksOrder.cs" />
+    <Compile Include="Commands\CanPlaceFoodAndDrinkOrder.cs" />
+    <Compile Include="Commands\CanPlaceFoodOrder.cs" />
+    <Compile Include="Commands\CanServePreparedFood.cs" />
+    <Compile Include="Commands\FoodNotOrderedCanNotBeMarkedPrepared.cs" />
+    <Compile Include="Commands\MustPayEnoughToCloseTab.cs" />
+    <Compile Include="Commands\OrderedDrinksCanBeServed.cs" />
+    <Compile Include="Commands\OrderedFoodCanBeMarkedPrepared.cs" />
+    <Compile Include="CommandTestFixture.cs" />
+    <Compile Include="Events\WhenDrinksOrdered.cs" />
+    <Compile Include="Events\WhenDrinksServed.cs" />
+    <Compile Include="Events\WhenFoodPrepared.cs" />
+    <Compile Include="Events\WhenFoodsOrdered.cs" />
+    <Compile Include="Events\WhenFoodsServed.cs" />
+    <Compile Include="Events\WhenTabClosed.cs" />
+    <Compile Include="Events\WhenTabOpened.cs" />
+    <Compile Include="EventTestFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\MyCQRS.CommandHandlers\MyCQRS.CommandHandlers.csproj">
-      <Project>{D605A99F-F3D3-4BE3-89AA-CE3F73B9F91C}</Project>
-      <Name>MyCQRS.CommandHandlers</Name>
+    <ProjectReference Include="..\..\samples\MyCQRS.Restaurant.Commands\MyCQRS.Restaurant.Commands.csproj">
+      <Project>{88AD5CD0-417D-46E8-B832-264D6AB57CF3}</Project>
+      <Name>MyCQRS.Restaurant.Commands</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\samples\MyCQRS.Restaurant.Domain\MyCQRS.Restaurant.Domain.csproj">
+      <Project>{F78CF8EE-C3E8-416B-86C1-76402A504202}</Project>
+      <Name>MyCQRS.Restaurant.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\samples\MyCQRS.Restaurant.Events\MyCQRS.Restaurant.Events.csproj">
+      <Project>{CC658FB3-8A5D-41C5-BDBC-B7DA359C827B}</Project>
+      <Name>MyCQRS.Restaurant.Events</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\samples\MyCQRS.Restaurant.Read\MyCQRS.Restaurant.Read.csproj">
+      <Project>{C6B96D03-8CBE-4132-BD75-FF1B7E174273}</Project>
+      <Name>MyCQRS.Restaurant.Read</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\MyCQRS.Commands\MyCQRS.Commands.csproj">
       <Project>{D210D6B3-0DAA-4CB1-A65E-D7DF9A42B0A6}</Project>
       <Name>MyCQRS.Commands</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\MyCQRS.Domain\MyCQRS.Domain.csproj">
-      <Project>{99E149F7-A606-45F7-BB41-91F0D499D1DC}</Project>
-      <Name>MyCQRS.Domain</Name>
+    <ProjectReference Include="..\..\src\MyCQRS.EventStore\MyCQRS.EventStore.csproj">
+      <Project>{57850692-5F07-43AF-881A-BEFA95791CD0}</Project>
+      <Name>MyCQRS.EventStore</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\MyCQRS.Events\MyCQRS.Events.csproj">
       <Project>{5512AF07-A3BB-4A41-A0B4-28C930C57145}</Project>

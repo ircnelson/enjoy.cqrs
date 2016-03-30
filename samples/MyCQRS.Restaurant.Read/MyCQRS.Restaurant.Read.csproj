@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{5512AF07-A3BB-4A41-A0B4-28C930C57145}</ProjectGuid>
+    <ProjectGuid>{C6B96D03-8CBE-4132-BD75-FF1B7E174273}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MyCQRS.Events</RootNamespace>
-    <AssemblyName>MyCQRS.Events</AssemblyName>
+    <RootNamespace>MyCQRS.Restaurant.Read</RootNamespace>
+    <AssemblyName>MyCQRS.Restaurant.Read</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -40,9 +40,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DomainEvent.cs" />
-    <Compile Include="IDomainEvent.cs" />
-    <Compile Include="IEventHandler.cs" />
+    <Compile Include="IReadRepository.cs" />
+    <Compile Include="Models\OrderItemModel.cs" />
+    <Compile Include="Models\TabModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
