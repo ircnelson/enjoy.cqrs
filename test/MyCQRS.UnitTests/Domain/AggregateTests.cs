@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
 using FluentAssertions;
-using MyCQRS.Events;
-using MyCQRS.EventStore;
+using MyCQRS.EventStore.Exceptions;
 using MyCQRS.TestFramework;
+using MyCQRS.UnitTests.Domain.Events;
 using Xunit;
 
 namespace MyCQRS.UnitTests.Domain
@@ -12,6 +12,7 @@ namespace MyCQRS.UnitTests.Domain
     {
         protected override void When()
         {
+            AggregateRoot = TestAggregateRoot.Create();
             AggregateRoot.DoSomething("Walter White");
         }
 
@@ -32,44 +33,13 @@ namespace MyCQRS.UnitTests.Domain
         [Fact]
         public void Then_throws_an_exception()
         {
-            CaughtException.Should().BeAssignableTo<ThereWasNoExceptionButOneWasExpectedException>();
+            CaughtException.Should().BeAssignableTo<HandleNotFound>();
         }
-    }
 
-    public class TestAggregateRoot : Aggregate
-    {
-        public string Name { get; private set; }
-
-        public TestAggregateRoot()
+        [Fact]
+        public void Then_the_event_type_should_be_SomeEvent()
         {
-            On<SomeEvent>(x =>
-            {
-                Name = x.Name;
-            });
+            CaughtException.As<HandleNotFound>().EventType.Should().BeAssignableTo<NotRegisteredEvent>();
         }
-        
-        public void DoSomething(string name)
-        {
-            Raise(new SomeEvent(name));
-        }
-
-        public void DoSomethingWithoutEvent()
-        {
-            Raise(new NotRegisteredEvent());
-        }
-    }
-
-    public class SomeEvent : DomainEvent
-    {
-        public string Name { get; }
-
-        public SomeEvent(string name)
-        {
-            Name = name;
-        }
-    }
-
-    public class NotRegisteredEvent : DomainEvent
-    {
     }
 }

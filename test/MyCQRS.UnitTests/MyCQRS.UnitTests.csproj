@@ -45,6 +45,10 @@
       <HintPath>..\..\packages\Moq.4.2.1510.2205\lib\net40\Moq.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -71,6 +75,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Domain\Events\NotRegisteredEvent.cs" />
+    <Compile Include="Domain\Events\SomeEvent.cs" />
+    <Compile Include="Domain\Events\TestAggregateCreatedEvent.cs" />
+    <Compile Include="Domain\TestAggregateRoot.cs" />
+    <Compile Include="Storage\DomainRepositoryTests.cs" />
+    <Compile Include="Storage\InMemoryDomainEventStore.cs" />
     <Compile Include="Domain\AggregateTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -90,6 +100,9 @@
       <Project>{B1060653-D6FB-4AB1-880F-8E773544EDCE}</Project>
       <Name>MyCQRS.TestFramework</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

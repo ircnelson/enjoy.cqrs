@@ -7,11 +7,11 @@ namespace MyCQRS.EventStore.Storage
     public class EventStoreUnitOfWork : IEventStoreUnitOfWork
     {
         private readonly IAggregateCache _aggregateCache;
-        private readonly IDomainEventStore<IDomainEvent> _domainEventStore;
+        private readonly IDomainEventStore _domainEventStore;
         private readonly List<IAggregate> _aggregates = new List<IAggregate>();
 
         //TODO: Need inject Bus service
-        public EventStoreUnitOfWork(IAggregateCache aggregateCache, IDomainEventStore<IDomainEvent> domainEventStore)
+        public EventStoreUnitOfWork(IAggregateCache aggregateCache, IDomainEventStore domainEventStore)
         {
             _aggregateCache = aggregateCache;
             _domainEventStore = domainEventStore;

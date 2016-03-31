@@ -7,17 +7,14 @@ namespace MyCQRS.EventStore.Storage
     /// <summary>
     /// Event Store repository abstraction.
     /// </summary>
-    /// <typeparam name="TDomainEvent"></typeparam>
-    public interface IDomainEventStore<TDomainEvent> : ITransactional
-        where TDomainEvent : IDomainEvent
+    public interface IDomainEventStore : ITransactional
     {
-
         /// <summary>
-        /// Retrieve all events based on <param name="aggregateId"></param>.
+        /// Retrieve all events based on <param name="id"></param>.
         /// </summary>
-        /// <param name="aggregateId"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
-        IEnumerable<TDomainEvent> GetAllEvents(Guid aggregateId);
+        IEnumerable<IDomainEvent> GetAllEvents(Guid id);
 
         /// <summary>
         /// Save the aggregate events in Event Store.
