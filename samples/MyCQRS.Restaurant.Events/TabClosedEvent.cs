@@ -11,7 +11,7 @@ namespace MyCQRS.Restaurant.Events
         public decimal OrdersValue { get; }
         public decimal TipValue { get; }
 
-        public TabClosedEvent(int tableNumber, decimal amountPaid, decimal ordersValue, decimal tipValue)
+        public TabClosedEvent(Guid aggregateId, int tableNumber, decimal amountPaid, decimal ordersValue, decimal tipValue) : base(aggregateId)
         {
             TableNumber = tableNumber;
             AmountPaid = amountPaid;

@@ -33,7 +33,7 @@ namespace MyCQRS.Restaurant.Tests.Commands
 
             yield return PrepareDomainEvent.Set(new TabOpenedEvent(_tabAggregate, 1, "Nelson")).ToVersion(1);
             yield return PrepareDomainEvent.Set(new FoodOrderedEvent(_tabAggregate, _testFood1.Description, _testFood1.MenuNumber, _testFood1.Price, _testFood1.Status.ToString())).ToVersion(2);
-            yield return PrepareDomainEvent.Set(new FoodPreparedEvent(new List<int> {_testFood1.MenuNumber})).ToVersion(3);
+            yield return PrepareDomainEvent.Set(new FoodPreparedEvent(_tabAggregate, new List<int> {_testFood1.MenuNumber})).ToVersion(3);
         }
 
         protected override MarkFoodServedCommand When()

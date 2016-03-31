@@ -29,7 +29,7 @@ namespace MyCQRS.Restaurant.Tests.Events
 
         protected override TabClosedEvent When()
         {
-            return new TabClosedEvent(1, 5, 4.5M, 0.5M);
+            return new TabClosedEvent(_tab.Id, 1, 5, 4.5M, 0.5M);
         }
 
         [Fact]

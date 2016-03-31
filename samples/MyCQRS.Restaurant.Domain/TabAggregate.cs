@@ -60,7 +60,7 @@ namespace MyCQRS.Restaurant.Domain
             if (!AreDrinksOutstanding(menuNumbers))
                 throw new DrinksNotOutstanding();
 
-            Raise(new DrinksServedEvent(menuNumbers));
+            Raise(new DrinksServedEvent(Id, menuNumbers));
         }
 
         public void MarkFoodPrepared(IEnumerable<int> menuNumbers)
@@ -68,7 +68,7 @@ namespace MyCQRS.Restaurant.Domain
             if (!IsFoodOutstanding(menuNumbers))
                 throw new FoodNotOutstanding();
 
-            Raise(new FoodPreparedEvent(menuNumbers));
+            Raise(new FoodPreparedEvent(Id, menuNumbers));
         }
 
         public void MarkFoodServed(IEnumerable<int> menuNumbers)
@@ -76,7 +76,7 @@ namespace MyCQRS.Restaurant.Domain
             if (!IsFoodPrepared(menuNumbers))
                 throw new FoodNotPrepared();
 
-            Raise(new FoodServedEvent(menuNumbers));
+            Raise(new FoodServedEvent(Id, menuNumbers));
         }
 
         public void CloseTab(decimal amountPaid)
@@ -91,7 +91,7 @@ namespace MyCQRS.Restaurant.Domain
             var ordersValue = _servedItemsValue;
             var tipValue = amountPaid - _servedItemsValue;
 
-            Raise(new TabClosedEvent(_tableNumber, amountPaid, ordersValue, tipValue));
+            Raise(new TabClosedEvent(Id, _tableNumber, amountPaid, ordersValue, tipValue));
         }
 
         private bool HasUnservedItems()
@@ -197,7 +197,7 @@ namespace MyCQRS.Restaurant.Domain
 
         private void OnNewTabOpened(TabOpenedEvent evt)
         {
-            Id = evt.TabId;
+            Id = evt.AggregateId;
             _tableNumber = evt.TableNumber;
             _open = true;
         }

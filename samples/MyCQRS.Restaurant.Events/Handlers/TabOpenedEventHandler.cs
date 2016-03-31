@@ -15,7 +15,7 @@ namespace MyCQRS.Restaurant.Events.Handlers
 
         public void Execute(TabOpenedEvent theEvent)
         {
-            var tab = new TabModel(theEvent.TabId, theEvent.TableNumber, theEvent.Waiter);
+            var tab = new TabModel(theEvent.AggregateId, theEvent.TableNumber, theEvent.Waiter);
             _tabRepository.Insert(tab);
         }
     }

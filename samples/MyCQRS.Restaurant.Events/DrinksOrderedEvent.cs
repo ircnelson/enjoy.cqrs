@@ -11,13 +11,12 @@ namespace MyCQRS.Restaurant.Events
         public decimal Price { get; }
         public string Status { get; }
 
-        public DrinksOrderedEvent(Guid id, string description, int menuNumber, decimal price, string status)
+        public DrinksOrderedEvent(Guid aggregateId, string description, int menuNumber, decimal price, string status) : base(aggregateId)
         {
             Description = description;
             MenuNumber = menuNumber;
             Price = price;
             Status = status;
-            AggregateId = id;
         }
     }
 }

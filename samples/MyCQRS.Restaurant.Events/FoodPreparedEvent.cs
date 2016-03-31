@@ -9,7 +9,7 @@ namespace MyCQRS.Restaurant.Events
     {
         public IEnumerable<int> MenuNumbers { get; }
 
-        public FoodPreparedEvent(IEnumerable<int> menuNumbers)
+        public FoodPreparedEvent(Guid aggregateId, IEnumerable<int> menuNumbers) : base(aggregateId)
         {
             MenuNumbers = menuNumbers;
         }

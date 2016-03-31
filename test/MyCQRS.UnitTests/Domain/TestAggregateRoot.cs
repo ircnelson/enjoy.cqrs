@@ -26,12 +26,12 @@ namespace MyCQRS.UnitTests.Domain
         
         public void DoSomething(string name)
         {
-            Raise(new SomeEvent(name));
+            Raise(new SomeEvent(Id, name));
         }
 
         public void DoSomethingWithoutEvent()
         {
-            Raise(new NotRegisteredEvent());
+            Raise(new NotRegisteredEvent(Id));
         }
     }
 }

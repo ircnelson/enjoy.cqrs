@@ -6,13 +6,11 @@ namespace MyCQRS.Restaurant.Events
     [Serializable]
     public class TabOpenedEvent : DomainEvent
     {
-        public Guid TabId { get; set; }
         public int TableNumber { get; }
         public string Waiter { get; }
 
-        public TabOpenedEvent(Guid tabId, int tableNumber, string waiter)
+        public TabOpenedEvent(Guid aggregateId, int tableNumber, string waiter) : base(aggregateId)
         {
-            TabId = tabId;
             TableNumber = tableNumber;
             Waiter = waiter;
         }

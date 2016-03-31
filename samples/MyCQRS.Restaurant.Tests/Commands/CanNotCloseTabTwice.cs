@@ -43,9 +43,9 @@ namespace MyCQRS.Restaurant.Tests.Commands
             yield return PrepareDomainEvent.Set(new TabOpenedEvent(_tabAggregate, 1, "Nelson")).ToVersion(1);
             yield return PrepareDomainEvent.Set(new FoodOrderedEvent(_tabAggregate, _testFood1.Description, _testFood1.MenuNumber, _testFood1.Price, _testFood1.Status.ToString())).ToVersion(2);
             yield return PrepareDomainEvent.Set(new FoodOrderedEvent(_tabAggregate, _testFood2.Description, _testFood2.MenuNumber, _testFood2.Price, _testFood2.Status.ToString())).ToVersion(3);
-            yield return PrepareDomainEvent.Set(new FoodPreparedEvent(new List<int> {_testFood1.MenuNumber, _testFood2.MenuNumber})).ToVersion(4);
-            yield return PrepareDomainEvent.Set(new FoodServedEvent(new List<int> {_testFood1.MenuNumber, _testFood2.MenuNumber})).ToVersion(5);
-            yield return PrepareDomainEvent.Set(new TabClosedEvent(1, _testFood1.Price + tipValue, _testFood1.Price, tipValue)).ToVersion(6);
+            yield return PrepareDomainEvent.Set(new FoodPreparedEvent(_tabAggregate, new List <int> {_testFood1.MenuNumber, _testFood2.MenuNumber})).ToVersion(4);
+            yield return PrepareDomainEvent.Set(new FoodServedEvent(_tabAggregate, new List<int> {_testFood1.MenuNumber, _testFood2.MenuNumber})).ToVersion(5);
+            yield return PrepareDomainEvent.Set(new TabClosedEvent(_tabAggregate, 1, _testFood1.Price + tipValue, _testFood1.Price, tipValue)).ToVersion(6);
         }
 
         protected override CloseTabCommand When()

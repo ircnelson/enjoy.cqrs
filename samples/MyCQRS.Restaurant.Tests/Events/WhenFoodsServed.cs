@@ -58,7 +58,7 @@ namespace MyCQRS.Restaurant.Tests.Events
 
         protected override FoodServedEvent When()
         {
-            return new FoodServedEvent(new []{ _food1.MenuNumber });
+            return new FoodServedEvent(_tab.Id, new []{ _food1.MenuNumber });
         }
 
         [Fact]

@@ -1,3 +1,4 @@
+using System;
 using MyCQRS.Events;
 
 namespace MyCQRS.UnitTests.Domain.Events
@@ -6,7 +7,7 @@ namespace MyCQRS.UnitTests.Domain.Events
     {
         public string Name { get; }
 
-        public SomeEvent(string name)
+        public SomeEvent(Guid aggregateId, string name) : base(aggregateId)
         {
             Name = name;
         }

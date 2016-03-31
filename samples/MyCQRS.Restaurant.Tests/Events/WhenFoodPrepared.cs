@@ -46,7 +46,7 @@ namespace MyCQRS.Restaurant.Tests.Events
 
         protected override FoodPreparedEvent When()
         {
-            var @event = new FoodPreparedEvent(new List<int>
+            var @event = new FoodPreparedEvent(_tab.Id, new List<int>
             {
                 _food2.MenuNumber
             });
