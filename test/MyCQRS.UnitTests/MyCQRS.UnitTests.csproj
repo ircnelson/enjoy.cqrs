@@ -71,10 +71,25 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Domain\AggregateTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\MyCQRS.EventStore\MyCQRS.EventStore.csproj">
+      <Project>{57850692-5F07-43AF-881A-BEFA95791CD0}</Project>
+      <Name>MyCQRS.EventStore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\MyCQRS.Events\MyCQRS.Events.csproj">
+      <Project>{5512AF07-A3BB-4A41-A0B4-28C930C57145}</Project>
+      <Name>MyCQRS.Events</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\MyCQRS.TestFramework\MyCQRS.TestFramework.csproj">
+      <Project>{B1060653-D6FB-4AB1-880F-8E773544EDCE}</Project>
+      <Name>MyCQRS.TestFramework</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
