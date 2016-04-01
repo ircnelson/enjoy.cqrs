@@ -21,7 +21,7 @@ namespace MyCQRS.Commands
                 commandHandler.Execute(command);
                 _unitOfWork.Commit();
             }
-            catch (Exception Ex)
+            catch (Exception)
             {
                 _unitOfWork.Rollback();
                 throw;
