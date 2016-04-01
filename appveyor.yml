@@ -1,0 +1,11 @@
+version: 1.0.{build}
+branches:
+  only:
+  - dev
+configuration: Debug
+platform: Any CPU
+clone_depth: 1
+before_build:
+- cmd: nuget restore
+build:
+  verbosity: detailed

@@ -1,3 +1,5 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/eprwudlh0eskijof?svg=true)](https://ci.appveyor.com/project/nelsoncvjr/mycqrs)
+
 # MyCQRS
 The motivation to create this project was born through the curiosity about CQRS (Command Query Responsibility Separation) & Event Sourcing architecture.
 
