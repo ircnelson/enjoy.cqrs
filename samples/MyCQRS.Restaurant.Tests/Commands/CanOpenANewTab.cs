@@ -2,7 +2,7 @@
 using System.Linq;
 using FluentAssertions;
 using MyCQRS.Restaurant.Commands;
-using MyCQRS.Restaurant.Commands.Handlers;
+using MyCQRS.Restaurant.CommandsHandlers;
 using MyCQRS.Restaurant.Domain;
 using MyCQRS.Restaurant.Events;
 using MyCQRS.TestFramework;

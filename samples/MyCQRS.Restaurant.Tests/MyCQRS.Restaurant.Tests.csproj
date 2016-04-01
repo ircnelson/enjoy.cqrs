@@ -119,6 +119,10 @@
       <Project>{B1060653-D6FB-4AB1-880F-8E773544EDCE}</Project>
       <Name>MyCQRS.TestFramework</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MyCQRS.Restaurant.CommandsHandlers\MyCQRS.Restaurant.CommandsHandlers.csproj">
+      <Project>{97957F1A-482B-461A-AF61-F4CE05E52C21}</Project>
+      <Name>MyCQRS.Restaurant.CommandsHandlers</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MyCQRS.Restaurant.Commands\MyCQRS.Restaurant.Commands.csproj">
       <Project>{88AD5CD0-417D-46E8-B832-264D6AB57CF3}</Project>
       <Name>MyCQRS.Restaurant.Commands</Name>

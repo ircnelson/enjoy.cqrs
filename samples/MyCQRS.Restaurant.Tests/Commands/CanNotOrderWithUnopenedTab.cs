@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using MyCQRS.Restaurant.Commands;
-using MyCQRS.Restaurant.Commands.Handlers;
+using MyCQRS.Restaurant.CommandsHandlers;
 using MyCQRS.Restaurant.Domain;
 using MyCQRS.Restaurant.Domain.Exceptions;
 using MyCQRS.Restaurant.Domain.ValueObjects;

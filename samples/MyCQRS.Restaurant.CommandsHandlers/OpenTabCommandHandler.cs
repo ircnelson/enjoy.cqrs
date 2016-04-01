@@ -1,8 +1,9 @@
 ﻿using MyCQRS.Commands;
 using MyCQRS.EventStore;
+using MyCQRS.Restaurant.Commands;
 using MyCQRS.Restaurant.Domain;
 
-namespace MyCQRS.Restaurant.Commands.Handlers
+namespace MyCQRS.Restaurant.CommandsHandlers
 {
     public class OpenTabCommandHandler : ICommandHandler<OpenTabCommand>
     {

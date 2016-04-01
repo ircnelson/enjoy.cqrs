@@ -1,22 +1,22 @@
 ﻿using MyCQRS.Commands;
 using MyCQRS.EventStore;
+using MyCQRS.Restaurant.Commands;
 using MyCQRS.Restaurant.Domain;
 
-namespace MyCQRS.Restaurant.Commands.Handlers
+namespace MyCQRS.Restaurant.CommandsHandlers
 {
-    public class MarkDrinksServedCommandHandler : ICommandHandler<MarkDrinksServedCommand>
+    public class CloseTabCommandHandler : ICommandHandler<CloseTabCommand>
     {
         private readonly IDomainRepository _domainRepository;
 
-        public MarkDrinksServedCommandHandler(IDomainRepository domainRepository)
+        public CloseTabCommandHandler(IDomainRepository domainRepository)
         {
             _domainRepository = domainRepository;
         }
-
-        public void Execute(MarkDrinksServedCommand command)
+        public void Execute(CloseTabCommand command)
         {
             var tab = _domainRepository.GetById<TabAggregate>(command.AggregateId);
-            tab.MarkDrinksServed(command.MenuNumbers);
+            tab.CloseTab(command.AmountPaid);
         }
     }
 }

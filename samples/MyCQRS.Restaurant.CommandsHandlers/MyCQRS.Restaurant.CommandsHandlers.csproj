@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{88AD5CD0-417D-46E8-B832-264D6AB57CF3}</ProjectGuid>
+    <ProjectGuid>{97957F1A-482B-461A-AF61-F4CE05E52C21}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MyCQRS.Restaurant.Commands</RootNamespace>
-    <AssemblyName>MyCQRS.Restaurant.Commands</AssemblyName>
+    <RootNamespace>MyCQRS.Restaurant.CommandsHandlers</RootNamespace>
+    <AssemblyName>MyCQRS.Restaurant.CommandsHandlers</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -40,22 +40,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CloseTabCommand.cs" />
-    <Compile Include="MarkDrinksServedCommand.cs" />
-    <Compile Include="MarkFoodPreparedCommand.cs" />
-    <Compile Include="MarkFoodServedCommand.cs" />
-    <Compile Include="OpenTabCommand.cs" />
-    <Compile Include="PlaceOrderCommand.cs" />
+    <Compile Include="CloseTabCommandHandler.cs" />
+    <Compile Include="MarkDrinksServedCommandHandler.cs" />
+    <Compile Include="MarkFoodPreparedCommandHandler.cs" />
+    <Compile Include="MarkFoodServedCommandHandler.cs" />
+    <Compile Include="OpenTabCommandHandler.cs" />
+    <Compile Include="PlaceOrderCommandHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\MyCQRS.Commands\MyCQRS.Commands.csproj">
-      <Project>{F75361EB-8636-4A22-977B-CE3A7745FB3D}</Project>
+      <Project>{D210D6B3-0DAA-4CB1-A65E-D7DF9A42B0A6}</Project>
       <Name>MyCQRS.Commands</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\MyCQRS.EventStore\MyCQRS.EventStore.csproj">
       <Project>{57850692-5F07-43AF-881A-BEFA95791CD0}</Project>
       <Name>MyCQRS.EventStore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MyCQRS.Restaurant.Commands\MyCQRS.Restaurant.Commands.csproj">
+      <Project>{88AD5CD0-417D-46E8-B832-264D6AB57CF3}</Project>
+      <Name>MyCQRS.Restaurant.Commands</Name>
     </ProjectReference>
     <ProjectReference Include="..\MyCQRS.Restaurant.Domain\MyCQRS.Restaurant.Domain.csproj">
       <Project>{F78CF8EE-C3E8-416B-86C1-76402A504202}</Project>

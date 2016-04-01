@@ -4,7 +4,7 @@ using System.Linq;
 using FluentAssertions;
 using MyCQRS.Events;
 using MyCQRS.Restaurant.Commands;
-using MyCQRS.Restaurant.Commands.Handlers;
+using MyCQRS.Restaurant.CommandsHandlers;
 using MyCQRS.Restaurant.Domain;
 using MyCQRS.Restaurant.Domain.ValueObjects;
 using MyCQRS.Restaurant.Events;
