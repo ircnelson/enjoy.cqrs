@@ -4,7 +4,7 @@ using FluentAssertions;
 using Moq;
 using MyCQRS.Restaurant.Domain.ValueObjects;
 using MyCQRS.Restaurant.Events;
-using MyCQRS.Restaurant.Events.Handlers;
+using MyCQRS.Restaurant.EventsHandlers;
 using MyCQRS.Restaurant.Read;
 using MyCQRS.Restaurant.Read.Models;
 using MyCQRS.TestFramework;

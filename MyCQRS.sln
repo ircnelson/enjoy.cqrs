@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCQRS.UnitTests", "test\My
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCQRS.Restaurant.CommandsHandlers", "samples\MyCQRS.Restaurant.CommandsHandlers\MyCQRS.Restaurant.CommandsHandlers.csproj", "{97957F1A-482B-461A-AF61-F4CE05E52C21}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCQRS.Restaurant.EventsHandlers", "samples\MyCQRS.Restaurant.EventsHandlers\MyCQRS.Restaurant.EventsHandlers.csproj", "{732B0326-680B-499F-9BAA-E5FBA9A90F4D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,6 +85,10 @@ Global
 		{97957F1A-482B-461A-AF61-F4CE05E52C21}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{97957F1A-482B-461A-AF61-F4CE05E52C21}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{97957F1A-482B-461A-AF61-F4CE05E52C21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{732B0326-680B-499F-9BAA-E5FBA9A90F4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{732B0326-680B-499F-9BAA-E5FBA9A90F4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{732B0326-680B-499F-9BAA-E5FBA9A90F4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{732B0326-680B-499F-9BAA-E5FBA9A90F4D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -100,5 +106,6 @@ Global
 		{B1060653-D6FB-4AB1-880F-8E773544EDCE} = {1D765E45-6176-4855-AA97-3CFDD6724043}
 		{F7B0A3B8-579B-4FD3-93DC-E2D43555FEF1} = {BFFED7E8-0A58-46ED-89DE-58D8E350E43D}
 		{97957F1A-482B-461A-AF61-F4CE05E52C21} = {E1C05F7E-57A1-4827-9A3C-158AB639964A}
+		{732B0326-680B-499F-9BAA-E5FBA9A90F4D} = {E1C05F7E-57A1-4827-9A3C-158AB639964A}
 	EndGlobalSection
 EndGlobal

@@ -1,20 +1,21 @@
 ﻿using System.Linq;
 using MyCQRS.Events;
+using MyCQRS.Restaurant.Events;
 using MyCQRS.Restaurant.Read;
 using MyCQRS.Restaurant.Read.Models;
 
-namespace MyCQRS.Restaurant.Events.Handlers
+namespace MyCQRS.Restaurant.EventsHandlers
 {
-    public class DrinksServedEventHandler : IEventHandler<DrinksServedEvent>
+    public class FoodServedEventHandler : IEventHandler<FoodServedEvent>
     {
         private readonly IReadRepository<TabModel> _repository;
 
-        public DrinksServedEventHandler(IReadRepository<TabModel> repository)
+        public FoodServedEventHandler(IReadRepository<TabModel> repository)
         {
             _repository = repository;
         }
 
-        public void Execute(DrinksServedEvent theEvent)
+        public void Execute(FoodServedEvent theEvent)
         {
             var tab = _repository.GetById(theEvent.AggregateId);
 

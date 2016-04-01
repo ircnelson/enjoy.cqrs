@@ -1,9 +1,10 @@
 ﻿using System;
 using MyCQRS.Events;
+using MyCQRS.Restaurant.Events;
 using MyCQRS.Restaurant.Read;
 using MyCQRS.Restaurant.Read.Models;
 
-namespace MyCQRS.Restaurant.Events.Handlers
+namespace MyCQRS.Restaurant.EventsHandlers
 {
     public class DrinksOrderedEventHandler : IEventHandler<DrinksOrderedEvent>
     {
