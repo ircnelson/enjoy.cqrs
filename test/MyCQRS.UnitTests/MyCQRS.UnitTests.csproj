@@ -79,6 +79,7 @@
     <Compile Include="Domain\Events\SomeEvent.cs" />
     <Compile Include="Domain\Events\TestAggregateCreatedEvent.cs" />
     <Compile Include="Domain\TestAggregateRoot.cs" />
+    <Compile Include="MessageBus\CommandBusTests.cs" />
     <Compile Include="Storage\DomainRepositoryTests.cs" />
     <Compile Include="Storage\InMemoryDomainEventStore.cs" />
     <Compile Include="Domain\AggregateTests.cs" />
@@ -88,6 +89,14 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\MyCQRS.Bus\MyCQRS.Bus.csproj">
+      <Project>{2F9A59EE-DD4E-4302-A1F0-7191E6A1130D}</Project>
+      <Name>MyCQRS.Bus</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\MyCQRS.Commands\MyCQRS.Commands.csproj">
+      <Project>{D210D6B3-0DAA-4CB1-A65E-D7DF9A42B0A6}</Project>
+      <Name>MyCQRS.Commands</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\MyCQRS.EventStore\MyCQRS.EventStore.csproj">
       <Project>{57850692-5F07-43AF-881A-BEFA95791CD0}</Project>
       <Name>MyCQRS.EventStore</Name>
@@ -104,6 +113,7 @@
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
