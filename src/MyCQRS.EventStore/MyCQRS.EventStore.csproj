@@ -56,6 +56,10 @@
     <Compile Include="Storage\ITransactional.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MyCQRS.Bus\MyCQRS.Bus.csproj">
+      <Project>{2F9A59EE-DD4E-4302-A1F0-7191E6A1130D}</Project>
+      <Name>MyCQRS.Bus</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MyCQRS.Events\MyCQRS.Events.csproj">
       <Project>{6DDE8468-B014-49E1-AE34-DF717AA7AEC9}</Project>
       <Name>MyCQRS.Events</Name>

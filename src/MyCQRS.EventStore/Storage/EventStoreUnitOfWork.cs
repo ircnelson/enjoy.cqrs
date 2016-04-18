@@ -1,6 +1,8 @@
 ﻿using MyCQRS.Events;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using MyCQRS.Bus;
 
 namespace MyCQRS.EventStore.Storage
 {
@@ -8,13 +10,14 @@ namespace MyCQRS.EventStore.Storage
     {
         private readonly IAggregateCache _aggregateCache;
         private readonly IDomainEventStore _domainEventStore;
+        private readonly IMessageBus _messageBus;
         private readonly List<IAggregate> _aggregates = new List<IAggregate>();
-
-        //TODO: Need inject Bus service
-        public EventStoreUnitOfWork(IAggregateCache aggregateCache, IDomainEventStore domainEventStore)
+        
+        public EventStoreUnitOfWork(IAggregateCache aggregateCache, IDomainEventStore domainEventStore, IMessageBus messageBus)
         {
             _aggregateCache = aggregateCache;
             _domainEventStore = domainEventStore;
+            _messageBus = messageBus;
         }
         
         public TAggregate GetById<TAggregate>(Guid id) where TAggregate : class, IAggregate, new()
@@ -42,19 +45,19 @@ namespace MyCQRS.EventStore.Storage
             foreach (var aggregate in _aggregates)
             {
                 _domainEventStore.Save(aggregate);
-                //TODO: Queue events to publish further
+                _messageBus.Publish(aggregate.UncommitedEvents.Select(e => (object)e));
                 aggregate.ClearUncommitedEvents();
             }
 
             _aggregates.Clear();
 
-            //TODO: Publish queued messages
+            _messageBus.Commit();
             _domainEventStore.Commit();
         }
 
         public void Rollback()
         {
-            //TODO: Dequeue messages!
+            _messageBus.Rollback();
 
             _domainEventStore.Rollback();
 
