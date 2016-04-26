@@ -10,7 +10,7 @@ Obviously, has much paradigms and fears that should be left over the long of the
 
 The sample inside this project is based on the same problem of http://cqrs.nu/tutorial.
 
-The implementation is not complete, e.g. need to implement the abstraction for integration with Message Bus, Snapshotting...
+The implementation is not complete, e.g. need to implement the abstraction for Snapshotting...
 
 Any suggestion is welcome.
 

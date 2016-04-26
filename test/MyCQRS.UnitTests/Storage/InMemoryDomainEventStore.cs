@@ -58,7 +58,8 @@ namespace MyCQRS.UnitTests.Storage
             var eventsToSave = aggregate.UncommitedEvents;
             var serializedEvents = eventsToSave.Select(Serialize).ToList();
             var expectedVersion = aggregate.Version - eventsToSave.Count;
-            if (expectedVersion < 0)
+
+            if (expectedVersion == 0)
             {
                 EventStore.Add(aggregate.Id, serializedEvents);
             }
@@ -66,6 +67,7 @@ namespace MyCQRS.UnitTests.Storage
             {
                 var existingEvents = EventStore[aggregate.Id];
                 var currentversion = existingEvents.Count - 1;
+
                 if (currentversion != expectedVersion)
                 {
                     throw new WrongExpectedVersionException($"Expected version {expectedVersion} but the version is {currentversion}");

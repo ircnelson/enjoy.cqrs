@@ -29,8 +29,8 @@ namespace MyCQRS.EventStore
         /// <summary>
         /// Load the events in the Aggregate.
         /// </summary>
-        /// <param name="enumerable"></param>
-        void LoadFromHistory(IEnumerable<IDomainEvent> enumerable);
+        /// <param name="events"></param>
+        void LoadFromHistory(IEnumerable<IDomainEvent> events);
 
         /// <summary>
         /// Collection of <see cref="IDomainEvent"/> that contains uncommited events.

@@ -12,7 +12,8 @@ namespace MyCQRS.EventStore
 
         public IReadOnlyCollection<IDomainEvent> UncommitedEvents => _uncommitedEvents.AsReadOnly();
         public Guid Id { get; protected set; }
-        public int Version { get; protected set; } = -1;
+        public int Version { get; protected set; }
+        public int EventVersion { get; protected set; }
 
         protected void On<T>(Action<T> action)
             where T : class 
@@ -24,6 +25,8 @@ namespace MyCQRS.EventStore
         {
             ApplyEvent(@event);
             _uncommitedEvents.Add(@event);
+
+            EventVersion++;
         }
 
         public void ApplyEvent(IDomainEvent @event)
@@ -38,9 +41,9 @@ namespace MyCQRS.EventStore
             _uncommitedEvents.Clear();
         }
 
-        public void LoadFromHistory(IEnumerable<IDomainEvent> enumerable)
+        public void LoadFromHistory(IEnumerable<IDomainEvent> events)
         {
-            foreach (var @event in enumerable)
+            foreach (var @event in events)
             {
                 ApplyEvent(@event);
             }
