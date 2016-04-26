@@ -17,17 +17,17 @@ namespace MyCQRS.UnitTests.Storage
         private readonly EventStoreUnitOfWork _eventStoreUnitOfWork;
         private readonly IDomainRepository _domainRepository;
         private readonly Mock<IMessageBus> _mockMessageBus;
-        private readonly AggregateCache _aggregateCache;
+        private readonly AggregateTracker _aggregateTracker;
 
         public DomainRepositoryTests()
         {
             _mockMessageBus = new Mock<IMessageBus>();
             _mockMessageBus.Setup(e => e.Publish(It.IsAny<object>()));
 
-            _aggregateCache = new AggregateCache();
+            _aggregateTracker = new AggregateTracker();
             
-            _eventStoreUnitOfWork = new EventStoreUnitOfWork(_aggregateCache, _inMemoryDomainEventStore, _mockMessageBus.Object);
-            _domainRepository = new DomainRepository(_eventStoreUnitOfWork, _aggregateCache);
+            _eventStoreUnitOfWork = new EventStoreUnitOfWork(_aggregateTracker, _inMemoryDomainEventStore, _mockMessageBus.Object);
+            _domainRepository = new DomainRepository(_eventStoreUnitOfWork, _aggregateTracker);
         }
 
         [Fact]
@@ -78,7 +78,7 @@ namespace MyCQRS.UnitTests.Storage
             _eventStoreUnitOfWork.Commit();
             
             // To dont keep reference, the previous aggregate instance was removed
-            _aggregateCache.Remove(testAggregate.GetType(), testAggregate.Id);
+            _aggregateTracker.Remove(testAggregate.GetType(), testAggregate.Id);
 
             var testAggregate2 = _domainRepository.GetById<TestAggregateRoot>(testAggregate.Id);
 

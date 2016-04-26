@@ -6,9 +6,9 @@ namespace MyCQRS.EventStore
     public class DomainRepository : IDomainRepository
     {
         private readonly IEventStoreUnitOfWork _eventStoreUnitOfWork;
-        private readonly IAggregateCache _aggregateCache;
+        private readonly IAggregateTracker _aggregateCache;
 
-        public DomainRepository(IEventStoreUnitOfWork eventStoreUnitOfWork, IAggregateCache aggregateCache)
+        public DomainRepository(IEventStoreUnitOfWork eventStoreUnitOfWork, IAggregateTracker aggregateCache)
         {
             _eventStoreUnitOfWork = eventStoreUnitOfWork;
             _aggregateCache = aggregateCache;

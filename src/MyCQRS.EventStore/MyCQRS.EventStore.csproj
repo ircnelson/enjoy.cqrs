@@ -49,9 +49,9 @@
     <Compile Include="IUnitOfWork.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Route.cs" />
-    <Compile Include="Storage\AggregateCache.cs" />
+    <Compile Include="Storage\AggregateTracker.cs" />
     <Compile Include="Storage\EventStoreUnitOfWork.cs" />
-    <Compile Include="Storage\IAggregateCache.cs" />
+    <Compile Include="Storage\IAggregateTracker.cs" />
     <Compile Include="Storage\IDomainEventStore.cs" />
     <Compile Include="Storage\IEventStoreUnitOfWork.cs" />
     <Compile Include="Storage\ITransactional.cs" />

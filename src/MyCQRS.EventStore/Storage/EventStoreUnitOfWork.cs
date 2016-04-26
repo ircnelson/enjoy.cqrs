@@ -8,12 +8,12 @@ namespace MyCQRS.EventStore.Storage
 {
     public class EventStoreUnitOfWork : IEventStoreUnitOfWork
     {
-        private readonly IAggregateCache _aggregateCache;
+        private readonly IAggregateTracker _aggregateCache;
         private readonly IDomainEventStore _domainEventStore;
         private readonly IMessageBus _messageBus;
         private readonly List<IAggregate> _aggregates = new List<IAggregate>();
         
-        public EventStoreUnitOfWork(IAggregateCache aggregateCache, IDomainEventStore domainEventStore, IMessageBus messageBus)
+        public EventStoreUnitOfWork(IAggregateTracker aggregateCache, IDomainEventStore domainEventStore, IMessageBus messageBus)
         {
             _aggregateCache = aggregateCache;
             _domainEventStore = domainEventStore;

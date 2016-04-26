@@ -3,12 +3,12 @@
 namespace MyCQRS.EventStore.Storage
 {
     /// <summary>
-    /// Abstraction of the cache of the <see ref="IAggregate" />.
+    /// Abstraction of the tracker of the <see ref="IAggregate" />.
     /// </summary>
-    public interface IAggregateCache
+    public interface IAggregateTracker
     {
         /// <summary>
-        /// Retrieves an instance of the <typeparam name="TAggregate"></typeparam> cached based on <param name="id"></param>.
+        /// Retrieves an instance of the <typeparam name="TAggregate"></typeparam> in the tracker based on <param name="id"></param>.
         /// </summary>
         /// <typeparam name="TAggregate"></typeparam>
         /// <param name="id"></param>
@@ -16,7 +16,7 @@ namespace MyCQRS.EventStore.Storage
         TAggregate GetById<TAggregate>(Guid id) where TAggregate : class, IAggregate, new();
 
         /// <summary>
-        /// Add instance of the <typeparam name="TAggregate"></typeparam> to cache.
+        /// Add instance of the <typeparam name="TAggregate"></typeparam> to tracking.
         /// </summary>
         /// <typeparam name="TAggregate"></typeparam>
         /// <param name="aggregateRoot"></param>
