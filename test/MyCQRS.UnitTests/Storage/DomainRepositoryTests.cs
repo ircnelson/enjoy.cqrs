@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using FluentAssertions;
 using Moq;
 using MyCQRS.Bus;
 using MyCQRS.EventStore;
+using MyCQRS.EventStore.Exceptions;
 using MyCQRS.EventStore.Storage;
 using MyCQRS.UnitTests.Domain;
 using Xunit;
@@ -15,7 +17,7 @@ namespace MyCQRS.UnitTests.Storage
         private readonly EventStoreUnitOfWork _eventStoreUnitOfWork;
         private readonly IDomainRepository _domainRepository;
         private readonly Mock<IMessageBus> _mockMessageBus;
-        private AggregateCache _aggregateCache;
+        private readonly AggregateCache _aggregateCache;
 
         public DomainRepositoryTests()
         {
@@ -64,6 +66,34 @@ namespace MyCQRS.UnitTests.Storage
             var testAggregate2 = _domainRepository.GetById<TestAggregateRoot>(testAggregate.Id);
             
             testAggregate.Version.Should().Be(testAggregate2.Version);
+        }
+
+        [Fact]
+        public void When_try_save_aggregate_out_of_date_Should_throws_a_ConcurrentException()
+        {
+            var testAggregate = TestAggregateRoot.Create();
+            testAggregate.DoSomething("Walter White");
+
+            _domainRepository.Add(testAggregate);
+            _eventStoreUnitOfWork.Commit();
+            
+            // To dont keep reference, the previous aggregate instance was removed
+            _aggregateCache.Remove(testAggregate.GetType(), testAggregate.Id);
+
+            var testAggregate2 = _domainRepository.GetById<TestAggregateRoot>(testAggregate.Id);
+
+            Action action = () =>
+            {
+                testAggregate.DoSomething("Heisenberg");
+                _domainRepository.Add(testAggregate);
+                _eventStoreUnitOfWork.Commit();
+                
+                testAggregate2.DoSomething("Gus");
+                _domainRepository.Add(testAggregate2);
+                _eventStoreUnitOfWork.Commit();
+            };
+
+            action.ShouldThrow<WrongExpectedVersionException>();
         }
     }
 }

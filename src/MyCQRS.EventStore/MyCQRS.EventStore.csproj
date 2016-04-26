@@ -43,6 +43,7 @@
     <Compile Include="Aggregate.cs" />
     <Compile Include="DomainRepository.cs" />
     <Compile Include="Exceptions\HandleNotFound.cs" />
+    <Compile Include="Exceptions\WrongExpectedVersionException.cs" />
     <Compile Include="IAggregate.cs" />
     <Compile Include="IDomainRepository.cs" />
     <Compile Include="IUnitOfWork.cs" />

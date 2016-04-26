@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MyCQRS.Events;
 using MyCQRS.EventStore;
+using MyCQRS.EventStore.Exceptions;
 using MyCQRS.EventStore.Storage;
 using Newtonsoft.Json;
 
@@ -66,7 +67,7 @@ namespace MyCQRS.UnitTests.Storage
             else
             {
                 var existingEvents = EventStore[aggregate.Id];
-                var currentversion = existingEvents.Count - 1;
+                var currentversion = existingEvents.Count;
 
                 if (currentversion != expectedVersion)
                 {
@@ -86,13 +87,6 @@ namespace MyCQRS.UnitTests.Storage
         private IDomainEvent Deserialize(string domainEvent)
         {
             return JsonConvert.DeserializeObject<IDomainEvent>(domainEvent, _serializationSettings);
-        }
-    }
-
-    public class WrongExpectedVersionException : Exception
-    {
-        public WrongExpectedVersionException(string message) : base(message)
-        {
         }
     }
 }

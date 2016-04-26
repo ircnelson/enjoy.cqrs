@@ -11,8 +11,20 @@ namespace MyCQRS.EventStore
         private readonly Route<IDomainEvent> _routeEvents = new Route<IDomainEvent>();
 
         public IReadOnlyCollection<IDomainEvent> UncommitedEvents => _uncommitedEvents.AsReadOnly();
+        
+        /// <summary>
+        /// Unique identifier.
+        /// </summary>
         public Guid Id { get; protected set; }
+
+        /// <summary>
+        /// Current version of the Aggregate.
+        /// </summary>
         public int Version { get; protected set; }
+
+        /// <summary>
+        /// This version is calculated based on Uncommited events.
+        /// </summary>
         public int EventVersion { get; protected set; }
 
         protected void On<T>(Action<T> action)
