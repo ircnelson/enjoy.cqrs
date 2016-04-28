@@ -14,7 +14,10 @@ The implementation is not complete, e.g. need to implement the abstraction for S
 
 Any suggestion is welcome.
 
-In my study about CQRS and Event Sourcing I have some references (people, projects, presentations). See links below.
+## Architecture
+
+![CQRS high level architecture](http://s32.postimg.org/b6mnz0ib9/cqrsschema.png)
+
 
 ## References
 ### People
