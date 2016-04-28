@@ -7,7 +7,7 @@ namespace EnjoyCQRS.EventStore.Storage
     /// <summary>
     /// Event Store repository abstraction.
     /// </summary>
-    public interface IDomainEventStore : ITransactional
+    public interface IEventStore : ITransactional
     {
         /// <summary>
         /// Retrieve all events based on <param name="id"></param>.

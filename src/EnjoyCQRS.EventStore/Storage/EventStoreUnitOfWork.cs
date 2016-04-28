@@ -8,11 +8,11 @@ namespace EnjoyCQRS.EventStore.Storage
     public class EventStoreUnitOfWork : IEventStoreUnitOfWork
     {
         private readonly IAggregateTracker _aggregateCache;
-        private readonly IDomainEventStore _domainEventStore;
+        private readonly IEventStore _domainEventStore;
         private readonly IMessageBus _messageBus;
         private readonly List<IAggregate> _aggregates = new List<IAggregate>();
         
-        public EventStoreUnitOfWork(IAggregateTracker aggregateCache, IDomainEventStore domainEventStore, IMessageBus messageBus)
+        public EventStoreUnitOfWork(IAggregateTracker aggregateCache, IEventStore domainEventStore, IMessageBus messageBus)
         {
             _aggregateCache = aggregateCache;
             _domainEventStore = domainEventStore;

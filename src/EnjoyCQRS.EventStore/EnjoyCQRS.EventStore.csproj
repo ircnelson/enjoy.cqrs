@@ -52,7 +52,7 @@
     <Compile Include="Storage\AggregateTracker.cs" />
     <Compile Include="Storage\EventStoreUnitOfWork.cs" />
     <Compile Include="Storage\IAggregateTracker.cs" />
-    <Compile Include="Storage\IDomainEventStore.cs" />
+    <Compile Include="Storage\IEventStore.cs" />
     <Compile Include="Storage\IEventStoreUnitOfWork.cs" />
     <Compile Include="Storage\ITransactional.cs" />
   </ItemGroup>

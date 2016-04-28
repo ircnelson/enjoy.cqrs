@@ -13,7 +13,7 @@ namespace EnjoyCQRS.UnitTests.Storage
 {
     public class DomainRepositoryTests
     {
-        private readonly InMemoryDomainEventStore _inMemoryDomainEventStore = new InMemoryDomainEventStore();
+        private readonly StubEventStore _inMemoryDomainEventStore = new StubEventStore();
         private readonly EventStoreUnitOfWork _eventStoreUnitOfWork;
         private readonly IDomainRepository _domainRepository;
         private readonly Mock<IMessageBus> _mockMessageBus;

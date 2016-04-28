@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace EnjoyCQRS.UnitTests.Storage
 {
-    public class InMemoryDomainEventStore : IDomainEventStore
+    public class StubEventStore : IEventStore
     {
         private readonly List<IDomainEvent> _latestEvents = new List<IDomainEvent>();
         private readonly JsonSerializerSettings _serializationSettings;
@@ -17,7 +17,7 @@ namespace EnjoyCQRS.UnitTests.Storage
         public readonly Dictionary<Guid, List<string>> EventStore = new Dictionary<Guid, List<string>>();
         public bool InTransaction;
         
-        public InMemoryDomainEventStore()
+        public StubEventStore()
         {
             _serializationSettings = new JsonSerializerSettings
             {
