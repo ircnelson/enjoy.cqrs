@@ -5,7 +5,10 @@ branches:
 configuration: Debug
 platform: Any CPU
 clone_depth: 1
+nuget:
+  project_feed: true
 before_build:
 - cmd: nuget restore
 build:
   verbosity: detailed
+deploy: off
