@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using EnjoyCQRS.TestFramework;
 using MyCQRS.Restaurant.Commands;
 using MyCQRS.Restaurant.CommandsHandlers;
 using MyCQRS.Restaurant.Domain;
 using MyCQRS.Restaurant.Domain.Exceptions;
 using MyCQRS.Restaurant.Domain.ValueObjects;
-using MyCQRS.TestFramework;
 using Xunit;
 
 namespace MyCQRS.Restaurant.Tests.Commands

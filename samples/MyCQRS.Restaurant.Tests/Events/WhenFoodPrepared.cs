@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using EnjoyCQRS.TestFramework;
 using FluentAssertions;
 using Moq;
 using MyCQRS.Restaurant.Domain.ValueObjects;
@@ -8,7 +9,6 @@ using MyCQRS.Restaurant.Events;
 using MyCQRS.Restaurant.EventsHandlers;
 using MyCQRS.Restaurant.Read;
 using MyCQRS.Restaurant.Read.Models;
-using MyCQRS.TestFramework;
 using Xunit;
 
 namespace MyCQRS.Restaurant.Tests.Events

@@ -49,11 +49,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\MyCQRS.Commands\EnjoyCQRS.Commands.csproj">
+    <ProjectReference Include="..\..\src\EnjoyCQRS.Commands\EnjoyCQRS.Commands.csproj">
       <Project>{D210D6B3-0DAA-4CB1-A65E-D7DF9A42B0A6}</Project>
       <Name>EnjoyCQRS.Commands</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\MyCQRS.EventStore\EnjoyCQRS.EventStore.csproj">
+    <ProjectReference Include="..\..\src\EnjoyCQRS.EventStore\EnjoyCQRS.EventStore.csproj">
       <Project>{57850692-5F07-43AF-881A-BEFA95791CD0}</Project>
       <Name>EnjoyCQRS.EventStore</Name>
     </ProjectReference>

@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using MyCQRS.Events;
+using EnjoyCQRS.Events;
 using MyCQRS.Restaurant.Events;
 using MyCQRS.Restaurant.Read;
 using MyCQRS.Restaurant.Read.Models;

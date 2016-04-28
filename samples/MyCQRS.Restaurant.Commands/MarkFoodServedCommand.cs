@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using MyCQRS.Commands;
+using EnjoyCQRS.Commands;
 
 namespace MyCQRS.Restaurant.Commands
 {

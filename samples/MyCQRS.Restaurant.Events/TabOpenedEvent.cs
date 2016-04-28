@@ -1,5 +1,5 @@
 ﻿using System;
-using MyCQRS.Events;
+using EnjoyCQRS.Events;
 
 namespace MyCQRS.Restaurant.Events
 {

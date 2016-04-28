@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using MyCQRS.EventStore;
+using EnjoyCQRS.EventStore;
 using MyCQRS.Restaurant.Domain.Exceptions;
 using MyCQRS.Restaurant.Domain.ValueObjects;
 using MyCQRS.Restaurant.Events;

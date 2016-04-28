@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using MyCQRS.Events;
+using EnjoyCQRS.Events;
 
 namespace MyCQRS.Restaurant.Events
 {

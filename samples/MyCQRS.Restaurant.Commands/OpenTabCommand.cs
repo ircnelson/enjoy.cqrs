@@ -1,5 +1,5 @@
 ﻿using System;
-using MyCQRS.Commands;
+using EnjoyCQRS.Commands;
 
 namespace MyCQRS.Restaurant.Commands
 {

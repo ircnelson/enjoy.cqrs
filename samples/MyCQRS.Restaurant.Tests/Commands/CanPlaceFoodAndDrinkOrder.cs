@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using EnjoyCQRS.Events;
+using EnjoyCQRS.TestFramework;
 using FluentAssertions;
-using MyCQRS.Events;
 using MyCQRS.Restaurant.Commands;
 using MyCQRS.Restaurant.CommandsHandlers;
 using MyCQRS.Restaurant.Domain;
 using MyCQRS.Restaurant.Domain.ValueObjects;
 using MyCQRS.Restaurant.Events;
-using MyCQRS.TestFramework;
 using Xunit;
 
 namespace MyCQRS.Restaurant.Tests.Commands

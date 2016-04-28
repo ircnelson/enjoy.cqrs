@@ -1,5 +1,5 @@
-﻿using MyCQRS.Commands;
-using MyCQRS.EventStore;
+﻿using EnjoyCQRS.Commands;
+using EnjoyCQRS.EventStore;
 using MyCQRS.Restaurant.Commands;
 using MyCQRS.Restaurant.Domain;
 
