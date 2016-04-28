@@ -46,13 +46,13 @@
     <Compile Include="ValueObjects\OrderedItem.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\MyCQRS.EventStore\MyCQRS.EventStore.csproj">
+    <ProjectReference Include="..\..\src\MyCQRS.EventStore\EnjoyCQRS.EventStore.csproj">
       <Project>{57850692-5F07-43AF-881A-BEFA95791CD0}</Project>
-      <Name>MyCQRS.EventStore</Name>
+      <Name>EnjoyCQRS.EventStore</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\MyCQRS.Events\MyCQRS.Events.csproj">
-      <Project>{6DDE8468-B014-49E1-AE34-DF717AA7AEC9}</Project>
-      <Name>MyCQRS.Events</Name>
+    <ProjectReference Include="..\..\src\MyCQRS.Events\EnjoyCQRS.Events.csproj">
+      <Project>{5512AF07-A3BB-4A41-A0B4-28C930C57145}</Project>
+      <Name>EnjoyCQRS.Events</Name>
     </ProjectReference>
     <ProjectReference Include="..\MyCQRS.Restaurant.Events\MyCQRS.Restaurant.Events.csproj">
       <Project>{CC658FB3-8A5D-41C5-BDBC-B7DA359C827B}</Project>

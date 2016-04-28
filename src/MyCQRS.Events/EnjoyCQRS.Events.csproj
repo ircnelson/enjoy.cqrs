@@ -7,8 +7,8 @@
     <ProjectGuid>{5512AF07-A3BB-4A41-A0B4-28C930C57145}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MyCQRS.Events</RootNamespace>
-    <AssemblyName>MyCQRS.Events</AssemblyName>
+    <RootNamespace>EnjoyCQRS.Events</RootNamespace>
+    <AssemblyName>EnjoyCQRS.Events</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

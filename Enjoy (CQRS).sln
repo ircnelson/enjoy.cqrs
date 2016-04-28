@@ -7,9 +7,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{1D765E45-617
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{BFFED7E8-0A58-46ED-89DE-58D8E350E43D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCQRS.Events", "src\MyCQRS.Events\MyCQRS.Events.csproj", "{5512AF07-A3BB-4A41-A0B4-28C930C57145}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnjoyCQRS.Events", "src\MyCQRS.Events\EnjoyCQRS.Events.csproj", "{5512AF07-A3BB-4A41-A0B4-28C930C57145}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCQRS.Commands", "src\MyCQRS.Commands\MyCQRS.Commands.csproj", "{D210D6B3-0DAA-4CB1-A65E-D7DF9A42B0A6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnjoyCQRS.Commands", "src\MyCQRS.Commands\EnjoyCQRS.Commands.csproj", "{D210D6B3-0DAA-4CB1-A65E-D7DF9A42B0A6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{E04171B9-2EC8-4B7B-A5CE-7466A24D1206}"
 EndProject
@@ -23,13 +23,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCQRS.Restaurant.Events", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCQRS.Restaurant.Read", "samples\MyCQRS.Restaurant.Read\MyCQRS.Restaurant.Read.csproj", "{C6B96D03-8CBE-4132-BD75-FF1B7E174273}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCQRS.EventStore", "src\MyCQRS.EventStore\MyCQRS.EventStore.csproj", "{57850692-5F07-43AF-881A-BEFA95791CD0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnjoyCQRS.EventStore", "src\MyCQRS.EventStore\EnjoyCQRS.EventStore.csproj", "{57850692-5F07-43AF-881A-BEFA95791CD0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCQRS.Restaurant.Tests", "samples\MyCQRS.Restaurant.Tests\MyCQRS.Restaurant.Tests.csproj", "{4F80544C-21C9-4F44-9076-5B229881AF64}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCQRS.TestFramework", "src\MyCQRS.TestFramework\MyCQRS.TestFramework.csproj", "{B1060653-D6FB-4AB1-880F-8E773544EDCE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnjoyCQRS.TestFramework", "src\MyCQRS.TestFramework\EnjoyCQRS.TestFramework.csproj", "{B1060653-D6FB-4AB1-880F-8E773544EDCE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCQRS.UnitTests", "test\MyCQRS.UnitTests\MyCQRS.UnitTests.csproj", "{F7B0A3B8-579B-4FD3-93DC-E2D43555FEF1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnjoyCQRS.UnitTests", "test\MyCQRS.UnitTests\EnjoyCQRS.UnitTests.csproj", "{F7B0A3B8-579B-4FD3-93DC-E2D43555FEF1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCQRS.Restaurant.CommandsHandlers", "samples\MyCQRS.Restaurant.CommandsHandlers\MyCQRS.Restaurant.CommandsHandlers.csproj", "{97957F1A-482B-461A-AF61-F4CE05E52C21}"
 EndProject
@@ -41,7 +41,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0. Solution Items", "0. Sol
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCQRS.Bus", "src\MyCQRS.Bus\MyCQRS.Bus.csproj", "{2F9A59EE-DD4E-4302-A1F0-7191E6A1130D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnjoyCQRS.Bus", "src\MyCQRS.Bus\EnjoyCQRS.Bus.csproj", "{2F9A59EE-DD4E-4302-A1F0-7191E6A1130D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

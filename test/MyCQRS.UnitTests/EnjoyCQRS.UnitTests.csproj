@@ -8,8 +8,8 @@
     <ProjectGuid>{F7B0A3B8-579B-4FD3-93DC-E2D43555FEF1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MyCQRS.UnitTests</RootNamespace>
-    <AssemblyName>MyCQRS.UnitTests</AssemblyName>
+    <RootNamespace>EnjoyCQRS.UnitTests</RootNamespace>
+    <AssemblyName>EnjoyCQRS.UnitTests</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
@@ -89,25 +89,25 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\MyCQRS.Bus\MyCQRS.Bus.csproj">
+    <ProjectReference Include="..\..\src\MyCQRS.Bus\EnjoyCQRS.Bus.csproj">
       <Project>{2F9A59EE-DD4E-4302-A1F0-7191E6A1130D}</Project>
-      <Name>MyCQRS.Bus</Name>
+      <Name>EnjoyCQRS.Bus</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\MyCQRS.Commands\MyCQRS.Commands.csproj">
+    <ProjectReference Include="..\..\src\MyCQRS.Commands\EnjoyCQRS.Commands.csproj">
       <Project>{D210D6B3-0DAA-4CB1-A65E-D7DF9A42B0A6}</Project>
-      <Name>MyCQRS.Commands</Name>
+      <Name>EnjoyCQRS.Commands</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\MyCQRS.EventStore\MyCQRS.EventStore.csproj">
+    <ProjectReference Include="..\..\src\MyCQRS.EventStore\EnjoyCQRS.EventStore.csproj">
       <Project>{57850692-5F07-43AF-881A-BEFA95791CD0}</Project>
-      <Name>MyCQRS.EventStore</Name>
+      <Name>EnjoyCQRS.EventStore</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\MyCQRS.Events\MyCQRS.Events.csproj">
+    <ProjectReference Include="..\..\src\MyCQRS.Events\EnjoyCQRS.Events.csproj">
       <Project>{5512AF07-A3BB-4A41-A0B4-28C930C57145}</Project>
-      <Name>MyCQRS.Events</Name>
+      <Name>EnjoyCQRS.Events</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\MyCQRS.TestFramework\MyCQRS.TestFramework.csproj">
+    <ProjectReference Include="..\..\src\MyCQRS.TestFramework\EnjoyCQRS.TestFramework.csproj">
       <Project>{B1060653-D6FB-4AB1-880F-8E773544EDCE}</Project>
-      <Name>MyCQRS.TestFramework</Name>
+      <Name>EnjoyCQRS.TestFramework</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

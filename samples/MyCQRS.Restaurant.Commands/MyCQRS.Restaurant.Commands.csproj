@@ -49,13 +49,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\MyCQRS.Commands\MyCQRS.Commands.csproj">
-      <Project>{F75361EB-8636-4A22-977B-CE3A7745FB3D}</Project>
-      <Name>MyCQRS.Commands</Name>
+    <ProjectReference Include="..\..\src\MyCQRS.Commands\EnjoyCQRS.Commands.csproj">
+      <Project>{D210D6B3-0DAA-4CB1-A65E-D7DF9A42B0A6}</Project>
+      <Name>EnjoyCQRS.Commands</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\MyCQRS.EventStore\MyCQRS.EventStore.csproj">
+    <ProjectReference Include="..\..\src\MyCQRS.EventStore\EnjoyCQRS.EventStore.csproj">
       <Project>{57850692-5F07-43AF-881A-BEFA95791CD0}</Project>
-      <Name>MyCQRS.EventStore</Name>
+      <Name>EnjoyCQRS.EventStore</Name>
     </ProjectReference>
     <ProjectReference Include="..\MyCQRS.Restaurant.Domain\MyCQRS.Restaurant.Domain.csproj">
       <Project>{F78CF8EE-C3E8-416B-86C1-76402A504202}</Project>

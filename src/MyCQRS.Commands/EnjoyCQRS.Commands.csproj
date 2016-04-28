@@ -7,8 +7,8 @@
     <ProjectGuid>{D210D6B3-0DAA-4CB1-A65E-D7DF9A42B0A6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MyCQRS.Commands</RootNamespace>
-    <AssemblyName>MyCQRS.Commands</AssemblyName>
+    <RootNamespace>EnjoyCQRS.Commands</RootNamespace>
+    <AssemblyName>EnjoyCQRS.Commands</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -47,9 +47,9 @@
     <Compile Include="TransactionCommandHandler.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MyCQRS.EventStore\MyCQRS.EventStore.csproj">
+    <ProjectReference Include="..\MyCQRS.EventStore\EnjoyCQRS.EventStore.csproj">
       <Project>{57850692-5F07-43AF-881A-BEFA95791CD0}</Project>
-      <Name>MyCQRS.EventStore</Name>
+      <Name>EnjoyCQRS.EventStore</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

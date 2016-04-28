@@ -50,9 +50,9 @@
     <Compile Include="TabOpenedEventHandler.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\MyCQRS.Events\MyCQRS.Events.csproj">
+    <ProjectReference Include="..\..\src\MyCQRS.Events\EnjoyCQRS.Events.csproj">
       <Project>{5512AF07-A3BB-4A41-A0B4-28C930C57145}</Project>
-      <Name>MyCQRS.Events</Name>
+      <Name>EnjoyCQRS.Events</Name>
     </ProjectReference>
     <ProjectReference Include="..\MyCQRS.Restaurant.Events\MyCQRS.Restaurant.Events.csproj">
       <Project>{CC658FB3-8A5D-41C5-BDBC-B7DA359C827B}</Project>

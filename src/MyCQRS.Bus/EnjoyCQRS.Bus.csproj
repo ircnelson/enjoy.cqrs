@@ -7,8 +7,8 @@
     <ProjectGuid>{2F9A59EE-DD4E-4302-A1F0-7191E6A1130D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MyCQRS.Bus</RootNamespace>
-    <AssemblyName>MyCQRS.Bus</AssemblyName>
+    <RootNamespace>EnjoyCQRS.Bus</RootNamespace>
+    <AssemblyName>EnjoyCQRS.Bus</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
