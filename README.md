@@ -1,14 +1,12 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/eprwudlh0eskijof?svg=true)](https://ci.appveyor.com/project/nelsoncvjr/mycqrs)
+[![Build status](https://ci.appveyor.com/api/projects/status/eprwudlh0eskijof?svg=true)](https://ci.appveyor.com/project/nelsoncvjr/enjoy-cqrs)
 
-# MyCQRS
+# eNJoy CQRS
 The motivation to create this project was born through the curiosity about CQRS (Command Query Responsibility Separation) & Event Sourcing architecture.
 
 I'm tired to build software using classical architecture, then I decided to start adventure in this world.
 The new way of thinking about the area where everything occurs are events, like a timeline in real life is very cool and different!
 
 Obviously, has much paradigms and fears that should be left over the long of the time, but never is too late.
-
-The sample inside this project is based on the same problem of http://cqrs.nu/tutorial.
 
 The implementation is not complete, e.g. need to implement the abstraction for Snapshotting...
 
