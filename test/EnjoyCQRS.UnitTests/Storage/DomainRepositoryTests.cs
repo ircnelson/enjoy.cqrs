@@ -14,7 +14,7 @@ namespace EnjoyCQRS.UnitTests.Storage
     public class DomainRepositoryTests
     {
         private readonly StubEventStore _inMemoryDomainEventStore = new StubEventStore();
-        private readonly EventStoreUnitOfWork _eventStoreUnitOfWork;
+        private readonly Session _eventStoreUnitOfWork;
         private readonly IDomainRepository _domainRepository;
         private readonly Mock<IMessageBus> _mockMessageBus;
         private readonly AggregateTracker _aggregateTracker;
@@ -26,7 +26,7 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             _aggregateTracker = new AggregateTracker();
             
-            _eventStoreUnitOfWork = new EventStoreUnitOfWork(_aggregateTracker, _inMemoryDomainEventStore, _mockMessageBus.Object);
+            _eventStoreUnitOfWork = new Session(_aggregateTracker, _inMemoryDomainEventStore, _mockMessageBus.Object);
             _domainRepository = new DomainRepository(_eventStoreUnitOfWork, _aggregateTracker);
         }
 

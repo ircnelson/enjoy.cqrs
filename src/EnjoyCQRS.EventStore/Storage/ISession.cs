@@ -5,7 +5,7 @@ namespace EnjoyCQRS.EventStore.Storage
     /// <summary>
     /// Represents an abstraction where aggregate events will be persisted.
     /// </summary>
-    public interface IEventStoreUnitOfWork : IUnitOfWork
+    public interface ISession : IUnitOfWork
     {
         /// <summary>
         /// Retrieves an <typeparam name="TAggregate"></typeparam> based on your unique identifier property.

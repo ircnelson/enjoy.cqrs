@@ -50,10 +50,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Route.cs" />
     <Compile Include="Storage\AggregateTracker.cs" />
-    <Compile Include="Storage\EventStoreUnitOfWork.cs" />
+    <Compile Include="Storage\Session.cs" />
     <Compile Include="Storage\IAggregateTracker.cs" />
     <Compile Include="Storage\IEventStore.cs" />
-    <Compile Include="Storage\IEventStoreUnitOfWork.cs" />
+    <Compile Include="Storage\ISession.cs" />
     <Compile Include="Storage\ITransactional.cs" />
   </ItemGroup>
   <ItemGroup>

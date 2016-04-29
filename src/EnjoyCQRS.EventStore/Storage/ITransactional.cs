@@ -1,7 +1,7 @@
 ﻿namespace EnjoyCQRS.EventStore.Storage
 {
     /// <summary>
-    /// This abstraction used on <see cref="EventStoreUnitOfWork"/> to garantee atomicity.
+    /// This abstraction used on <see cref="Session"/> to garantee atomicity.
     /// </summary>
     public interface ITransactional
     {

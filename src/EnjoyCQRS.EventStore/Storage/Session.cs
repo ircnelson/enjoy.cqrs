@@ -5,14 +5,14 @@ using EnjoyCQRS.Bus;
 
 namespace EnjoyCQRS.EventStore.Storage
 {
-    public class EventStoreUnitOfWork : IEventStoreUnitOfWork
+    public class Session : ISession
     {
         private readonly IAggregateTracker _aggregateCache;
         private readonly IEventStore _domainEventStore;
         private readonly IMessageBus _messageBus;
         private readonly List<IAggregate> _aggregates = new List<IAggregate>();
         
-        public EventStoreUnitOfWork(IAggregateTracker aggregateCache, IEventStore domainEventStore, IMessageBus messageBus)
+        public Session(IAggregateTracker aggregateCache, IEventStore domainEventStore, IMessageBus messageBus)
         {
             _aggregateCache = aggregateCache;
             _domainEventStore = domainEventStore;
