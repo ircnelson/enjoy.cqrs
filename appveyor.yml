@@ -14,7 +14,7 @@ build:
 after_build:
 - ps: nuget pack EnjoyCQRS.nuspec -Version $env:appveyor_build_version
 artifacts:
-- path: *.nupkg
+- path: '*.nupkg'
   name: nuget-pkg
 deploy:
 - provider: NuGet
