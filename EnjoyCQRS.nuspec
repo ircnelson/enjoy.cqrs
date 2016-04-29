@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>EnjoyCQRS</id>
+    <version>0.0.0</version>
+    <title>EnjoyCQRS</title>
+    <authors>Nelson C Viana Jr</authors>
+    <owners>Nelson C Viana Jr</owners>
+    <projectUrl>https://github.com/ircnelson/enjoy.cqrs</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+
+    <summary>CQRS Framework.</summary>
+    <description><![CDATA[EnjoyCQRS is a framework to provides the minimal infrastructure for CQRS & Event Sourcing architecture.]]></description>
+
+    <copyright>Copyright 2016</copyright>
+
+    <tags>.NET CQRS EventSource EventSourcing</tags>
+  </metadata>
+
+  <files>
+    <file src="**\src\**\bin\Debug\*.dll" target="lib\net461" />
+    <file src="**\src\**\bin\Debug\*.pdb" target="lib\net461" />
+    <file src="**\src\**\tools\**\*.*" exclude="**\*.log" />
+  </files>
+</package>
