@@ -16,6 +16,17 @@ Any suggestion is welcome.
 
 ![CQRS high level architecture](http://s32.postimg.org/b6mnz0ib9/cqrsschema.png)
 
+## Installing (or restore) by Nuget
+
+If you don't have a nuget.exe installed, please download [here](https://dist.nuget.org/win-x86-commandline/latest/nuget.exe).
+
+to install: 
+
+    nuget.exe install EnjoyCQRS -Source https://www.myget.org/F/enjoy/api/v3/index.json
+
+to restore:
+
+    nuget.exe restore EnjoyCQRS -Source https://www.myget.org/F/enjoy/api/v3/index.json
 
 ## References
 ### People
