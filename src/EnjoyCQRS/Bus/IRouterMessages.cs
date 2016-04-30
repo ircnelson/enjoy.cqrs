@@ -1,4 +1,4 @@
-﻿namespace EnjoyCQRS.Bus.Direct
+﻿namespace EnjoyCQRS.Bus
 {
     public interface IRouterMessages
     {

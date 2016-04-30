@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using EnjoyCQRS.Bus;
-using EnjoyCQRS.EventStore;
-using EnjoyCQRS.EventStore.Exceptions;
 using EnjoyCQRS.EventStore.Storage;
 using EnjoyCQRS.UnitTests.Domain;
 using FluentAssertions;

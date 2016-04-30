@@ -8,9 +8,14 @@ The new way of thinking about the area where everything occurs are events, like 
 
 Obviously, has much paradigms and fears that should be left over the long of the time, but never is too late.
 
-The implementation is not complete, e.g. need to implement the abstraction for Snapshotting...
+The implementation is not complete, e.g. need to implement the abstraction for Snapshot.
 
 Any suggestion is welcome.
+
+## Features
+
+* Direct Bus (publish Commands & Events with transaction)
+* Unit of Work
 
 ## Architecture
 

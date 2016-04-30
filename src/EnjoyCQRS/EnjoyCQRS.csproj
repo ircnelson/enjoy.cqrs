@@ -43,7 +43,7 @@
     <Compile Include="Bus\Direct\DefaultRouterMessages.cs" />
     <Compile Include="Bus\Direct\DirectMessageBus.cs" />
     <Compile Include="Bus\Direct\InMemoryQueue.cs" />
-    <Compile Include="Bus\Direct\IRouterMessages.cs" />
+    <Compile Include="Bus\IRouterMessages.cs" />
     <Compile Include="Bus\Direct\RouteNotRegisteredException.cs" />
     <Compile Include="Bus\IMessageBus.cs" />
     <Compile Include="Bus\IUnitOfWork.cs" />
