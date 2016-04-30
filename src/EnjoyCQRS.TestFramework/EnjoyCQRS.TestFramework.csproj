@@ -53,17 +53,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\EnjoyCQRS.Commands\EnjoyCQRS.Commands.csproj">
-      <Project>{D210D6B3-0DAA-4CB1-A65E-D7DF9A42B0A6}</Project>
-      <Name>EnjoyCQRS.Commands</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\EnjoyCQRS.EventStore\EnjoyCQRS.EventStore.csproj">
-      <Project>{57850692-5F07-43AF-881A-BEFA95791CD0}</Project>
-      <Name>EnjoyCQRS.EventStore</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\EnjoyCQRS.Events\EnjoyCQRS.Events.csproj">
-      <Project>{5512AF07-A3BB-4A41-A0B4-28C930C57145}</Project>
-      <Name>EnjoyCQRS.Events</Name>
+    <ProjectReference Include="..\EnjoyCQRS\EnjoyCQRS.csproj">
+      <Project>{7CEDD8F7-210D-44FC-B690-9079AF5A12DF}</Project>
+      <Name>EnjoyCQRS</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

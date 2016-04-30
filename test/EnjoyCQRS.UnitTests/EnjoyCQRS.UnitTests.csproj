@@ -89,25 +89,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\EnjoyCQRS.Bus\EnjoyCQRS.Bus.csproj">
-      <Project>{2F9A59EE-DD4E-4302-A1F0-7191E6A1130D}</Project>
-      <Name>EnjoyCQRS.Bus</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\EnjoyCQRS.Commands\EnjoyCQRS.Commands.csproj">
-      <Project>{D210D6B3-0DAA-4CB1-A65E-D7DF9A42B0A6}</Project>
-      <Name>EnjoyCQRS.Commands</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\EnjoyCQRS.EventStore\EnjoyCQRS.EventStore.csproj">
-      <Project>{57850692-5F07-43AF-881A-BEFA95791CD0}</Project>
-      <Name>EnjoyCQRS.EventStore</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\EnjoyCQRS.Events\EnjoyCQRS.Events.csproj">
-      <Project>{5512AF07-A3BB-4A41-A0B4-28C930C57145}</Project>
-      <Name>EnjoyCQRS.Events</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\src\EnjoyCQRS.TestFramework\EnjoyCQRS.TestFramework.csproj">
       <Project>{B1060653-D6FB-4AB1-880F-8E773544EDCE}</Project>
       <Name>EnjoyCQRS.TestFramework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\EnjoyCQRS\EnjoyCQRS.csproj">
+      <Project>{7CEDD8F7-210D-44FC-B690-9079AF5A12DF}</Project>
+      <Name>EnjoyCQRS</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{57850692-5F07-43AF-881A-BEFA95791CD0}</ProjectGuid>
+    <ProjectGuid>{7CEDD8F7-210D-44FC-B690-9079AF5A12DF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EnjoyCQRS.EventStore</RootNamespace>
-    <AssemblyName>EnjoyCQRS.EventStore</AssemblyName>
+    <RootNamespace>EnjoyCQRS</RootNamespace>
+    <AssemblyName>EnjoyCQRS</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -40,28 +40,32 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Aggregate.cs" />
-    <Compile Include="Storage\Repository.cs" />
-    <Compile Include="Exceptions\HandleNotFound.cs" />
-    <Compile Include="Exceptions\WrongExpectedVersionException.cs" />
-    <Compile Include="Storage\IRepository.cs" />
-    <Compile Include="IUnitOfWork.cs" />
+    <Compile Include="Bus\Direct\DefaultRouterMessages.cs" />
+    <Compile Include="Bus\Direct\DirectMessageBus.cs" />
+    <Compile Include="Bus\Direct\InMemoryQueue.cs" />
+    <Compile Include="Bus\Direct\IRouterMessages.cs" />
+    <Compile Include="Bus\Direct\RouteNotRegisteredException.cs" />
+    <Compile Include="Bus\IMessageBus.cs" />
+    <Compile Include="Bus\IUnitOfWork.cs" />
+    <Compile Include="Commands\Command.cs" />
+    <Compile Include="Commands\ICommand.cs" />
+    <Compile Include="Commands\ICommandHandler.cs" />
+    <Compile Include="Commands\TransactionCommandHandler.cs" />
+    <Compile Include="EventStore\Aggregate.cs" />
+    <Compile Include="EventStore\Exceptions\HandleNotFound.cs" />
+    <Compile Include="EventStore\Exceptions\WrongExpectedVersionException.cs" />
+    <Compile Include="EventStore\IUnitOfWork.cs" />
+    <Compile Include="EventStore\Route.cs" />
+    <Compile Include="EventStore\Storage\IEventStore.cs" />
+    <Compile Include="EventStore\Storage\IRepository.cs" />
+    <Compile Include="EventStore\Storage\ISession.cs" />
+    <Compile Include="EventStore\Storage\ITransactional.cs" />
+    <Compile Include="EventStore\Storage\Repository.cs" />
+    <Compile Include="EventStore\Storage\Session.cs" />
+    <Compile Include="Events\DomainEvent.cs" />
+    <Compile Include="Events\IDomainEvent.cs" />
+    <Compile Include="Events\IEventHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Route.cs" />
-    <Compile Include="Storage\Session.cs" />
-    <Compile Include="Storage\IEventStore.cs" />
-    <Compile Include="Storage\ISession.cs" />
-    <Compile Include="Storage\ITransactional.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\EnjoyCQRS.Bus\EnjoyCQRS.Bus.csproj">
-      <Project>{2F9A59EE-DD4E-4302-A1F0-7191E6A1130D}</Project>
-      <Name>EnjoyCQRS.Bus</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\EnjoyCQRS.Events\EnjoyCQRS.Events.csproj">
-      <Project>{5512AF07-A3BB-4A41-A0B4-28C930C57145}</Project>
-      <Name>EnjoyCQRS.Events</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
