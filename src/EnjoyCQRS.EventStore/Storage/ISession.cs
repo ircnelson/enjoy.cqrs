@@ -13,13 +13,13 @@ namespace EnjoyCQRS.EventStore.Storage
         /// <typeparam name="TAggregate"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        TAggregate GetById<TAggregate>(Guid id) where TAggregate : class, IAggregate, new();
+        TAggregate GetById<TAggregate>(Guid id) where TAggregate : Aggregate, new();
 
         /// <summary>
         /// Add an instance of <typeparam name="TAggregate"></typeparam> in event store.
         /// </summary>
         /// <typeparam name="TAggregate"></typeparam>
         /// <param name="aggregate"></param>
-        void Add<TAggregate>(TAggregate aggregate) where TAggregate : class, IAggregate, new();
+        void Add<TAggregate>(TAggregate aggregate) where TAggregate : Aggregate;
     }
 }

@@ -80,7 +80,7 @@
     <Compile Include="Domain\Events\TestAggregateCreatedEvent.cs" />
     <Compile Include="Domain\TestAggregateRoot.cs" />
     <Compile Include="MessageBus\CommandBusTests.cs" />
-    <Compile Include="Storage\DomainRepositoryTests.cs" />
+    <Compile Include="Storage\SessionTests.cs" />
     <Compile Include="Storage\StubEventStore.cs" />
     <Compile Include="Domain\AggregateTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

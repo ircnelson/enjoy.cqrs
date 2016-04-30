@@ -41,17 +41,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Aggregate.cs" />
-    <Compile Include="DomainRepository.cs" />
+    <Compile Include="Storage\Repository.cs" />
     <Compile Include="Exceptions\HandleNotFound.cs" />
     <Compile Include="Exceptions\WrongExpectedVersionException.cs" />
-    <Compile Include="IAggregate.cs" />
-    <Compile Include="IDomainRepository.cs" />
+    <Compile Include="Storage\IRepository.cs" />
     <Compile Include="IUnitOfWork.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Route.cs" />
-    <Compile Include="Storage\AggregateTracker.cs" />
     <Compile Include="Storage\Session.cs" />
-    <Compile Include="Storage\IAggregateTracker.cs" />
     <Compile Include="Storage\IEventStore.cs" />
     <Compile Include="Storage\ISession.cs" />
     <Compile Include="Storage\ITransactional.cs" />

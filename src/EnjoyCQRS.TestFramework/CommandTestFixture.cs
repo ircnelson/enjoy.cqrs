@@ -4,6 +4,7 @@ using System.Linq;
 using EnjoyCQRS.Commands;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventStore;
+using EnjoyCQRS.EventStore.Storage;
 using Moq;
 
 namespace EnjoyCQRS.TestFramework
@@ -11,7 +12,7 @@ namespace EnjoyCQRS.TestFramework
     public abstract class CommandTestFixture<TCommand, TCommandHandler, TAggregateRoot>
         where TCommand : class, ICommand
         where TCommandHandler : class, ICommandHandler<TCommand>
-        where TAggregateRoot : class, IAggregate, new()
+        where TAggregateRoot : Aggregate, new()
     {
         private readonly IDictionary<Type, object> _mocks;
 
@@ -64,9 +65,9 @@ namespace EnjoyCQRS.TestFramework
 
             foreach (var parameter in constructorInfo.GetParameters())
             {
-                if (parameter.ParameterType == typeof(IDomainRepository))
+                if (parameter.ParameterType == typeof(ISession))
                 {
-                    var repositoryMock = new Mock<IDomainRepository>();
+                    var repositoryMock = new Mock<ISession>();
                     repositoryMock.Setup(x => x.GetById<TAggregateRoot>(It.IsAny<Guid>())).Returns(AggregateRoot);
                     repositoryMock.Setup(x => x.Add(It.IsAny<TAggregateRoot>())).Callback<TAggregateRoot>(x => AggregateRoot = x);
                     _mocks.Add(parameter.ParameterType, repositoryMock);

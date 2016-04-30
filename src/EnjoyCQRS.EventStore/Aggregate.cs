@@ -4,11 +4,15 @@ using EnjoyCQRS.Events;
 
 namespace EnjoyCQRS.EventStore
 {
-    public abstract class Aggregate : IAggregate
+    public abstract class Aggregate
     {
         private readonly List<IDomainEvent> _uncommitedEvents = new List<IDomainEvent>();
         private readonly Route<IDomainEvent> _routeEvents = new Route<IDomainEvent>();
 
+        /// <summary>
+        /// Collection of <see cref="IDomainEvent"/> that contains uncommited events.
+        /// All events that not persisted yet should be here.
+        /// </summary>
         public IReadOnlyCollection<IDomainEvent> UncommitedEvents => _uncommitedEvents.AsReadOnly();
         
         /// <summary>
@@ -40,6 +44,11 @@ namespace EnjoyCQRS.EventStore
             EventVersion++;
         }
 
+        /// <summary>
+        /// Apply the event in Aggregate.
+        /// The last event applied is the current state of the Aggregate.
+        /// </summary>
+        /// <param name="event"></param>
         public void ApplyEvent(IDomainEvent @event)
         {
             _routeEvents.Handle(@event);
@@ -47,11 +56,18 @@ namespace EnjoyCQRS.EventStore
             Version++;
         }
 
+        /// <summary>
+        /// Clear the collection of events that uncommited.
+        /// </summary>
         public void ClearUncommitedEvents()
         {
             _uncommitedEvents.Clear();
         }
 
+        /// <summary>
+        /// Load the events in the Aggregate.
+        /// </summary>
+        /// <param name="events"></param>
         public void LoadFromHistory(IEnumerable<IDomainEvent> events)
         {
             foreach (var @event in events)

@@ -17,9 +17,9 @@ namespace EnjoyCQRS.EventStore.Storage
         IEnumerable<IDomainEvent> GetAllEvents(Guid id);
 
         /// <summary>
-        /// Save the aggregate events in Event Store.
+        /// Save the events in Event Store.
         /// </summary>
-        /// <param name="aggregate"></param>
-        void Save(IAggregate aggregate);
+        /// <param name="events"></param>
+        void Save(IEnumerable<IDomainEvent> events);
     }
 }

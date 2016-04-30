@@ -5,7 +5,7 @@ using EnjoyCQRS.EventStore;
 
 namespace EnjoyCQRS.TestFramework
 {
-    public abstract class AggregateRootTestFixture<TAggregateRoot> where TAggregateRoot : IAggregate, new()
+    public abstract class AggregateRootTestFixture<TAggregateRoot> where TAggregateRoot : Aggregate, new()
     {
         protected TAggregateRoot AggregateRoot;
         protected Exception CaughtException;
