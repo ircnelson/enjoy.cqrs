@@ -44,7 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AggregateRootTestFixture.cs" />
+    <Compile Include="AggregateTestFixture.cs" />
     <Compile Include="CommandTestFixture.cs" />
     <Compile Include="EventTestFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

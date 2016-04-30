@@ -1,62 +1,82 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using EnjoyCQRS.Bus;
 
 namespace EnjoyCQRS.EventStore.Storage
 {
     public class Session : ISession
     {
-        private readonly ConcurrentDictionary<Guid, Aggregate> _aggregateTracker = new ConcurrentDictionary<Guid, Aggregate>();
-        private readonly IRepository _repository;
+        private readonly IAggregateTracker _aggregateTracker;
+        private readonly IEventStore _domainEventStore;
         private readonly IMessageBus _messageBus;
+        private readonly List<Aggregate> _aggregates = new List<Aggregate>();
 
-        public Session(IRepository repository, IMessageBus messageBus)
+        public Session(IAggregateTracker aggregateTracker, IEventStore domainEventStore, IMessageBus messageBus)
         {
-            _repository = repository;
+            _aggregateTracker = aggregateTracker;
+            _domainEventStore = domainEventStore;
             _messageBus = messageBus;
         }
 
         public TAggregate GetById<TAggregate>(Guid id) where TAggregate : Aggregate, new()
         {
-            TAggregate aggregate;
+            var aggregate = new TAggregate();
 
-            if (_aggregateTracker.ContainsKey(id))
-            {
-                aggregate = (TAggregate) _aggregateTracker[id];
+            var events = _domainEventStore.GetAllEvents(id);
 
-                return aggregate;
-            }
+            aggregate.LoadFromHistory(events);
 
-            aggregate = _repository.GetById<TAggregate>(id);
-
-            Add(aggregate);
+            RegisterForTracking(aggregate);
 
             return aggregate;
         }
 
         public void Add<TAggregate>(TAggregate aggregate) where TAggregate : Aggregate
         {
-            if (!_aggregateTracker.ContainsKey(aggregate.Id))
-            {
-                _aggregateTracker.TryAdd(aggregate.Id, aggregate);
-            }
+            RegisterForTracking(aggregate);
         }
 
         public void Commit()
         {
-            foreach (var aggregate in _aggregateTracker)
+            _domainEventStore.BeginTransaction();
+
+            foreach (var aggregate in _aggregates)
             {
-                _repository.Save(aggregate.Value);
+                var changes = aggregate.UncommitedEvents.ToList();
+                
+                _domainEventStore.Save(changes);
+
+                _messageBus.Publish(changes.Select(e => (object)e));
+
+                aggregate.ClearUncommitedEvents();
             }
 
-            _aggregateTracker.Clear();
+            _aggregates.Clear();
 
             _messageBus.Commit();
+            _domainEventStore.Commit();
         }
 
         public void Rollback()
         {
             _messageBus.Rollback();
+
+            _domainEventStore.Rollback();
+
+            foreach (var aggregate in _aggregates)
+            {
+                _aggregateTracker.Remove(aggregate.GetType(), aggregate.Id);
+            }
+
+            _aggregates.Clear();
+        }
+
+        private void RegisterForTracking<TAggregate>(TAggregate aggregateRoot) where TAggregate : Aggregate
+        {
+            _aggregates.Add(aggregateRoot);
+            _aggregateTracker.Add(aggregateRoot);
         }
     }
 }

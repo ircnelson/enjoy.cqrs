@@ -5,7 +5,7 @@ using EnjoyCQRS.EventStore;
 
 namespace EnjoyCQRS.TestFramework
 {
-    public abstract class AggregateRootTestFixture<TAggregateRoot> where TAggregateRoot : Aggregate, new()
+    public abstract class AggregateTestFixture<TAggregateRoot> where TAggregateRoot : Aggregate, new()
     {
         protected TAggregateRoot AggregateRoot;
         protected Exception CaughtException;
@@ -17,7 +17,7 @@ namespace EnjoyCQRS.TestFramework
         protected virtual void Finally() { }
         protected abstract void When();
         
-        protected AggregateRootTestFixture()
+        protected AggregateTestFixture()
         {   
             CaughtException = new ThereWasNoExceptionButOneWasExpectedException();
             AggregateRoot = new TAggregateRoot();

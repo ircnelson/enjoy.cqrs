@@ -7,7 +7,7 @@ using Xunit;
 
 namespace EnjoyCQRS.UnitTests.Domain
 {
-    public class Registered_event_in_aggregate : AggregateRootTestFixture<TestAggregateRoot>
+    public class Registered_event_in_aggregate : AggregateTestFixture<TestAggregateRoot>
     {
         protected override void When()
         {
@@ -22,7 +22,7 @@ namespace EnjoyCQRS.UnitTests.Domain
         }
     }
 
-    public class Not_registered_event_in_aggregate : AggregateRootTestFixture<TestAggregateRoot>
+    public class Not_registered_event_in_aggregate : AggregateTestFixture<TestAggregateRoot>
     {
         protected override void When()
         {

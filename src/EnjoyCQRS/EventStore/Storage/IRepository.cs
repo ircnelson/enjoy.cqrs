@@ -20,6 +20,6 @@ namespace EnjoyCQRS.EventStore.Storage
         /// </summary>
         /// <typeparam name="TAggregate"></typeparam>
         /// <param name="aggregate"></param>
-        void Save<TAggregate>(TAggregate aggregate) where TAggregate : Aggregate;
+        void Add<TAggregate>(TAggregate aggregate) where TAggregate : Aggregate;
     }
 }

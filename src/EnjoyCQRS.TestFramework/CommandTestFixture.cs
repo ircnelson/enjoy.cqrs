@@ -65,9 +65,9 @@ namespace EnjoyCQRS.TestFramework
 
             foreach (var parameter in constructorInfo.GetParameters())
             {
-                if (parameter.ParameterType == typeof(ISession))
+                if (parameter.ParameterType == typeof(IRepository))
                 {
-                    var repositoryMock = new Mock<ISession>();
+                    var repositoryMock = new Mock<IRepository>();
                     repositoryMock.Setup(x => x.GetById<TAggregateRoot>(It.IsAny<Guid>())).Returns(AggregateRoot);
                     repositoryMock.Setup(x => x.Add(It.IsAny<TAggregateRoot>())).Callback<TAggregateRoot>(x => AggregateRoot = x);
                     _mocks.Add(parameter.ParameterType, repositoryMock);

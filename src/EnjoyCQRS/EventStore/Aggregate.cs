@@ -52,8 +52,6 @@ namespace EnjoyCQRS.EventStore
         public void ApplyEvent(IDomainEvent @event)
         {
             _routeEvents.Handle(@event);
-
-            Version++;
         }
 
         /// <summary>
@@ -73,6 +71,8 @@ namespace EnjoyCQRS.EventStore
             foreach (var @event in events)
             {
                 ApplyEvent(@event);
+
+                Version++;
             }
         }
     }

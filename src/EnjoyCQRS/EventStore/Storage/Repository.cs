@@ -1,39 +1,37 @@
 ﻿using System;
-using System.Linq;
-using EnjoyCQRS.Bus;
 
 namespace EnjoyCQRS.EventStore.Storage
 {
     public class Repository : IRepository
     {
-        private readonly IEventStore _eventStore;
-        private readonly IMessageBus _messageBus;
+        private readonly ISession _session;
+        private readonly IAggregateTracker _aggregateTracker;
 
-        public Repository(IEventStore eventStore, IMessageBus messageBus)
+        public Repository(ISession session, IAggregateTracker aggregateTracker)
         {
-            _eventStore = eventStore;
-            _messageBus = messageBus;
+            _session = session;
+            _aggregateTracker = aggregateTracker;
+        }
+
+        public void Add<TAggregate>(TAggregate aggregate) where TAggregate : Aggregate
+        {
+            _session.Add(aggregate);
         }
 
         public TAggregate GetById<TAggregate>(Guid id)
             where TAggregate : Aggregate, new()
         {
-            var aggregate = new TAggregate();
-            var events = _eventStore.GetAllEvents(id);
-
-            aggregate.LoadFromHistory(events);
-
-            return aggregate;
+            return RegisterForTracking(_aggregateTracker.GetById<TAggregate>(id)) ?? _session.GetById<TAggregate>(id);
         }
 
-        public void Save<TAggregate>(TAggregate aggregate) where TAggregate : Aggregate
+        private TAggregate RegisterForTracking<TAggregate>(TAggregate aggregateRoot) where TAggregate : Aggregate, new()
         {
-            var changes = aggregate.UncommitedEvents.ToList();
-            aggregate.ClearUncommitedEvents();
+            if (aggregateRoot == null)
+                return null;
 
-            _eventStore.Save(changes);
+            _session.Add(aggregateRoot);
 
-            _messageBus.Publish(changes.Select(e => (object)e));
+            return aggregateRoot;
         }
     }
 }
