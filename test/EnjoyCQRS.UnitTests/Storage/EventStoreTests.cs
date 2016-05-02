@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using EnjoyCQRS.Bus;
+using EnjoyCQRS.Events;
 using EnjoyCQRS.EventStore.Storage;
 using EnjoyCQRS.UnitTests.Domain;
 using FluentAssertions;
@@ -14,17 +15,17 @@ namespace EnjoyCQRS.UnitTests.Storage
         private readonly StubEventStore _inMemoryDomainEventStore = new StubEventStore();
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository _repository;
-        private readonly Mock<IMessageBus> _mockMessageBus;
+        private readonly Mock<IEventPublisher> _mockEventPublisher;
         private readonly IAggregateTracker _aggregateTracker;
 
         public EventStoreTests()
         {
-            _mockMessageBus = new Mock<IMessageBus>();
-            _mockMessageBus.Setup(e => e.Publish(It.IsAny<object>()));
+            _mockEventPublisher = new Mock<IEventPublisher>();
+            _mockEventPublisher.Setup(e => e.Publish(It.IsAny<IEnumerable<IDomainEvent>>()));
 
             _aggregateTracker = new AggregateTracker();
             
-            var session = new Session(_aggregateTracker, _inMemoryDomainEventStore, _mockMessageBus.Object);
+            var session = new Session(_aggregateTracker, _inMemoryDomainEventStore, _mockEventPublisher.Object);
             _repository = new Repository(session, _aggregateTracker);
 
             _unitOfWork = session;
@@ -51,7 +52,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             _repository.Add(testAggregate);
             _unitOfWork.Commit();
 
-            _mockMessageBus.Verify(e => e.Publish(It.IsAny<IEnumerable<object>>()), Times.Once);
+            _mockEventPublisher.Verify(e => e.Publish(It.IsAny<IEnumerable<IDomainEvent>>()));
         }
 
         [Fact]

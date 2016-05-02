@@ -1,8 +1,10 @@
 using System.Collections.Generic;
+using EnjoyCQRS.Commands;
+using EnjoyCQRS.Events;
 
 namespace EnjoyCQRS.Bus.Direct
 {
-    public class DirectMessageBus : IMessageBus
+    public class DirectMessageBus : ICommandDispatcher, IEventPublisher
     {
         private readonly IRouterMessages _routeMessages;
         private readonly object _lockObject = new object();
@@ -17,7 +19,7 @@ namespace EnjoyCQRS.Bus.Direct
             _postCommitQueue.Pop(DoPublish);
         }
 
-        public void Publish(object message)
+        public void Dispatch<TCommand>(TCommand message) where TCommand : ICommand
         {
             lock (_lockObject)
             {
@@ -25,7 +27,7 @@ namespace EnjoyCQRS.Bus.Direct
             }
         }
 
-        public void Publish(IEnumerable<object> messages)
+        public void Publish<TEvent>(IEnumerable<TEvent> messages) where TEvent : IDomainEvent
         {
             lock (_lockObject)
             {

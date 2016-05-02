@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using EnjoyCQRS.Bus;
+using EnjoyCQRS.Events;
 
 namespace EnjoyCQRS.EventStore.Storage
 {
@@ -10,14 +11,14 @@ namespace EnjoyCQRS.EventStore.Storage
     {
         private readonly IAggregateTracker _aggregateTracker;
         private readonly IEventStore _domainEventStore;
-        private readonly IMessageBus _messageBus;
+        private readonly IEventPublisher _eventPublisher;
         private readonly List<Aggregate> _aggregates = new List<Aggregate>();
 
-        public Session(IAggregateTracker aggregateTracker, IEventStore domainEventStore, IMessageBus messageBus)
+        public Session(IAggregateTracker aggregateTracker, IEventStore domainEventStore, IEventPublisher eventPublisher)
         {
             _aggregateTracker = aggregateTracker;
             _domainEventStore = domainEventStore;
-            _messageBus = messageBus;
+            _eventPublisher = eventPublisher;
         }
 
         public TAggregate GetById<TAggregate>(Guid id) where TAggregate : Aggregate, new()
@@ -48,20 +49,20 @@ namespace EnjoyCQRS.EventStore.Storage
                 
                 _domainEventStore.Save(changes);
 
-                _messageBus.Publish(changes.Select(e => (object)e));
+                _eventPublisher.Publish(changes);
 
                 aggregate.ClearUncommitedEvents();
             }
 
             _aggregates.Clear();
 
-            _messageBus.Commit();
+            _eventPublisher.Commit();
             _domainEventStore.Commit();
         }
 
         public void Rollback()
         {
-            _messageBus.Rollback();
+            _eventPublisher.Rollback();
 
             _domainEventStore.Rollback();
 
