@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using EnjoyCQRS.Events;
 
 namespace EnjoyCQRS.EventSource
@@ -38,10 +39,7 @@ namespace EnjoyCQRS.EventSource
 
         protected void Raise(IDomainEvent @event)
         {
-            ApplyEvent(@event);
-            _uncommitedEvents.Add(@event);
-
-            EventVersion++;
+            ApplyEvent(@event, true);
         }
 
         /// <summary>
@@ -49,9 +47,23 @@ namespace EnjoyCQRS.EventSource
         /// The last event applied is the current state of the Aggregate.
         /// </summary>
         /// <param name="event"></param>
-        public void ApplyEvent(IDomainEvent @event)
+        private void ApplyEvent(IDomainEvent @event, bool isNewEvent)
         {
             _routeEvents.Handle(@event);
+
+            if (isNewEvent)
+            {
+                var eventVersion = EventVersion + 1;
+
+                if (@event is DomainEvent)
+                {
+                    ((DomainEvent) @event).Version = eventVersion;
+                }
+
+                _uncommitedEvents.Add(@event);
+
+                EventVersion = eventVersion;
+            }
         }
 
         /// <summary>
@@ -70,10 +82,12 @@ namespace EnjoyCQRS.EventSource
         {
             foreach (var @event in events)
             {
-                ApplyEvent(@event);
-
-                Version++;
+                ApplyEvent(@event, false);
             }
+
+            EventVersion = events.LastOrDefault()?.Version ?? 0;
+
+            Version = EventVersion;
         }
     }
 }

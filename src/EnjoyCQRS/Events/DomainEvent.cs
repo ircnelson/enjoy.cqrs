@@ -20,6 +20,11 @@ namespace EnjoyCQRS.Events
         public Guid AggregateId { get; }
 
         /// <summary>
+        /// Event version.
+        /// </summary>
+        public int Version { get; internal set; }
+
+        /// <summary>
         /// Construct the domain event.
         /// </summary>
         /// <param name="aggregateId"></param>

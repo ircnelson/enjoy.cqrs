@@ -18,5 +18,10 @@ namespace EnjoyCQRS.Events
         /// Aggregate Unique identifier.
         /// </summary>
         Guid AggregateId { get; }
+
+        /// <summary>
+        /// Event version.
+        /// </summary>
+        int Version { get; }
     }
 }

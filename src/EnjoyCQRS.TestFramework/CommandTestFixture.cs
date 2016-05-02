@@ -112,7 +112,7 @@ namespace EnjoyCQRS.TestFramework
 
         public IDomainEvent ToVersion(int version)
         {
-            //_domainEvent.Version = version;
+            ((DomainEvent) _domainEvent).Version = version;
             return _domainEvent;
         }
     }
