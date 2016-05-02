@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using EnjoyCQRS.Events;
 
-namespace EnjoyCQRS.EventStore.Storage
+namespace EnjoyCQRS.EventSource.Storage
 {
     /// <summary>
     /// Event Store repository abstraction.

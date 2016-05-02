@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EnjoyCQRS.EventStore.Storage
+namespace EnjoyCQRS.EventSource.Storage
 {
     public class Repository : IRepository
     {

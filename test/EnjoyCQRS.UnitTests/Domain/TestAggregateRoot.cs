@@ -1,5 +1,5 @@
 ﻿using System;
-using EnjoyCQRS.EventStore;
+using EnjoyCQRS.EventSource;
 using EnjoyCQRS.UnitTests.Domain.Events;
 
 namespace EnjoyCQRS.UnitTests.Domain

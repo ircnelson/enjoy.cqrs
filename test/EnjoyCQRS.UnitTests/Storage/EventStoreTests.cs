@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using EnjoyCQRS.Bus;
 using EnjoyCQRS.Events;
-using EnjoyCQRS.EventStore.Storage;
+using EnjoyCQRS.EventSource.Storage;
 using EnjoyCQRS.UnitTests.Domain;
 using FluentAssertions;
 using Moq;
 using Xunit;
-using IUnitOfWork = EnjoyCQRS.EventStore.IUnitOfWork;
+using IUnitOfWork = EnjoyCQRS.EventSource.IUnitOfWork;
 
 namespace EnjoyCQRS.UnitTests.Storage
 {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using EnjoyCQRS.Events;
-using EnjoyCQRS.EventStore;
+using EnjoyCQRS.EventSource;
 
 namespace EnjoyCQRS.TestFramework
 {

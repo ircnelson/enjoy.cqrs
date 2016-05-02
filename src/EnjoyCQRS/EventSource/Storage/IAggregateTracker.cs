@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EnjoyCQRS.EventStore.Storage
+namespace EnjoyCQRS.EventSource.Storage
 {
     /// <summary>
     /// Abstraction of the tracker of the <see ref="IAggregate" />.

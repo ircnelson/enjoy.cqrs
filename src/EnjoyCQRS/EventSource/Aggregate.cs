@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using EnjoyCQRS.Events;
 
-namespace EnjoyCQRS.EventStore
+namespace EnjoyCQRS.EventSource
 {
     public abstract class Aggregate
     {

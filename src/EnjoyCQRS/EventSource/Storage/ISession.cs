@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EnjoyCQRS.EventStore.Storage
+namespace EnjoyCQRS.EventSource.Storage
 {
     /// <summary>
     /// Represents an abstraction where aggregate events will be persisted.

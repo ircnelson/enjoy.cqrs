@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using EnjoyCQRS.Commands;
 using EnjoyCQRS.Events;
-using EnjoyCQRS.EventStore;
-using EnjoyCQRS.EventStore.Storage;
+using EnjoyCQRS.EventSource;
+using EnjoyCQRS.EventSource.Storage;
 using Moq;
 
 namespace EnjoyCQRS.TestFramework

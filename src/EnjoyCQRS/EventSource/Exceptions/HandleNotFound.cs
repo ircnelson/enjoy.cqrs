@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EnjoyCQRS.EventStore.Exceptions
+namespace EnjoyCQRS.EventSource.Exceptions
 {
     public class HandleNotFound : Exception
     {

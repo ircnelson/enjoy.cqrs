@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
-namespace EnjoyCQRS.EventStore.Storage
+namespace EnjoyCQRS.EventSource.Storage
 {
     public class AggregateTracker : IAggregateTracker
     {

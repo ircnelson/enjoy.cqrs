@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using EnjoyCQRS.EventStore.Exceptions;
+using EnjoyCQRS.EventSource.Exceptions;
 
-namespace EnjoyCQRS.EventStore
+namespace EnjoyCQRS.EventSource
 {
     public class Route<T> : Dictionary<Type, Action<T>>
     {

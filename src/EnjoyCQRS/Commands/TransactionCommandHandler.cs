@@ -1,5 +1,5 @@
 ﻿using System;
-using EnjoyCQRS.EventStore;
+using EnjoyCQRS.EventSource;
 
 namespace EnjoyCQRS.Commands
 {

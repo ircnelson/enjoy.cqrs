@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using EnjoyCQRS.Events;
-using EnjoyCQRS.EventStore;
-using EnjoyCQRS.EventStore.Exceptions;
-using EnjoyCQRS.EventStore.Storage;
+using EnjoyCQRS.EventSource.Storage;
 using Newtonsoft.Json;
 
 namespace EnjoyCQRS.UnitTests.Storage

@@ -1,4 +1,4 @@
-﻿namespace EnjoyCQRS.EventStore
+﻿namespace EnjoyCQRS.EventSource
 {
     /// <summary>
     /// Abstraction of the Unit of work.

@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using EnjoyCQRS.EventStore.Exceptions;
+using EnjoyCQRS.EventSource.Exceptions;
 using EnjoyCQRS.TestFramework;
 using EnjoyCQRS.UnitTests.Domain.Events;
 using FluentAssertions;

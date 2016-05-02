@@ -1,4 +1,4 @@
-﻿namespace EnjoyCQRS.EventStore.Storage
+﻿namespace EnjoyCQRS.EventSource.Storage
 {
     /// <summary>
     /// This abstraction used on <see cref="Session"/> to garantee atomicity.
