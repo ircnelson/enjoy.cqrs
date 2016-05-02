@@ -60,7 +60,7 @@ namespace EnjoyCQRS.EventSource
         /// </example>
         protected abstract void RegisterEvents();
 
-        protected void On<T>(Action<T> action)
+        protected void SubscribeTo<T>(Action<T> action)
             where T : class 
         {
             _routeEvents.Add(typeof(T), o => action(o as T));

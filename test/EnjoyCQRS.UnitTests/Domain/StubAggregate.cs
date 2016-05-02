@@ -8,7 +8,7 @@ namespace EnjoyCQRS.UnitTests.Domain
     {
         public string Name { get; private set; }
         
-        private StubAggregate(Guid newGuid) : this()
+        private StubAggregate(Guid newGuid)
         {
             Raise(new TestAggregateCreatedEvent(newGuid));
         }
@@ -34,8 +34,8 @@ namespace EnjoyCQRS.UnitTests.Domain
 
         protected override void RegisterEvents()
         {
-            On<SomeEvent>(x => { Name = x.Name; });
-            On<TestAggregateCreatedEvent>(x => { Id = x.AggregateId; });
+            SubscribeTo<SomeEvent>(x => { Name = x.Name; });
+            SubscribeTo<TestAggregateCreatedEvent>(x => { Id = x.AggregateId; });
         }
     }
 }
