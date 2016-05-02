@@ -31,6 +31,35 @@ namespace EnjoyCQRS.EventSource
         /// </summary>
         public int EventVersion { get; protected set; }
 
+        /// <summary>
+        /// Aggregate default constructor.
+        /// </summary>
+        public Aggregate()
+        {
+            RegisterEvents();
+        }
+
+        /// <summary>
+        /// This method is called internaly and you can put all handlers here.
+        /// </summary>
+        /// <example>
+        /// Example:
+        /// <code>
+        /// <![CDATA[
+        /// void RegisterEvents() 
+        /// {
+        ///     On<MyEvent>(ApplyMyEvent);
+        /// }
+        /// 
+        /// private void ApplyMyEvent(MyEvent ev)
+        /// {
+        ///     Console.WriteLine(ev);
+        /// }
+        /// ]]>
+        /// </code>
+        /// </example>
+        protected abstract void RegisterEvents();
+
         protected void On<T>(Action<T> action)
             where T : class 
         {

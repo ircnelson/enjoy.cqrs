@@ -7,16 +7,14 @@ namespace EnjoyCQRS.UnitTests.Domain
     public class StubAggregate : Aggregate
     {
         public string Name { get; private set; }
-
-        public StubAggregate()
-        {
-            On<SomeEvent>(x =>  { Name = x.Name; });
-            On<TestAggregateCreatedEvent>(x => { Id = x.AggregateId; });
-        }
-
+        
         private StubAggregate(Guid newGuid) : this()
         {
             Raise(new TestAggregateCreatedEvent(newGuid));
+        }
+
+        public StubAggregate()
+        {
         }
 
         public static StubAggregate Create()
@@ -32,6 +30,12 @@ namespace EnjoyCQRS.UnitTests.Domain
         public void DoSomethingWithoutEvent()
         {
             Raise(new NotRegisteredEvent(Id));
+        }
+
+        protected override void RegisterEvents()
+        {
+            On<SomeEvent>(x => { Name = x.Name; });
+            On<TestAggregateCreatedEvent>(x => { Id = x.AggregateId; });
         }
     }
 }
