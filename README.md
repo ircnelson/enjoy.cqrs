@@ -19,7 +19,7 @@ Any suggestion is welcome.
 
 ## Architecture
 
-![CQRS high level architecture](http://s32.postimg.org/b6mnz0ib9/cqrsschema.png)
+![CQRS high level architecture](http://s32.postimg.org/ty18uww45/090615_1544_introductio1_png_w_604.png)
 
 ## Installing (or restore) by Nuget
 
