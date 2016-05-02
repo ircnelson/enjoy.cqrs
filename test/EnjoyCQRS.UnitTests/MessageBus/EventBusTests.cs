@@ -11,7 +11,7 @@ namespace EnjoyCQRS.UnitTests.MessageBus
     public class EventBusTests
     {
         [Fact]
-        public void When_a_single_event_gets_published_to_the_bus_containing_an_sinlge_command_handler()
+        public void When_a_single_event_is_published_to_the_bus_containing_a_single_EventHandler()
         {
             var testEvent = new TestEvent(Guid.NewGuid());
             var handler = new FirstTestEventHandler();
@@ -19,15 +19,15 @@ namespace EnjoyCQRS.UnitTests.MessageBus
             routerMessages.Register<TestEvent>(x => handler.Execute(x));
 
             DirectMessageBus directMessageBus = new DirectMessageBus(routerMessages);
-            
-            directMessageBus.Publish(new [] { testEvent });
+
+            directMessageBus.Publish(new[] { testEvent });
             directMessageBus.Commit();
 
             handler.Ids.First().Should().Be(testEvent.AggregateId);
         }
 
         [Fact]
-        public void When_a_single_event_gets_published_to_the_bus_containing_multiple_event_handlers()
+        public void When_a_single_event_is_published_to_the_bus_containing_multiple_EventHandlers()
         {
             var testEvent = new TestEvent(Guid.NewGuid());
             var handler1 = new FirstTestEventHandler();
@@ -39,7 +39,7 @@ namespace EnjoyCQRS.UnitTests.MessageBus
 
             DirectMessageBus directMessageBus = new DirectMessageBus(routerMessages);
 
-            directMessageBus.Publish(new [] { testEvent });
+            directMessageBus.Publish(new[] { testEvent });
             directMessageBus.Commit();
 
             handler1.Ids.First().Should().Be(testEvent.AggregateId);

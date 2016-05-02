@@ -7,11 +7,11 @@ using Xunit;
 
 namespace EnjoyCQRS.UnitTests.Domain
 {
-    public class Registered_event_in_aggregate : AggregateTestFixture<TestAggregateRoot>
+    public class Registered_event_in_aggregate : AggregateTestFixture<StubAggregate>
     {
         protected override void When()
         {
-            AggregateRoot = TestAggregateRoot.Create();
+            AggregateRoot = StubAggregate.Create();
             AggregateRoot.DoSomething("Walter White");
         }
 
@@ -22,7 +22,7 @@ namespace EnjoyCQRS.UnitTests.Domain
         }
     }
 
-    public class Not_registered_event_in_aggregate : AggregateTestFixture<TestAggregateRoot>
+    public class Not_registered_event_in_aggregate : AggregateTestFixture<StubAggregate>
     {
         protected override void When()
         {

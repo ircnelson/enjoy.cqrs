@@ -78,7 +78,7 @@
     <Compile Include="Domain\Events\NotRegisteredEvent.cs" />
     <Compile Include="Domain\Events\SomeEvent.cs" />
     <Compile Include="Domain\Events\TestAggregateCreatedEvent.cs" />
-    <Compile Include="Domain\TestAggregateRoot.cs" />
+    <Compile Include="Domain\StubAggregate.cs" />
     <Compile Include="MessageBus\EventBusTests.cs" />
     <Compile Include="MessageBus\CommandBusTests.cs" />
     <Compile Include="Storage\EventStoreTests.cs" />

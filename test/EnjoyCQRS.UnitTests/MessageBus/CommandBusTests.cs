@@ -11,7 +11,7 @@ namespace EnjoyCQRS.UnitTests.MessageBus
     public class CommandBusTests
     {
         [Fact]
-        public void When_a_single_command_gets_published_to_the_bus_containing_an_sinlge_command_handler()
+        public void When_a_single_Command_is_published_to_the_bus_containing_a_single_CommandHandler()
         {
             var testCommand = new TestCommand(Guid.NewGuid());
             var handler = new FirstTestCommandHandler();
@@ -19,7 +19,7 @@ namespace EnjoyCQRS.UnitTests.MessageBus
             routerMessages.Register<TestCommand>(x => handler.Execute(x));
 
             DirectMessageBus directMessageBus = new DirectMessageBus(routerMessages);
-            
+
             directMessageBus.Dispatch(testCommand);
             directMessageBus.Commit();
 
@@ -27,7 +27,7 @@ namespace EnjoyCQRS.UnitTests.MessageBus
         }
 
         [Fact]
-        public void When_a_single_command_gets_published_to_the_bus_containing_multiple_command_handlers()
+        public void When_a_single_Command_is_published_to_the_bus_containing_multiple_CommandHandlers()
         {
             var testCommand = new TestCommand(Guid.NewGuid());
             var handler1 = new FirstTestCommandHandler();

@@ -4,24 +4,24 @@ using EnjoyCQRS.UnitTests.Domain.Events;
 
 namespace EnjoyCQRS.UnitTests.Domain
 {
-    public class TestAggregateRoot : Aggregate
+    public class StubAggregate : Aggregate
     {
         public string Name { get; private set; }
 
-        public TestAggregateRoot()
+        public StubAggregate()
         {
             On<SomeEvent>(x =>  { Name = x.Name; });
             On<TestAggregateCreatedEvent>(x => { Id = x.AggregateId; });
         }
 
-        private TestAggregateRoot(Guid newGuid) : this()
+        private StubAggregate(Guid newGuid) : this()
         {
             Raise(new TestAggregateCreatedEvent(newGuid));
         }
 
-        public static TestAggregateRoot Create()
+        public static StubAggregate Create()
         {
-            return new TestAggregateRoot(Guid.NewGuid());
+            return new StubAggregate(Guid.NewGuid());
         }
         
         public void DoSomething(string name)

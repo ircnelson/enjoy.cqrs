@@ -34,7 +34,7 @@ namespace EnjoyCQRS.UnitTests.Storage
         [Fact]
         public void When_calling_Save_it_will_add_the_domain_events_to_the_domain_event_storage()
         {
-            var testAggregate = TestAggregateRoot.Create();
+            var testAggregate = StubAggregate.Create();
             testAggregate.DoSomething("Heisenberg");
 
             _repository.Add(testAggregate);
@@ -46,7 +46,7 @@ namespace EnjoyCQRS.UnitTests.Storage
         [Fact]
         public void When_calling_Save_the_uncommited_events_should_be_published()
         {
-            var testAggregate = TestAggregateRoot.Create();
+            var testAggregate = StubAggregate.Create();
             testAggregate.DoSomething("Heisenberg");
 
             _repository.Add(testAggregate);
@@ -58,13 +58,13 @@ namespace EnjoyCQRS.UnitTests.Storage
         [Fact]
         public void When_load_aggregate_should_be_correct_version()
         {
-            var testAggregate = TestAggregateRoot.Create();
+            var testAggregate = StubAggregate.Create();
             testAggregate.DoSomething("Heisenberg");
 
             _repository.Add(testAggregate);
             _unitOfWork.Commit();
 
-            var testAggregate2 = _repository.GetById<TestAggregateRoot>(testAggregate.Id);
+            var testAggregate2 = _repository.GetById<StubAggregate>(testAggregate.Id);
             
             testAggregate.Version.Should().Be(testAggregate2.Version);
         }
