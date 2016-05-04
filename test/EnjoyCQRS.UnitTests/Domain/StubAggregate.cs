@@ -10,7 +10,7 @@ namespace EnjoyCQRS.UnitTests.Domain
         
         private StubAggregate(Guid newGuid)
         {
-            Raise(new TestAggregateCreatedEvent(newGuid));
+            Emit(new TestAggregateCreatedEvent(newGuid));
         }
 
         public StubAggregate()
@@ -24,12 +24,12 @@ namespace EnjoyCQRS.UnitTests.Domain
         
         public void DoSomething(string name)
         {
-            Raise(new SomeEvent(Id, name));
+            Emit(new SomeEvent(Id, name));
         }
 
         public void DoSomethingWithoutEvent()
         {
-            Raise(new NotRegisteredEvent(Id));
+            Emit(new NotRegisteredEvent(Id));
         }
 
         protected override void RegisterEvents()

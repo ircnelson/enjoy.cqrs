@@ -66,7 +66,11 @@ namespace EnjoyCQRS.EventSource
             _routeEvents.Add(typeof(T), o => action(o as T));
         }
 
-        protected void Raise(IDomainEvent @event)
+        /// <summary>
+        /// Event emitter.
+        /// </summary>
+        /// <param name="event"></param>
+        protected void Emit(IDomainEvent @event)
         {
             ApplyEvent(@event, true);
         }
@@ -114,7 +118,7 @@ namespace EnjoyCQRS.EventSource
                 ApplyEvent(@event, false);
             }
 
-            EventVersion = events.LastOrDefault()?.Version ?? 0;
+            EventVersion = events.Max(e => e.Version);
 
             Version = EventVersion;
         }

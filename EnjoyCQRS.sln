@@ -11,14 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnjoyCQRS.TestFramework", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnjoyCQRS.UnitTests", "test\EnjoyCQRS.UnitTests\EnjoyCQRS.UnitTests.csproj", "{F7B0A3B8-579B-4FD3-93DC-E2D43555FEF1}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0. Solution Items", "0. Solution Items", "{A356E019-EE54-4167-B6CC-B62511C2E0A2}"
-	ProjectSection(SolutionItems) = preProject
-		appveyor.yml = appveyor.yml
-		EnjoyCQRS.nuspec = EnjoyCQRS.nuspec
-		EnjoyCQRS.TestFramework.nuspec = EnjoyCQRS.TestFramework.nuspec
-		README.md = README.md
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnjoyCQRS", "src\EnjoyCQRS\EnjoyCQRS.csproj", "{7CEDD8F7-210D-44FC-B690-9079AF5A12DF}"
 EndProject
 Global
