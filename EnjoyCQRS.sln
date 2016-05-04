@@ -15,6 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0. Solution Items", "0. Sol
 	ProjectSection(SolutionItems) = preProject
 		appveyor.yml = appveyor.yml
 		EnjoyCQRS.nuspec = EnjoyCQRS.nuspec
+		EnjoyCQRS.TestFramework.nuspec = EnjoyCQRS.TestFramework.nuspec
 		README.md = README.md
 	EndProjectSection
 EndProject

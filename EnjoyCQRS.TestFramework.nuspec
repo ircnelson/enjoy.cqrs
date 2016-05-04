@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>EnjoyCQRS.TestFramework</id>
+    <version>0.0.0</version>
+    <title>EnjoyCQRS.TestFramework</title>
+    <authors>Nelson C Viana Jr</authors>
+    <owners>Nelson C Viana Jr</owners>
+    <projectUrl>https://github.com/ircnelson/enjoy.cqrs</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+
+    <summary>CQRS Test Framework.</summary>
+    <description><![CDATA[EnjoyCQRS.TestFramework is a framework to provides the minimal infrastructure for testing the CQRS & Event Sourcing architecture.]]></description>
+
+    <copyright>Copyright 2016</copyright>
+
+    <tags>.NET CQRS EventSource EventSourcing</tags>
+
+    <dependencies>
+      <group targetFramework="net461">
+        <dependency id="Moq" version="4.2.1510.2205" />
+      </group>
+    </dependencies>
+    <references>
+      <reference file="EnjoyCQRS.dll" />
+    </references>
+  </metadata>
+
+  <files>
+    <file src="**\src\**\bin\Debug\*.dll" target="lib\net461" />
+    <file src="**\src\**\bin\Debug\*.pdb" target="lib\net461" />
+    <file src="**\src\**\tools\**\*.*" exclude="**\*.log" />
+  </files>
+
+</package>
