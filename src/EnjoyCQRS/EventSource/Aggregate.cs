@@ -118,7 +118,12 @@ namespace EnjoyCQRS.EventSource
                 ApplyEvent(@event, false);
             }
 
-            EventVersion = events.Max(e => e.Version);
+            EventVersion = 0;
+
+            if (events != null && events.Any())
+            {
+                EventVersion = events.Max(e => e.Version);
+            }
 
             Version = EventVersion;
         }
