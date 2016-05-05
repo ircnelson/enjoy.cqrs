@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace EnjoyCQRS.Bus.Direct
 {
-    public class DefaultRouterMessages : IRouterMessages
+    public class DefaultRouterMessages : IRouterMessages, IRegisterHandler
     {
         private readonly IDictionary<Type, ICollection<Action<object>>> _routes;
 
