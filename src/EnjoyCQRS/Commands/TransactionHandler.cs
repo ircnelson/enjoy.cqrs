@@ -3,6 +3,11 @@ using EnjoyCQRS.EventSource;
 
 namespace EnjoyCQRS.Commands
 {
+    /// <summary>
+    /// Keep the <see cref="TCommandHandler"/> in transaction.
+    /// </summary>
+    /// <typeparam name="TCommand"></typeparam>
+    /// <typeparam name="TCommandHandler"></typeparam>
     public class TransactionHandler<TCommand, TCommandHandler>
         where TCommandHandler : ICommandHandler<TCommand>
         where TCommand : class, ICommand

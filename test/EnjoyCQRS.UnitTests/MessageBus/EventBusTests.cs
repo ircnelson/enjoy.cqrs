@@ -20,7 +20,7 @@ namespace EnjoyCQRS.UnitTests.MessageBus
 
             DirectMessageBus directMessageBus = new DirectMessageBus(routerMessages);
 
-            directMessageBus.Publish(new[] { testEvent });
+            directMessageBus.Publish<IDomainEvent>(new[] { testEvent });
             directMessageBus.Commit();
 
             handler.Ids.First().Should().Be(testEvent.AggregateId);
@@ -39,7 +39,7 @@ namespace EnjoyCQRS.UnitTests.MessageBus
 
             DirectMessageBus directMessageBus = new DirectMessageBus(routerMessages);
 
-            directMessageBus.Publish(new[] { testEvent });
+            directMessageBus.Publish<IDomainEvent>(new[] { testEvent });
             directMessageBus.Commit();
 
             handler1.Ids.First().Should().Be(testEvent.AggregateId);

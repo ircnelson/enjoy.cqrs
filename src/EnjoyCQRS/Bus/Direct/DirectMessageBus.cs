@@ -19,7 +19,23 @@ namespace EnjoyCQRS.Bus.Direct
             _postCommitQueue.Pop(DoPublish);
         }
 
-        public void Dispatch<TCommand>(TCommand message) where TCommand : ICommand
+        public void Dispatch<TCommand>(TCommand command) where TCommand : ICommand
+        {
+            lock (_lockObject)
+            {
+                _preCommitQueue.Enqueue(command);
+            }
+        }
+
+        public void Dispatch<TCommand>(IEnumerable<TCommand> commands) where TCommand : ICommand
+        {
+            foreach (var command in commands)
+            {
+                Dispatch(command);
+            }
+        }
+
+        public void Publish<TEvent>(TEvent message) where TEvent : IDomainEvent
         {
             lock (_lockObject)
             {
@@ -29,12 +45,9 @@ namespace EnjoyCQRS.Bus.Direct
 
         public void Publish<TEvent>(IEnumerable<TEvent> messages) where TEvent : IDomainEvent
         {
-            lock (_lockObject)
+            foreach (var message in messages)
             {
-                foreach (var message in messages)
-                {
-                    _preCommitQueue.Enqueue(message);
-                }
+                Publish(message);
             }
         }
 

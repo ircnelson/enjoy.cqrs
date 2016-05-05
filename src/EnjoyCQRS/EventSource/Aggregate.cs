@@ -44,7 +44,7 @@ namespace EnjoyCQRS.EventSource
         /// </summary>
         /// <example>
         /// Example:
-        /// <code>
+        /// <code lang="c#">
         /// <![CDATA[
         /// void RegisterEvents() 
         /// {

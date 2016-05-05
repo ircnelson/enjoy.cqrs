@@ -47,7 +47,7 @@ namespace EnjoyCQRS.EventSource.Storage
                 
                 _domainEventStore.Save(changes);
 
-                _eventPublisher.Publish(changes);
+                _eventPublisher.Publish<IDomainEvent>(changes);
 
                 aggregate.ClearUncommitedEvents();
             }
