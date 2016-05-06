@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace EnjoyCQRS.Configuration
 {
-    public class HandlerHelper
+    internal class HandlerHelper
     {
         public static IDictionary<Type, IList<Type>> GetHandlersOf(Type handlerType, IEnjoyTypeScanner scanner)
         {

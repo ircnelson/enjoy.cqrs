@@ -10,20 +10,21 @@ namespace EnjoyCQRS.Configuration
     {
         private readonly IResolver _resolver;
         private readonly HandlerDictionary _enjoyHandlers;
-        private readonly IEnjoyTypeScanner _scanner;
+        private readonly IEnumerable<Type> _events;
+
         private static MethodInfo _createPublishActionMethod;
         private static MethodInfo _registerMethod;
 
-        public EventWrapper(IResolver resolver, HandlerDictionary enjoyHandlers, IEnjoyTypeScanner scanner)
+        public EventWrapper(IResolver resolver, HandlerDictionary enjoyHandlers, IEnumerable<Type> events)
         {
             _resolver = resolver;
             _enjoyHandlers = enjoyHandlers;
-            _scanner = scanner;
+            _events = events;
         }
 
-        public static void Wrap(IResolver resolver, HandlerDictionary enjoyHandlers, IEnjoyTypeScanner scanner)
+        public static void Wrap(IResolver resolver, HandlerDictionary enjoyHandlers, IEnumerable<Type> events)
         {
-            var wrapper = new EventWrapper(resolver, enjoyHandlers, scanner);
+            var wrapper = new EventWrapper(resolver, enjoyHandlers, events);
             wrapper.Register();
         }
 
@@ -34,9 +35,7 @@ namespace EnjoyCQRS.Configuration
             _createPublishActionMethod = GetType().GetMethod(nameof(CreatePublishAction));
             _registerMethod = registerHandler.GetType().GetMethod(nameof(IRegisterHandler.Register));
 
-            var dtos = HandlerHelper.Get<IDomainEvent>(_scanner);
-
-            foreach (var dto in dtos)
+            foreach (var dto in _events)
             {
                 IList<Type> handlerTypes;
                 if (!_enjoyHandlers.TryGetValue(new HandlerMetadata(dto, HandlerType.Event), out handlerTypes))

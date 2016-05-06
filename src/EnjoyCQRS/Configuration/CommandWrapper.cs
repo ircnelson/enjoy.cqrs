@@ -10,20 +10,20 @@ namespace EnjoyCQRS.Configuration
     {
         private readonly IResolver _resolver;
         private readonly HandlerDictionary _enjoyHandlers;
-        private readonly IEnjoyTypeScanner _scanner;
+        private readonly IEnumerable<Type> _commands;
         private static MethodInfo _createPublishActionWrappedInTransactionMethod;
         private static MethodInfo _registerMethod;
         
-        public CommandWrapper(IResolver resolver, HandlerDictionary enjoyHandlers, IEnjoyTypeScanner scanner)
+        public CommandWrapper(IResolver resolver, HandlerDictionary enjoyHandlers, IEnumerable<Type> commands)
         {
             _resolver = resolver;
             _enjoyHandlers = enjoyHandlers;
-            _scanner = scanner;
+            _commands = commands;
         }
 
-        public static void Wrap(IResolver resolver, HandlerDictionary enjoyHandlers, IEnjoyTypeScanner scanner)
+        public static void Wrap(IResolver resolver, HandlerDictionary enjoyHandlers, IEnumerable<Type> commands)
         {
-            var wrapper = new CommandWrapper(resolver, enjoyHandlers, scanner);
+            var wrapper = new CommandWrapper(resolver, enjoyHandlers, commands);
             wrapper.Register();
         }
 
@@ -33,10 +33,8 @@ namespace EnjoyCQRS.Configuration
 
             _createPublishActionWrappedInTransactionMethod = GetType().GetMethod(nameof(CreatePublishActionWrappedInTransaction), BindingFlags.Instance | BindingFlags.NonPublic);
             _registerMethod = registerHandler.GetType().GetMethod(nameof(IRegisterHandler.Register));
-
-            var dtos = HandlerHelper.Get<ICommand>(_scanner);
-
-            foreach (var dto in dtos)
+            
+            foreach (var dto in _commands)
             {
                 IList<Type> handlerTypes;
                 if (!_enjoyHandlers.TryGetValue(new HandlerMetadata(dto, HandlerType.Command), out handlerTypes))
@@ -66,7 +64,9 @@ namespace EnjoyCQRS.Configuration
             where TCommand : class, ICommand 
             where TCommandHandler : ICommandHandler<TCommand>
         {
-            return command => _resolver.Resolve<TransactionHandler<TCommand, TCommandHandler>>().Execute(command, commandHandler);
+            var commandTransactionFactory = _resolver.Resolve<ITransactionalCommandHandler>();
+
+            return commandTransactionFactory.Factory<TCommand, TCommandHandler>(commandHandler);
         }
     }
 }

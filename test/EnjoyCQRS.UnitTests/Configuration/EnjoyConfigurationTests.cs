@@ -2,9 +2,9 @@
 using System.Linq;
 using Autofac;
 using EnjoyCQRS.Bus;
-using EnjoyCQRS.Bus.Direct;
 using EnjoyCQRS.Commands;
 using EnjoyCQRS.Configuration;
+using EnjoyCQRS.EventSource.Storage;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -39,9 +39,10 @@ namespace EnjoyCQRS.UnitTests.Configuration
             enjoyTypeScannerMock.Setup(e => e.Scan()).Returns(() => new[]
             {
                 typeof (Cmd1),
-                typeof (CmdHandler1),
-                typeof (CmdHandler2)
+                typeof (CmdHandler1)
             });
+
+            var transactionalCommandHandlerFactoryMock = new Mock<ITransactionalCommandHandler>();
             
             var handlerScanner = new HandlerScanner(enjoyTypeScannerMock.Object);
             var handlers = handlerScanner.Scan();
@@ -50,8 +51,8 @@ namespace EnjoyCQRS.UnitTests.Configuration
 
             var stubRegisterHandler = new StubRegisterHandler();
 
+            builder.Register(c => transactionalCommandHandlerFactoryMock.Object).As<ITransactionalCommandHandler>();
             builder.Register(c => stubRegisterHandler).As<IRegisterHandler>();
-            builder.RegisterGeneric(typeof (TransactionHandler<,>));
 
             foreach (var handler in handlers.Values.SelectMany(e => e))
             {
@@ -63,9 +64,8 @@ namespace EnjoyCQRS.UnitTests.Configuration
             EnjoyConfiguration enjoyConfiguration = new EnjoyConfiguration(new AutofacResolver(container), handlers, enjoyTypeScannerMock.Object);
 
             enjoyConfiguration.Setup();
-
-            stubRegisterHandler.Routes.Keys.Count().Should().Be(1);
-            stubRegisterHandler.Routes[typeof (Cmd1)].Count.Should().Be(2);
+            
+            transactionalCommandHandlerFactoryMock.Verify(e => e.Factory<Cmd1, CmdHandler1>(It.IsAny<CmdHandler1>()));
         }
     }
 

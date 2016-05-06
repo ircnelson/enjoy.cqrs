@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using EnjoyCQRS.Commands;
+using EnjoyCQRS.Events;
 
 namespace EnjoyCQRS.Configuration
 {
@@ -9,7 +11,10 @@ namespace EnjoyCQRS.Configuration
         private readonly HandlerDictionary _handlerDictionary;
         private readonly IEnjoyTypeScanner _scanner;
 
-        public EnjoyConfiguration(IResolver resolver, HandlerDictionary handlerDictionary, IEnjoyTypeScanner scanner)
+        public EnjoyConfiguration(
+            IResolver resolver, 
+            HandlerDictionary handlerDictionary, 
+            IEnjoyTypeScanner scanner)
         {
             _resolver = resolver;
             _handlerDictionary = handlerDictionary;
@@ -18,8 +23,11 @@ namespace EnjoyCQRS.Configuration
 
         public void Setup()
         {
-            CommandWrapper.Wrap(_resolver, _handlerDictionary, _scanner);
-            EventWrapper.Wrap(_resolver, _handlerDictionary, _scanner);
+            var commands = HandlerHelper.Get<ICommand>(_scanner);
+            CommandWrapper.Wrap(_resolver, _handlerDictionary, commands);
+
+            var events = HandlerHelper.Get<IDomainEvent>(_scanner);
+            EventWrapper.Wrap(_resolver, _handlerDictionary, events);
         }
     }
 
