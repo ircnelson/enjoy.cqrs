@@ -21,9 +21,6 @@
         <dependency id="Moq" version="4.2.1510.2205" />
       </group>
     </dependencies>
-    <references>
-      <reference file="EnjoyCQRS.dll" />
-    </references>
   </metadata>
 
   <files>
