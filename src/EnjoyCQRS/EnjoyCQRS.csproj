@@ -58,6 +58,10 @@
     <Compile Include="Configuration\HandlerScanner.cs" />
     <Compile Include="Configuration\HandlerType.cs" />
     <Compile Include="Configuration\IEnjoyTypeScanner.cs" />
+    <Compile Include="Configuration\IResolver.cs" />
+    <Compile Include="Configuration\IScopeResolver.cs" />
+    <Compile Include="Configuration\IServiceRegistration.cs" />
+    <Compile Include="Configuration\Lifetime.cs" />
     <Compile Include="Events\IEventPublisher.cs" />
     <Compile Include="Bus\IRouterMessages.cs" />
     <Compile Include="Bus\Direct\RouteNotRegisteredException.cs" />

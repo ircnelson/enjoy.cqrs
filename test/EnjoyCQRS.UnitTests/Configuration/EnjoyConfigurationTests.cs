@@ -61,7 +61,7 @@ namespace EnjoyCQRS.UnitTests.Configuration
 
             var container = builder.Build();
 
-            EnjoyConfiguration enjoyConfiguration = new EnjoyConfiguration(new AutofacResolver(container), handlers, enjoyTypeScannerMock.Object);
+            EnjoyConfiguration enjoyConfiguration = new EnjoyConfiguration(new AutofacScopeResolver(container), handlers, enjoyTypeScannerMock.Object);
 
             enjoyConfiguration.Setup();
             
@@ -69,23 +69,43 @@ namespace EnjoyCQRS.UnitTests.Configuration
         }
     }
 
+    public class AutofacScopeResolver : AutofacResolver, IScopeResolver
+    {
+        private readonly ILifetimeScope _lifetimeScope;
+
+        public AutofacScopeResolver(ILifetimeScope lifetimeScope) : base(lifetimeScope)
+        {
+            _lifetimeScope = lifetimeScope;
+        }
+
+        public void Dispose()
+        {
+            _lifetimeScope.Dispose();
+        }
+
+        public IScopeResolver BeginScope()
+        {
+            return new AutofacScopeResolver(_lifetimeScope.BeginLifetimeScope());
+        }
+    }
+
     public class AutofacResolver : IResolver
     {
-        private readonly IContainer _container;
+        private readonly IComponentContext _componentContext;
 
-        public AutofacResolver(IContainer container)
+        public AutofacResolver(IComponentContext componentContext)
         {
-            _container = container;
+            _componentContext = componentContext;
         }
 
         public TService Resolve<TService>()
         {
-            return _container.Resolve<TService>();
+            return _componentContext.Resolve<TService>();
         }
 
         public object Resolve(Type type)
         {
-            return _container.Resolve(type);
+            return _componentContext.Resolve(type);
         }
     }
 
