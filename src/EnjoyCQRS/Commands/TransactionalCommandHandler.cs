@@ -3,16 +3,16 @@ using EnjoyCQRS.EventSource;
 
 namespace EnjoyCQRS.Commands
 {
-    public class TransactionalCommandHandler : ITransactionalCommandHandler
+    public class DecorateCommandHandler : IDecorateCommandHandler
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public TransactionalCommandHandler(IUnitOfWork unitOfWork)
+        public DecorateCommandHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
 
-        public Action<TCommand> Factory<TCommand, TCommandHandler>(TCommandHandler commandHandler) 
+        public Action<TCommand> Decorate<TCommand, TCommandHandler>(TCommandHandler commandHandler) 
             where TCommand : class, ICommand 
             where TCommandHandler : ICommandHandler<TCommand>
         {

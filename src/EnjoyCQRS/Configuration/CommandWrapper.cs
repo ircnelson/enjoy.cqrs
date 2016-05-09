@@ -64,9 +64,9 @@ namespace EnjoyCQRS.Configuration
             where TCommand : class, ICommand 
             where TCommandHandler : ICommandHandler<TCommand>
         {
-            var commandTransactionFactory = _resolver.Resolve<ITransactionalCommandHandler>();
+            var commandTransactionFactory = _resolver.Resolve<IDecorateCommandHandler>();
 
-            return commandTransactionFactory.Factory<TCommand, TCommandHandler>(commandHandler);
+            return commandTransactionFactory.Decorate<TCommand, TCommandHandler>(commandHandler);
         }
     }
 }

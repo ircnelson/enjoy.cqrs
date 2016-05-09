@@ -42,7 +42,7 @@ namespace EnjoyCQRS.UnitTests.Configuration
                 typeof (CmdHandler1)
             });
 
-            var transactionalCommandHandlerFactoryMock = new Mock<ITransactionalCommandHandler>();
+            var transactionalCommandHandlerFactoryMock = new Mock<IDecorateCommandHandler>();
             
             var handlerScanner = new HandlerScanner(enjoyTypeScannerMock.Object);
             var handlers = handlerScanner.Scan();
@@ -51,7 +51,7 @@ namespace EnjoyCQRS.UnitTests.Configuration
 
             var stubRegisterHandler = new StubRegisterHandler();
 
-            builder.Register(c => transactionalCommandHandlerFactoryMock.Object).As<ITransactionalCommandHandler>();
+            builder.Register(c => transactionalCommandHandlerFactoryMock.Object).As<IDecorateCommandHandler>();
             builder.Register(c => stubRegisterHandler).As<IRegisterHandler>();
 
             foreach (var handler in handlers.Values.SelectMany(e => e))
@@ -65,7 +65,7 @@ namespace EnjoyCQRS.UnitTests.Configuration
 
             enjoyConfiguration.Setup();
             
-            transactionalCommandHandlerFactoryMock.Verify(e => e.Factory<Cmd1, CmdHandler1>(It.IsAny<CmdHandler1>()));
+            transactionalCommandHandlerFactoryMock.Verify(e => e.Decorate<Cmd1, CmdHandler1>(It.IsAny<CmdHandler1>()));
         }
     }
 
