@@ -46,7 +46,7 @@
     <Compile Include="Bus\IRegisterHandler.cs" />
     <Compile Include="Commands\ICommandDispatcher.cs" />
     <Compile Include="Commands\IDecorateCommandHandler.cs" />
-    <Compile Include="Commands\TransactionalCommandHandler.cs" />
+    <Compile Include="Commands\DecorateCommandHandler.cs" />
     <Compile Include="Commands\TransactionHandler.cs" />
     <Compile Include="Configuration\AssemblyTypeScanner.cs" />
     <Compile Include="Configuration\CommandWrapper.cs" />

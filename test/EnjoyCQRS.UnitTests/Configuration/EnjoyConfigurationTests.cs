@@ -4,6 +4,7 @@ using Autofac;
 using EnjoyCQRS.Bus;
 using EnjoyCQRS.Commands;
 using EnjoyCQRS.Configuration;
+using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource.Storage;
 using FluentAssertions;
 using Moq;
@@ -38,12 +39,14 @@ namespace EnjoyCQRS.UnitTests.Configuration
             var enjoyTypeScannerMock = new Mock<IEnjoyTypeScanner>();
             enjoyTypeScannerMock.Setup(e => e.Scan()).Returns(() => new[]
             {
-                typeof (Cmd1),
-                typeof (CmdHandler1)
+                typeof(Cmd1),
+                typeof(CmdHandler1),
+                typeof(Evt1),
+                typeof(EvtHandler1)
             });
 
             var transactionalCommandHandlerFactoryMock = new Mock<IDecorateCommandHandler>();
-            
+
             var handlerScanner = new HandlerScanner(enjoyTypeScannerMock.Object);
             var handlers = handlerScanner.Scan();
 
@@ -64,7 +67,7 @@ namespace EnjoyCQRS.UnitTests.Configuration
             EnjoyConfiguration enjoyConfiguration = new EnjoyConfiguration(new AutofacScopeResolver(container), handlers, enjoyTypeScannerMock.Object);
 
             enjoyConfiguration.Setup();
-            
+
             transactionalCommandHandlerFactoryMock.Verify(e => e.Decorate<Cmd1, CmdHandler1>(It.IsAny<CmdHandler1>()));
         }
     }
@@ -116,6 +119,13 @@ namespace EnjoyCQRS.UnitTests.Configuration
         }
     }
 
+    public class Evt1 : DomainEvent
+    {
+        public Evt1(Guid aggregateId) : base(aggregateId)
+        {
+        }
+    }
+
     public class CmdHandler1 : ICommandHandler<Cmd1>
     {
         public void Execute(Cmd1 command)
@@ -126,6 +136,13 @@ namespace EnjoyCQRS.UnitTests.Configuration
     public class CmdHandler2 : ICommandHandler<Cmd1>
     {
         public void Execute(Cmd1 command)
+        {
+        }
+    }
+
+    public class EvtHandler1 : IEventHandler<Evt1>
+    {
+        public void Execute(Evt1 command)
         {
         }
     }
