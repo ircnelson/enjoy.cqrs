@@ -5,13 +5,8 @@ namespace EnjoyCQRS.Bus.Direct
 {
     public class DefaultRouterMessages : IRouterMessages, IRegisterHandler
     {
-        private readonly IDictionary<Type, ICollection<Action<object>>> _routes;
-
-        public DefaultRouterMessages()
-        {
-            _routes = new Dictionary<Type, ICollection<Action<object>>>();
-        }
-
+        private readonly IDictionary<Type, ICollection<Action<object>>> _routes = new Dictionary<Type, ICollection<Action<object>>>();
+        
         public void Register<TMessage>(Action<TMessage> route) where TMessage : class
         {
             var routingKey = typeof(TMessage);
