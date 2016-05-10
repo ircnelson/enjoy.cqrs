@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using EnjoyCQRS.Bus;
 using EnjoyCQRS.Bus.Direct;
 using EnjoyCQRS.Commands;
 using FluentAssertions;
+using Moq;
 using Xunit;
 
 namespace EnjoyCQRS.UnitTests.MessageBus
@@ -13,12 +16,24 @@ namespace EnjoyCQRS.UnitTests.MessageBus
         [Fact]
         public void When_a_single_Command_is_published_to_the_bus_containing_a_single_CommandHandler()
         {
-            var testCommand = new TestCommand(Guid.NewGuid());
             var handler = new FirstTestCommandHandler();
-            DefaultRouterMessages routerMessages = new DefaultRouterMessages();
-            routerMessages.Register<TestCommand>(x => handler.Execute(x));
 
-            DirectMessageBus directMessageBus = new DirectMessageBus(routerMessages);
+            List<Action<TestCommand>> handlers = new List<Action<TestCommand>>
+            {
+                command => handler.Execute(command)
+            };
+
+            Mock<ICommandRouter> commandRouterMock = new Mock<ICommandRouter>();
+            commandRouterMock.Setup(e => e.Route(It.IsAny<TestCommand>())).Callback((ICommand command) =>
+            {
+                handlers.ForEach((action =>
+                {
+                    action((TestCommand) command);
+                }));
+            });
+
+            var testCommand = new TestCommand(Guid.NewGuid());
+            DirectMessageBus directMessageBus = new DirectMessageBus(commandRouterMock.Object, It.IsAny<IEventRouter>());
 
             directMessageBus.Dispatch(testCommand);
             directMessageBus.Commit();
@@ -29,15 +44,27 @@ namespace EnjoyCQRS.UnitTests.MessageBus
         [Fact]
         public void When_a_single_Command_is_published_to_the_bus_containing_multiple_CommandHandlers()
         {
-            var testCommand = new TestCommand(Guid.NewGuid());
             var handler1 = new FirstTestCommandHandler();
             var handler2 = new SecondTestCommandHandler();
 
-            DefaultRouterMessages routerMessages = new DefaultRouterMessages();
-            routerMessages.Register<TestCommand>(x => handler1.Execute(x));
-            routerMessages.Register<TestCommand>(x => handler2.Execute(x));
+            List<Action<TestCommand>> handlers = new List<Action<TestCommand>>
+            {
+                command => handler1.Execute(command),
+                command => handler2.Execute(command)
+            };
 
-            DirectMessageBus directMessageBus = new DirectMessageBus(routerMessages);
+            Mock<ICommandRouter> commandRouterMock = new Mock<ICommandRouter>();
+            commandRouterMock.Setup(e => e.Route(It.IsAny<TestCommand>())).Callback((ICommand command) =>
+            {
+                handlers.ForEach((action =>
+                {
+                    action((TestCommand)command);
+                }));
+            });
+
+            var testCommand = new TestCommand(Guid.NewGuid());
+            
+            DirectMessageBus directMessageBus = new DirectMessageBus(commandRouterMock.Object, It.IsAny<IEventRouter>());
 
             directMessageBus.Dispatch(testCommand);
             directMessageBus.Commit();

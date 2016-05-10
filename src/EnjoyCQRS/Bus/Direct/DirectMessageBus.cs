@@ -6,14 +6,18 @@ namespace EnjoyCQRS.Bus.Direct
 {
     public class DirectMessageBus : ICommandDispatcher, IEventPublisher
     {
-        private readonly IRouterMessages _routeMessages;
+        private readonly ICommandRouter _commandRouter;
+        private readonly IEventRouter _eventRouter;
+        
         private readonly object _lockObject = new object();
         private readonly Queue<object> _preCommitQueue;
         private readonly InMemoryQueue _postCommitQueue;
 
-        public DirectMessageBus(IRouterMessages routeMessages)
+        public DirectMessageBus(ICommandRouter commandRouter, IEventRouter eventRouter)
         {
-            _routeMessages = routeMessages;
+            _commandRouter = commandRouter;
+            _eventRouter = eventRouter;
+            
             _preCommitQueue = new Queue<object>(32);
             _postCommitQueue = new InMemoryQueue();
             _postCommitQueue.Pop(DoPublish);
@@ -74,7 +78,11 @@ namespace EnjoyCQRS.Bus.Direct
         {
             try
             {
-                _routeMessages.Route(message);
+                if (message is ICommand)
+                    _commandRouter.Route((ICommand) message);
+
+                if (message is IDomainEvent)
+                    _eventRouter.Route((IDomainEvent)message);
             }
             finally
             {

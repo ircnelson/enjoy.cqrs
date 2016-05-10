@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using EnjoyCQRS.Commands;
+using EnjoyCQRS.Events;
 
 namespace EnjoyCQRS.Bus.Direct
 {
-    public class DefaultRouterMessages : IRouterMessages, IRegisterHandler
+    public class DefaultRouterMessages : ICommandRouter, IEventRouter, IRegisterHandler
     {
         private readonly IDictionary<Type, ICollection<Action<object>>> _routes = new Dictionary<Type, ICollection<Action<object>>>();
         
@@ -18,7 +20,7 @@ namespace EnjoyCQRS.Bus.Direct
             routes.Add(message => route(message as TMessage));
         }
 
-        public void Route(object message)
+        private void DoRoute(object message)
         {
             ICollection<Action<object>> routes;
 
@@ -27,6 +29,16 @@ namespace EnjoyCQRS.Bus.Direct
 
             foreach (var route in routes)
                 route(message);
+        }
+
+        public void Route(ICommand command)
+        {
+            DoRoute(command);
+        }
+
+        public void Route(IDomainEvent @event)
+        {
+            DoRoute(@event);
         }
     }
 }

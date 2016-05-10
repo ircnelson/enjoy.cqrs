@@ -42,6 +42,8 @@
     <Compile Include="Bus\Direct\DefaultRouterMessages.cs" />
     <Compile Include="Bus\Direct\DirectMessageBus.cs" />
     <Compile Include="Bus\Direct\InMemoryQueue.cs" />
+    <Compile Include="Bus\ICommandRouter.cs" />
+    <Compile Include="Bus\IEventRouter.cs" />
     <Compile Include="Bus\IRegisterHandler.cs" />
     <Compile Include="Commands\ICommandDispatcher.cs" />
     <Compile Include="Commands\IDecorateCommandHandler.cs" />
