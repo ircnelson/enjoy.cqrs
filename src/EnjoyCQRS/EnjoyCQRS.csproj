@@ -66,7 +66,7 @@
     <Compile Include="Events\IEventPublisher.cs" />
     <Compile Include="Bus\IRouterMessages.cs" />
     <Compile Include="Bus\Direct\RouteNotRegisteredException.cs" />
-    <Compile Include="Bus\IUnitOfWork.cs" />
+    <Compile Include="Bus\ITransactionalMessageBus.cs" />
     <Compile Include="Commands\Command.cs" />
     <Compile Include="Commands\ICommand.cs" />
     <Compile Include="Commands\ICommandHandler.cs" />

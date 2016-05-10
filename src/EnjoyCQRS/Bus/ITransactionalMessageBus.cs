@@ -1,6 +1,6 @@
 ﻿namespace EnjoyCQRS.Bus
 {
-    public interface IUnitOfWork
+    public interface ITransactionalMessageBus
     {
         void Commit();
         void Rollback();

@@ -3,7 +3,7 @@ using EnjoyCQRS.Bus;
 
 namespace EnjoyCQRS.Commands
 {
-    public interface ICommandDispatcher : IUnitOfWork
+    public interface ICommandDispatcher : ITransactionalMessageBus
     {
         /// <summary>
         /// Dispatch the command to the handler.

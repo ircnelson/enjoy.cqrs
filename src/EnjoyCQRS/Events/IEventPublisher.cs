@@ -3,7 +3,7 @@ using EnjoyCQRS.Bus;
 
 namespace EnjoyCQRS.Events
 {
-    public interface IEventPublisher : IUnitOfWork
+    public interface IEventPublisher : ITransactionalMessageBus
     {
         /// <summary>
         /// Publishes the event to the handler(s).
