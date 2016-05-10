@@ -12,7 +12,7 @@ namespace EnjoyCQRS.Events
         /// <summary>
         /// Domain Event Unique identifier.
         /// </summary>
-        public Guid Id { get; }
+        public Guid Id { get; internal set; }
 
         /// <summary>
         /// Aggregate Unique identifier.
