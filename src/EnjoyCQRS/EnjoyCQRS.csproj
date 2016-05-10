@@ -62,6 +62,7 @@
     <Compile Include="Configuration\IScopeResolver.cs" />
     <Compile Include="Configuration\IServiceRegistration.cs" />
     <Compile Include="Configuration\Lifetime.cs" />
+    <Compile Include="EventSource\Exceptions\AggregateNotFoundException.cs" />
     <Compile Include="Events\IEventPublisher.cs" />
     <Compile Include="Bus\IRouterMessages.cs" />
     <Compile Include="Bus\Direct\RouteNotRegisteredException.cs" />
