@@ -79,6 +79,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Stubs\CommandRouter.cs" />
+    <Compile Include="Extensions\CustomRegistrationExtensions.cs" />
+    <Compile Include="Stubs\EventRouter.cs" />
     <Compile Include="MiniApplicationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sqlite\EventStoreSqlite.cs" />
