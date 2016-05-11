@@ -11,9 +11,13 @@ using Xunit;
 
 namespace EnjoyCQRS.UnitTests.MessageBus
 {
-    public class CommandBusTests
+    public class CommandRouterTests
     {
+        private const string CategoryName = "Unit";
+        private const string CategoryValue = "Command router";
+
         [Fact]
+        [Trait(CategoryName, CategoryValue)]
         public void When_a_single_Command_is_published_to_the_bus_containing_a_single_CommandHandler()
         {
             var handler = new FirstTestCommandHandler();
@@ -42,6 +46,7 @@ namespace EnjoyCQRS.UnitTests.MessageBus
         }
 
         [Fact]
+        [Trait(CategoryName, CategoryValue)]
         public void When_a_single_Command_is_published_to_the_bus_containing_multiple_CommandHandlers()
         {
             var handler1 = new FirstTestCommandHandler();

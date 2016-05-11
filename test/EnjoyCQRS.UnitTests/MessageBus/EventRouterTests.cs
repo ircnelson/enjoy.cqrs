@@ -10,9 +10,13 @@ using Xunit;
 
 namespace EnjoyCQRS.UnitTests.MessageBus
 {
-    public class EventBusTests
+    public class EventRouterTests
     {
+        private const string CategoryName = "Unit";
+        private const string CategoryValue = "Event router";
+
         [Fact]
+        [Trait(CategoryName, CategoryValue)]
         public void When_a_single_event_is_published_to_the_bus_containing_a_single_EventHandler()
         {
             var handler = new FirstTestEventHandler();
@@ -42,6 +46,7 @@ namespace EnjoyCQRS.UnitTests.MessageBus
         }
 
         [Fact]
+        [Trait(CategoryName, CategoryValue)]
         public void When_a_single_event_is_published_to_the_bus_containing_multiple_EventHandlers()
         {
             var handler1 = new FirstTestEventHandler();

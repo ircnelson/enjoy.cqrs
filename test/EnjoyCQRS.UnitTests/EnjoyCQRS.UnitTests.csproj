@@ -81,12 +81,14 @@
     <Compile Include="Domain\Events\NotRegisteredEvent.cs" />
     <Compile Include="Domain\Events\SomeEvent.cs" />
     <Compile Include="Domain\Events\TestAggregateCreatedEvent.cs" />
+    <Compile Include="Domain\Not_registered_event_in_aggregate.cs" />
+    <Compile Include="Domain\Registered_event_in_aggregate.cs" />
     <Compile Include="Domain\StubAggregate.cs" />
-    <Compile Include="MessageBus\EventBusTests.cs" />
-    <Compile Include="MessageBus\CommandBusTests.cs" />
+    <Compile Include="MessageBus\EventRouterTests.cs" />
+    <Compile Include="MessageBus\CommandRouterTests.cs" />
     <Compile Include="Storage\EventStoreTests.cs" />
     <Compile Include="Storage\StubEventStore.cs" />
-    <Compile Include="Domain\AggregateTests.cs" />
+    <Compile Include="Domain\Increment_the_EventVersion_When_new_events_are_applied.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
