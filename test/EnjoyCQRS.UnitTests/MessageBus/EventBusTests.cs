@@ -61,11 +61,7 @@ namespace EnjoyCQRS.UnitTests.MessageBus
                     action((TestEvent)@event);
                 }));
             });
-
-            DefaultRouterMessages routerMessages = new DefaultRouterMessages();
-            routerMessages.Register<TestEvent>(x => handler1.Execute(x));
-            routerMessages.Register<TestEvent>(x => handler2.Execute(x));
-
+            
             DirectMessageBus directMessageBus = new DirectMessageBus(It.IsAny<ICommandRouter>(), eventRouterMock.Object);
 
             var testEvent = new TestEvent(Guid.NewGuid());

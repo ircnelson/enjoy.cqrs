@@ -39,33 +39,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Bus\Direct\DefaultRouterMessages.cs" />
     <Compile Include="Bus\Direct\DirectMessageBus.cs" />
     <Compile Include="Bus\Direct\InMemoryQueue.cs" />
     <Compile Include="Bus\ICommandRouter.cs" />
     <Compile Include="Bus\IEventRouter.cs" />
-    <Compile Include="Bus\IRegisterHandler.cs" />
     <Compile Include="Commands\ICommandDispatcher.cs" />
-    <Compile Include="Commands\IDecorateCommandHandler.cs" />
-    <Compile Include="Commands\DecorateCommandHandler.cs" />
-    <Compile Include="Commands\TransactionHandler.cs" />
-    <Compile Include="Configuration\AssemblyTypeScanner.cs" />
-    <Compile Include="Configuration\CommandWrapper.cs" />
-    <Compile Include="Configuration\EnjoyConfiguration.cs" />
-    <Compile Include="Configuration\EventWrapper.cs" />
-    <Compile Include="Configuration\HandlerDictionary.cs" />
-    <Compile Include="Configuration\HandlerHelper.cs" />
-    <Compile Include="Configuration\HandlerMetadata.cs" />
-    <Compile Include="Configuration\HandlerScanner.cs" />
-    <Compile Include="Configuration\HandlerType.cs" />
-    <Compile Include="Configuration\IEnjoyTypeScanner.cs" />
-    <Compile Include="Configuration\IResolver.cs" />
-    <Compile Include="Configuration\IScopeResolver.cs" />
-    <Compile Include="Configuration\IServiceRegistration.cs" />
-    <Compile Include="Configuration\Lifetime.cs" />
+    <Compile Include="Commands\TransactionalCommandHandler.cs" />
     <Compile Include="EventSource\Exceptions\AggregateNotFoundException.cs" />
     <Compile Include="Events\IEventPublisher.cs" />
-    <Compile Include="Bus\IRouterMessages.cs" />
     <Compile Include="Bus\Direct\RouteNotRegisteredException.cs" />
     <Compile Include="Bus\ITransactionalMessageBus.cs" />
     <Compile Include="Commands\Command.cs" />

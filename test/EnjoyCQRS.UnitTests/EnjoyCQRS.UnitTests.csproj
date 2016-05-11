@@ -78,8 +78,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration\EnjoyConfigurationTests.cs" />
-    <Compile Include="Configuration\StubRegisterHandler.cs" />
     <Compile Include="Domain\Events\NotRegisteredEvent.cs" />
     <Compile Include="Domain\Events\SomeEvent.cs" />
     <Compile Include="Domain\Events\TestAggregateCreatedEvent.cs" />
