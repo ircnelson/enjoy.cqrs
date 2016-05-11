@@ -43,7 +43,8 @@ namespace EnjoyCQRS.IntegrationTests.Sqlite
 
         public void Rollback()
         {
-            Transaction?.Rollback();
+            if (Transaction?.Connection != null)
+                Transaction.Rollback();
         }
 
         public IEnumerable<IDomainEvent> GetAllEvents(Guid id)

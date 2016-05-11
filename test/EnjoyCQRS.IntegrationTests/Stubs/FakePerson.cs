@@ -7,7 +7,9 @@ namespace EnjoyCQRS.IntegrationTests.Stubs
     {
         public string Name { get; private set; }
 
-        public FakePerson(Guid id, string name)
+        public FakePerson() { }
+
+        public FakePerson(Guid id, string name) : this()
         {
             Emit(new FakePersonCreatedEvent(id, name));
         }

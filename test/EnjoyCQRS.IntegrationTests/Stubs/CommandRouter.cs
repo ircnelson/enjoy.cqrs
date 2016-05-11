@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
@@ -18,19 +19,12 @@ namespace EnjoyCQRS.IntegrationTests.Stubs
 
         public void Route(ICommand command)
         {
-            var genericCommandHandler = typeof (ICommandHandler<>).MakeGenericType(command.GetType());
-            var enumerabeGenericCommandHandler = typeof (IEnumerable<>).MakeGenericType(genericCommandHandler);
+            var genericHandler = typeof (ICommandHandler<>).MakeGenericType(command.GetType());
+            var handler = _scope.Resolve(genericHandler);
 
-            var handlers = _scope.ResolveOptional(enumerabeGenericCommandHandler) as IEnumerable;
+            var methodInfo = handler.GetType().GetMethod("Execute", BindingFlags.Instance | BindingFlags.Public);
+            methodInfo.Invoke(handler, new[] { command });
 
-
-            foreach (var handler in handlers)
-            {
-                
-                var methodInfo = handler.GetType().GetMethod("Execute", BindingFlags.Instance | BindingFlags.Public);
-                methodInfo.Invoke(handler, new[] {command});
-            }
-            
         }
     }
 }

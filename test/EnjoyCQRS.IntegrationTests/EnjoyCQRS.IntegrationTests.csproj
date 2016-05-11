@@ -79,6 +79,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Stubs\ChangeNameCommand.cs" />
+    <Compile Include="Stubs\ChangeNameCommandHandler.cs" />
     <Compile Include="Stubs\CommandRouter.cs" />
     <Compile Include="Extensions\CustomRegistrationExtensions.cs" />
     <Compile Include="Stubs\EventRouter.cs" />
