@@ -2,7 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Autofac;
+using Autofac.Builder;
+using Autofac.Core;
+using Autofac.Features.Scanning;
 using EnjoyCQRS.Bus;
 using EnjoyCQRS.Bus.Direct;
 using EnjoyCQRS.Commands;
@@ -11,7 +15,6 @@ using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Storage;
 using EnjoyCQRS.IntegrationTests.Sqlite;
 using EnjoyCQRS.IntegrationTests.Stubs;
-using FluentAssertions;
 using Xunit;
 
 namespace EnjoyCQRS.IntegrationTests
@@ -40,17 +43,22 @@ namespace EnjoyCQRS.IntegrationTests
 
             var assemblyCommandHandlers = typeof (CreateFakePersonCommandHandler).Assembly;
 
-            builder.RegisterGenericDecorator(
-                typeof(TransactionalCommandHandler<>),
-                typeof(ICommandHandler<>),
-                fromKey: "uowCmdHandler");
+            var genericCommandHandler = typeof (ICommandHandler<>);
 
             builder.RegisterAssemblyTypes(assemblyCommandHandlers)
-                   .AsClosedTypesOf(typeof(ICommandHandler<>))
-                   .AsSelf()
-                   .AsImplementedInterfaces()
-                   .InstancePerLifetimeScope()
-                   .Named("uowCmdHandler", typeof(ICommandHandler<>));
+                    .AsNamedClosedTypesOf(genericCommandHandler, t => "uowCmdHandler");
+            
+            builder.RegisterGenericDecorator(
+                typeof(TransactionalCommandHandler<>),
+                genericCommandHandler,
+                fromKey: "uowCmdHandler");
+
+            //builder.RegisterAssemblyTypes(assemblyCommandHandlers)
+            //       .AsClosedTypesOf(genericCommandHandler)
+            //       .AsSelf()
+            //       .AsImplementedInterfaces()
+            //       .InstancePerLifetimeScope()
+            //       .Keyed("uowCmdHandler", genericCommandHandler);
 
             var container = builder.Build();
 
@@ -96,10 +104,18 @@ namespace EnjoyCQRS.IntegrationTests
         public void Route(ICommand command)
         {
             var genericCommandHandler = typeof (ICommandHandler<>).MakeGenericType(command.GetType());
+            var enumerabeGenericCommandHandler = typeof (IEnumerable<>).MakeGenericType(genericCommandHandler);
 
-            var handler = _scope.ResolveOptional(genericCommandHandler) as ICommandHandler<ICommand>;
+            var handlers = _scope.ResolveOptional(enumerabeGenericCommandHandler) as IEnumerable;
+
+
+            foreach (var handler in handlers)
+            {
+                
+                var methodInfo = handler.GetType().GetMethod("Execute", BindingFlags.Instance | BindingFlags.Public);
+                methodInfo.Invoke(handler, new[] {command});
+            }
             
-            handler.Execute(command);
         }
     }
 
@@ -144,6 +160,41 @@ namespace EnjoyCQRS.IntegrationTests
             {
                 _unitOfWork.Rollback();
                 throw;
+            }
+        }
+    }
+
+    public static class CustomRegistrationExtensions
+    {
+        // This is the important custom bit: Registering a named service during scanning.
+        public static IRegistrationBuilder<TLimit, TScanningActivatorData, TRegistrationStyle>
+            AsNamedClosedTypesOf<TLimit, TScanningActivatorData, TRegistrationStyle>(
+                this IRegistrationBuilder<TLimit, TScanningActivatorData, TRegistrationStyle> registration,
+                Type openGenericServiceType,
+                Func<Type, object> keyFactory)
+            where TScanningActivatorData : ScanningActivatorData
+        {
+            if (openGenericServiceType == null) throw new ArgumentNullException("openGenericServiceType");
+
+            return registration
+                .Where(candidateType => candidateType.IsClosedTypeOf(openGenericServiceType))
+                .As(candidateType => candidateType.GetTypesThatClose(openGenericServiceType).Select(t => (Service)new KeyedService(keyFactory(t), t)));
+        }
+
+        // These next two methods are basically copy/paste of some Autofac internals that
+        // are used to determine closed generic types during scanning.
+        public static IEnumerable<Type> GetTypesThatClose(this Type candidateType, Type openGenericServiceType)
+        {
+            return candidateType.GetInterfaces().Concat(TraverseAcross(candidateType, t => t.BaseType)).Where(t => t.IsClosedTypeOf(openGenericServiceType));
+        }
+
+        public static IEnumerable<T> TraverseAcross<T>(T first, Func<T, T> next) where T : class
+        {
+            var item = first;
+            while (item != null)
+            {
+                yield return item;
+                item = next(item);
             }
         }
     }
