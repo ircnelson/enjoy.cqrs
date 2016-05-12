@@ -4,6 +4,6 @@ namespace EnjoyCQRS.Bus
 {
     public interface IEventRouter
     {
-        void Route(IDomainEvent @event);
+        void Route<TEvent>(TEvent @event) where TEvent : IDomainEvent;
     }
 }

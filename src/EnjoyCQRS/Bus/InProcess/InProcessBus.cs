@@ -3,21 +3,20 @@ using EnjoyCQRS.Messages;
 
 namespace EnjoyCQRS.Bus.InProcess
 {
-    public abstract class InProcessBus<TMessage>
-        where TMessage : IMessage
+    public abstract class InProcessBus
     {
         private readonly object _lockObject = new object();
-        private readonly Queue<TMessage> _preCommitQueue;
-        private readonly InMemoryQueue<TMessage> _postCommitQueue;
+        private readonly Queue<IMessage> _preCommitQueue;
+        private readonly InMemoryQueue<IMessage> _postCommitQueue;
 
         protected InProcessBus()
         {   
-            _preCommitQueue = new Queue<TMessage>(32);
-            _postCommitQueue = new InMemoryQueue<TMessage>();
+            _preCommitQueue = new Queue<IMessage>(32);
+            _postCommitQueue = new InMemoryQueue<IMessage>();
             _postCommitQueue.Pop(DoPublish);
         }
         
-        public void Send(TMessage command)
+        public void Send(IMessage command)
         {
             lock (_lockObject)
             {
@@ -25,7 +24,7 @@ namespace EnjoyCQRS.Bus.InProcess
             }
         }
 
-        public void Send(IEnumerable<TMessage> messages)
+        public void Send(IEnumerable<IMessage> messages)
         {
             foreach (var message in messages)
             {
@@ -52,17 +51,12 @@ namespace EnjoyCQRS.Bus.InProcess
             }
         }
 
-        protected abstract void Route(TMessage message);
+        protected abstract void Route(dynamic message);
 
-        private void DoPublish(TMessage message)
+        private void DoPublish(dynamic message)
         {
             try
             {
-                //if (message is ICommand)
-                //    _commandRouter.Route((ICommand) message);
-
-                //if (message is IDomainEvent)
-                //    _eventRouter.Route((IDomainEvent)message);
                 Route(message);
             }
             finally

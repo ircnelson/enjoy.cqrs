@@ -1,4 +1,4 @@
-using System.Reflection;
+using System.Collections.Generic;
 using Autofac;
 using EnjoyCQRS.Bus;
 using EnjoyCQRS.Commands;
@@ -13,15 +13,11 @@ namespace EnjoyCQRS.IntegrationTests.Stubs
         {
             _scope = scope;
         }
-
-        public void Route(ICommand command)
+        
+        public void Route<TCommand>(TCommand command) where TCommand : ICommand
         {
-            var genericHandler = typeof (ICommandHandler<>).MakeGenericType(command.GetType());
-            var handler = _scope.Resolve(genericHandler);
-
-            var methodInfo = handler.GetType().GetMethod("Execute", BindingFlags.Instance | BindingFlags.Public);
-            methodInfo.Invoke(handler, new[] { command });
-
+            var handler = _scope.Resolve<ICommandHandler<TCommand>>();
+            handler.Execute(command);
         }
     }
 }

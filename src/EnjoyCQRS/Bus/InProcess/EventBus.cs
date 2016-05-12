@@ -4,7 +4,7 @@ using EnjoyCQRS.Messages;
 
 namespace EnjoyCQRS.Bus.InProcess
 {
-    public class EventBus : InProcessBus<IDomainEvent>, IEventPublisher
+    public class EventBus : InProcessBus, IEventPublisher
     {
         private readonly IEventRouter _router;
 
@@ -12,12 +12,7 @@ namespace EnjoyCQRS.Bus.InProcess
         {
             _router = router;
         }
-
-        protected override void Route(IDomainEvent message)
-        {
-            _router.Route(message);
-        }
-
+        
         public void Publish<TEvent>(TEvent message) where TEvent : IDomainEvent
         {
             Send(message);
@@ -29,6 +24,11 @@ namespace EnjoyCQRS.Bus.InProcess
             {
                 Send(message);
             }
+        }
+        
+        protected override void Route(dynamic message)
+        {
+            _router.Route(message);
         }
     }
 }

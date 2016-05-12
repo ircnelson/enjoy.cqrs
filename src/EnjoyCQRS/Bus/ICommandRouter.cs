@@ -4,6 +4,6 @@ namespace EnjoyCQRS.Bus
 {
     public interface ICommandRouter
     {
-        void Route(ICommand command);
+        void Route<TCommand>(TCommand command) where TCommand : ICommand;
     }
 }

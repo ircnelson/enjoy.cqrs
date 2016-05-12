@@ -3,7 +3,7 @@ using EnjoyCQRS.Messages;
 
 namespace EnjoyCQRS.Bus.InProcess
 {
-    public class CommandBus : InProcessBus<ICommand>, ICommandDispatcher
+    public class CommandBus : InProcessBus, ICommandDispatcher
     {
         private readonly ICommandRouter _router;
 
@@ -11,15 +11,15 @@ namespace EnjoyCQRS.Bus.InProcess
         {
             _router = router;
         }
-
-        protected override void Route(ICommand message)
-        {
-            _router.Route(message);
-        }
-
+        
         public void Dispatch<TCommand>(TCommand command) where TCommand : ICommand
         {
             Send(command);
+        }
+
+        protected override void Route(dynamic message)
+        {
+            _router.Route(message);
         }
     }
 }

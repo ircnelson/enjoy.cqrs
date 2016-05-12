@@ -1,6 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
 using Autofac;
 using EnjoyCQRS.Bus;
 using EnjoyCQRS.Events;
@@ -15,17 +13,15 @@ namespace EnjoyCQRS.IntegrationTests.Stubs
         {
             _scope = scope;
         }
-
-        public void Route(IDomainEvent @event)
+        
+        public void Route<TEvent>(TEvent @event) 
+            where TEvent : IDomainEvent
         {
-            var genericHandler = typeof(IEventHandler<>).MakeGenericType(@event.GetType());
-            var enumerableGenericHandler = typeof(IEnumerable<>).MakeGenericType(genericHandler);
-            var handlers = _scope.ResolveOptional(enumerableGenericHandler) as IEnumerable;
+            var handlers = _scope.ResolveOptional<IEnumerable<IEventHandler<TEvent>>>();
 
             foreach (var handler in handlers)
             {
-                var methodInfo = handler.GetType().GetMethod("Execute", BindingFlags.Instance | BindingFlags.Public);
-                methodInfo.Invoke(handler, new[] { @event });
+                handler.Execute(@event);
             }
         }
     }
