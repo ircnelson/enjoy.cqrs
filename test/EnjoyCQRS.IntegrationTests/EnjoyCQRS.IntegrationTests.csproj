@@ -79,6 +79,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Fixtures\MiniApplicationFixture.cs" />
     <Compile Include="Stubs\ChangeNameCommand.cs" />
     <Compile Include="Stubs\ChangeNameCommandHandler.cs" />
     <Compile Include="Stubs\CommandRouter.cs" />
@@ -93,6 +94,7 @@
     <Compile Include="Stubs\FakePerson.cs" />
     <Compile Include="Stubs\FakePersonCreatedEvent.cs" />
     <Compile Include="Stubs\NameChangedEvent.cs" />
+    <Compile Include="Stubs\StubUnitOfWork.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -13,6 +13,8 @@ namespace EnjoyCQRS.EventSource.Storage
         private readonly IEventPublisher _eventPublisher;
         private readonly List<Aggregate> _aggregates = new List<Aggregate>();
 
+        public bool InTransaction { get; private set; }
+
         public Session(IAggregateTracker aggregateTracker, IEventStore eventStore, IEventPublisher eventPublisher)
         {
             _aggregateTracker = aggregateTracker;
@@ -52,12 +54,29 @@ namespace EnjoyCQRS.EventSource.Storage
             RegisterForTracking(aggregate);
         }
 
+        public void BeginTransaction()
+        {
+            if (InTransaction) throw new InvalidOperationException("The transaction already was open.");
+
+            InTransaction = true;
+            _eventStore.BeginTransaction();
+        }
+
+        public void Commit()
+        {
+            _eventStore.Commit();
+            InTransaction = false;
+        }
+
         /// <summary>
         /// Call <see cref="IEventStore.Save"/> in <see cref="IEventStore"/> passing aggregates.
         /// </summary>
-        public void Commit()
+        public virtual void SaveChanges()
         {
-            _eventStore.BeginTransaction();
+            if (!InTransaction)
+            {
+                _eventStore.BeginTransaction();
+            }
 
             foreach (var aggregate in _aggregates)
             {
@@ -73,7 +92,11 @@ namespace EnjoyCQRS.EventSource.Storage
             _aggregates.Clear();
 
             _eventPublisher.Commit();
-            _eventStore.Commit();
+
+            if (!InTransaction)
+            {
+                _eventStore.Commit();
+            }
         }
 
         /// <summary>

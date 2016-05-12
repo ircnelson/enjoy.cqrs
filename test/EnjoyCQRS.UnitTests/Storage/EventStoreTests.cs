@@ -30,7 +30,18 @@ namespace EnjoyCQRS.UnitTests.Storage
             var session = new Session(_aggregateTracker, _inMemoryDomainEventStore, _mockEventPublisher.Object);
             _repository = new Repository(session, _aggregateTracker);
 
-            _unitOfWork = session;
+            var unitOfWorkMock = new Mock<IUnitOfWork>();
+            unitOfWorkMock.Setup(e => e.Commit()).Callback(() =>
+            {
+                session.SaveChanges();
+            });
+
+            unitOfWorkMock.Setup(e => e.Rollback()).Callback(() =>
+            {
+                session.Rollback();
+            });
+
+            _unitOfWork = unitOfWorkMock.Object;
         }
 
         [Fact]

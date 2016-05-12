@@ -1,73 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using Autofac;
-using EnjoyCQRS.Bus;
-using EnjoyCQRS.Bus.Direct;
 using EnjoyCQRS.Commands;
-using EnjoyCQRS.Events;
-using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Storage;
-using EnjoyCQRS.IntegrationTests.Extensions;
-using EnjoyCQRS.IntegrationTests.Sqlite;
+using EnjoyCQRS.IntegrationTests.Fixtures;
 using EnjoyCQRS.IntegrationTests.Stubs;
 using FluentAssertions;
 using Xunit;
 
 namespace EnjoyCQRS.IntegrationTests
 {
-    public class MiniApplicationFixture : IDisposable
-    {
-        public IContainer Container { get; private set; }
-
-        public MiniApplicationFixture()
-        {
-            var fileName = "test.db";
-            EventStoreSqliteInitializer eventStoreSqliteInitializer = new EventStoreSqliteInitializer(fileName);
-
-            eventStoreSqliteInitializer.CreateDatabase(true);
-            eventStoreSqliteInitializer.CreateTable();
-            
-            ContainerBuilder builder = new ContainerBuilder();
-
-            builder.RegisterType<Session>().As<ISession, IUnitOfWork>().InstancePerLifetimeScope();
-            builder.RegisterType<AggregateTracker>().As<IAggregateTracker>().InstancePerLifetimeScope();
-            builder.RegisterType<Repository>().As<IRepository>();
-            builder.RegisterType<DirectMessageBus>().As<ICommandDispatcher, IEventPublisher>().InstancePerLifetimeScope();
-            builder.RegisterType<CommandRouter>().As<ICommandRouter>();
-            builder.RegisterType<EventRouter>().As<IEventRouter>();
-            builder.Register(c => new EventStoreSqlite(fileName)).As<IEventStore>();
-
-            var assemblyCommandHandlers = typeof (CreateFakePersonCommandHandler).Assembly;
-
-            var genericCommandHandler = typeof (ICommandHandler<>);
-
-            builder.RegisterAssemblyTypes(assemblyCommandHandlers)
-                    .AsNamedClosedTypesOf(genericCommandHandler, t => "uowCmdHandler");
-            
-            builder.RegisterGenericDecorator(
-                typeof(TransactionalCommandHandler<>),
-                genericCommandHandler,
-                fromKey: "uowCmdHandler");
-
-            //builder.RegisterAssemblyTypes(assemblyCommandHandlers)
-            //       .AsClosedTypesOf(genericCommandHandler)
-            //       .AsSelf()
-            //       .AsImplementedInterfaces()
-            //       .InstancePerLifetimeScope()
-            //       .Keyed("uowCmdHandler", genericCommandHandler);
-
-            var container = builder.Build();
-
-            Container = container;
-        }
-        
-        public void Dispose()
-        {
-            Container.Dispose();
-            Container = null;
-        }
-    }
-
     public class MiniApplicationTests : IClassFixture<MiniApplicationFixture>
     {
         private const string CategoryName = "Integration";

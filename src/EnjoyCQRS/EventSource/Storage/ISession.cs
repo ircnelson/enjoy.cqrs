@@ -5,7 +5,7 @@ namespace EnjoyCQRS.EventSource.Storage
     /// <summary>
     /// Represents an abstraction where aggregate events will be persisted.
     /// </summary>
-    public interface ISession : IUnitOfWork
+    public interface ISession
     {
         /// <summary>
         /// Retrieves an <typeparam name="TAggregate"></typeparam> based on your unique identifier property.
@@ -21,5 +21,26 @@ namespace EnjoyCQRS.EventSource.Storage
         /// <typeparam name="TAggregate"></typeparam>
         /// <param name="aggregate"></param>
         void Add<TAggregate>(TAggregate aggregate) where TAggregate : Aggregate;
+
+        /// <summary>
+        /// Begin the transaction.
+        /// </summary>
+        void BeginTransaction();
+        
+        /// <summary>
+        /// Confirm affected changes.
+        /// </summary>
+        void Commit();
+
+        /// <summary>
+        /// Save the modifications.
+        /// </summary>
+        void SaveChanges();
+
+        /// <summary>
+        /// Revert modifications.
+        /// </summary>
+        void Rollback();
+
     }
 }
