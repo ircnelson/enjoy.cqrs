@@ -93,6 +93,7 @@
     <Compile Include="Stubs\CreateFakePersonCommandHandler.cs" />
     <Compile Include="Stubs\FakePerson.cs" />
     <Compile Include="Stubs\FakePersonCreatedEvent.cs" />
+    <Compile Include="Stubs\FakePersonCreatedEventHandler.cs" />
     <Compile Include="Stubs\NameChangedEvent.cs" />
     <Compile Include="Stubs\StubUnitOfWork.cs" />
   </ItemGroup>

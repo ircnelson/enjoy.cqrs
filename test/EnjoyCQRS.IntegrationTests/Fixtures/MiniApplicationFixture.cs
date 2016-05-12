@@ -35,10 +35,11 @@ namespace EnjoyCQRS.IntegrationTests.Fixtures
             builder.RegisterType<EventRouter>().As<IEventRouter>();
             builder.Register(c => new EventStoreSqlite(fileName)).As<IEventStore>();
 
-            var assemblyCommandHandlers = typeof (CreateFakePersonCommandHandler).Assembly;
+            var assemblyCommandHandlers = typeof (FakePerson).Assembly;
 
+            // Command handlers
             var genericCommandHandler = typeof (ICommandHandler<>);
-
+            
             builder.RegisterAssemblyTypes(assemblyCommandHandlers)
                 .AsNamedClosedTypesOf(genericCommandHandler, t => "uowCmdHandler");
             
@@ -46,6 +47,13 @@ namespace EnjoyCQRS.IntegrationTests.Fixtures
                 typeof(TransactionalCommandHandler<>),
                 genericCommandHandler,
                 fromKey: "uowCmdHandler");
+
+            // Event handlers
+            var genericEventHandler = typeof(IEventHandler<>);
+
+            builder.RegisterAssemblyTypes(assemblyCommandHandlers)
+                   .AsClosedTypesOf(genericEventHandler)
+                   .AsImplementedInterfaces();
 
             var container = builder.Build();
 
