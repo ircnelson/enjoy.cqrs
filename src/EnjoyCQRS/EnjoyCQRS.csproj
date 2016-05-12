@@ -39,15 +39,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Bus\Direct\DirectMessageBus.cs" />
-    <Compile Include="Bus\Direct\InMemoryQueue.cs" />
+    <Compile Include="Bus\InProcess\CommandBus.cs" />
+    <Compile Include="Bus\InProcess\EventBus.cs" />
+    <Compile Include="Bus\InProcess\InProcessBus.cs" />
+    <Compile Include="Bus\InProcess\InMemoryQueue.cs" />
     <Compile Include="Bus\ICommandRouter.cs" />
     <Compile Include="Bus\IEventRouter.cs" />
-    <Compile Include="Commands\ICommandDispatcher.cs" />
+    <Compile Include="Messages\ICommandDispatcher.cs" />
     <Compile Include="Commands\TransactionalCommandHandler.cs" />
     <Compile Include="EventSource\Exceptions\AggregateNotFoundException.cs" />
-    <Compile Include="Events\IEventPublisher.cs" />
-    <Compile Include="Bus\Direct\RouteNotRegisteredException.cs" />
+    <Compile Include="Messages\IEventPublisher.cs" />
+    <Compile Include="Bus\InProcess\RouteNotRegisteredException.cs" />
     <Compile Include="Bus\ITransactionalMessageBus.cs" />
     <Compile Include="Commands\Command.cs" />
     <Compile Include="Commands\ICommand.cs" />
@@ -66,6 +68,7 @@
     <Compile Include="Events\DomainEvent.cs" />
     <Compile Include="Events\IDomainEvent.cs" />
     <Compile Include="Events\IEventHandler.cs" />
+    <Compile Include="Messages\IMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

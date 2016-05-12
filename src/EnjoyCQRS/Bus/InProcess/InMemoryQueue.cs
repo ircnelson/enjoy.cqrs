@@ -1,26 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using EnjoyCQRS.Messages;
 
-namespace EnjoyCQRS.Bus.Direct
+namespace EnjoyCQRS.Bus.InProcess
 {
-    public interface IQueue
+    public interface IQueue<TMessage>
     {
-        void Put(object item);
-        void Pop(Action<object> popAction);
+        void Put(TMessage item);
+        void Pop(Action<TMessage> popAction);
     }
 
-    public class InMemoryQueue : IQueue
+    public class InMemoryQueue<TMessage> : IQueue<TMessage>
+        where TMessage : IMessage
     {
-        private readonly Queue<object> _itemQueue;
-        private readonly Queue<Action<object>> _listenerQueue;
+        private readonly Queue<TMessage> _itemQueue;
+        private readonly Queue<Action<TMessage>> _listenerQueue;
 
         public InMemoryQueue()
         {
-            _itemQueue = new Queue<object>(32);
-            _listenerQueue = new Queue<Action<object>>(32);
+            _itemQueue = new Queue<TMessage>(32);
+            _listenerQueue = new Queue<Action<TMessage>>(32);
         }
 
-        public void Put(object item)
+        public void Put(TMessage item)
         {
             if (_listenerQueue.Count == 0)
             {
@@ -32,7 +34,7 @@ namespace EnjoyCQRS.Bus.Direct
             listener(item);
         }
 
-        public void Pop(Action<object> popAction)
+        public void Pop(Action<TMessage> popAction)
         {
             if (_itemQueue.Count == 0)
             {

@@ -1,4 +1,5 @@
-﻿using EnjoyCQRS.EventSource;
+﻿using System;
+using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Storage;
 
 namespace EnjoyCQRS.IntegrationTests.Stubs
@@ -14,16 +15,20 @@ namespace EnjoyCQRS.IntegrationTests.Stubs
 
         public void Commit()
         {
-            _session.BeginTransaction();
+            try
+            {
+                _session.BeginTransaction();
 
-            _session.SaveChanges();
+                _session.SaveChanges();
 
-            _session.Commit();
-        }
-
-        public void Rollback()
-        {
-            _session.Rollback();
+                _session.Commit();
+            }
+            catch (Exception)
+            {
+                _session.Rollback();
+                throw;
+            }
+            
         }
     }
 }

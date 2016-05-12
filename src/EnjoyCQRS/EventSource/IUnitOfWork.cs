@@ -6,13 +6,8 @@
     public interface IUnitOfWork
     {
         /// <summary>
-        /// Confirm modifications.
+        /// Save modifications.
         /// </summary>
         void Commit();
-
-        /// <summary>
-        /// Revert modifications.
-        /// </summary>
-        void Rollback();
     }
 }

@@ -5,6 +5,7 @@ using EnjoyCQRS.Commands;
 using EnjoyCQRS.EventSource.Storage;
 using EnjoyCQRS.IntegrationTests.Fixtures;
 using EnjoyCQRS.IntegrationTests.Stubs;
+using EnjoyCQRS.Messages;
 using FluentAssertions;
 using Xunit;
 
@@ -37,6 +38,9 @@ namespace EnjoyCQRS.IntegrationTests
                 var aggregateFromRepository = repository.GetById<FakePerson>(command.AggregateId);
 
                 aggregateFromRepository.Should().NotBeNull();
+
+                aggregateFromRepository.Name.Should().Be(command.Name);
+                aggregateFromRepository.Id.Should().Be(command.AggregateId);
             }
         }
         

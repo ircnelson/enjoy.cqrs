@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using EnjoyCQRS.Bus;
-using EnjoyCQRS.Bus.Direct;
+using EnjoyCQRS.Bus.InProcess;
 using EnjoyCQRS.Events;
 using FluentAssertions;
 using Moq;
@@ -37,7 +37,7 @@ namespace EnjoyCQRS.UnitTests.MessageBus
 
             var testEvent = new TestEvent(Guid.NewGuid());
             
-            DirectMessageBus directMessageBus = new DirectMessageBus(It.IsAny<ICommandRouter>(), eventRouterMock.Object);
+            EventBus directMessageBus = new EventBus(eventRouterMock.Object);
 
             directMessageBus.Publish<IDomainEvent>(new[] { testEvent });
             directMessageBus.Commit();
@@ -66,8 +66,8 @@ namespace EnjoyCQRS.UnitTests.MessageBus
                     action((TestEvent)@event);
                 }));
             });
-            
-            DirectMessageBus directMessageBus = new DirectMessageBus(It.IsAny<ICommandRouter>(), eventRouterMock.Object);
+
+            EventBus directMessageBus = new EventBus(eventRouterMock.Object);
 
             var testEvent = new TestEvent(Guid.NewGuid());
 

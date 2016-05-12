@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using EnjoyCQRS.Bus;
-using EnjoyCQRS.Bus.Direct;
+using EnjoyCQRS.Bus.InProcess;
 using EnjoyCQRS.Commands;
 using FluentAssertions;
 using Moq;
@@ -37,7 +37,7 @@ namespace EnjoyCQRS.UnitTests.MessageBus
             });
 
             var testCommand = new TestCommand(Guid.NewGuid());
-            DirectMessageBus directMessageBus = new DirectMessageBus(commandRouterMock.Object, It.IsAny<IEventRouter>());
+            CommandBus directMessageBus = new CommandBus(commandRouterMock.Object);
 
             directMessageBus.Dispatch(testCommand);
             directMessageBus.Commit();
@@ -68,8 +68,8 @@ namespace EnjoyCQRS.UnitTests.MessageBus
             });
 
             var testCommand = new TestCommand(Guid.NewGuid());
-            
-            DirectMessageBus directMessageBus = new DirectMessageBus(commandRouterMock.Object, It.IsAny<IEventRouter>());
+
+            CommandBus directMessageBus = new CommandBus(commandRouterMock.Object);
 
             directMessageBus.Dispatch(testCommand);
             directMessageBus.Commit();

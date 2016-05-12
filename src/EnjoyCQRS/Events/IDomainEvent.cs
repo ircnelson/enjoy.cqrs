@@ -1,4 +1,5 @@
 ﻿using System;
+using EnjoyCQRS.Messages;
 
 namespace EnjoyCQRS.Events
 {
@@ -7,7 +8,7 @@ namespace EnjoyCQRS.Events
     /// The domain event are things that have value for your domain.
     /// They are raised when occur changes on the aggregate root.
     /// </summary>
-    public interface IDomainEvent
+    public interface IDomainEvent : IMessage
     {
         /// <summary>
         /// Domain Event Unique identifier.

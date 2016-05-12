@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EnjoyCQRS.Bus.Direct
+namespace EnjoyCQRS.Bus.InProcess
 {
     public class RouteNotRegisteredException : Exception
     {

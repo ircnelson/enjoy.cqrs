@@ -2,6 +2,7 @@
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Storage;
+using EnjoyCQRS.Messages;
 using EnjoyCQRS.UnitTests.Domain;
 using FluentAssertions;
 using Moq;
@@ -31,11 +32,6 @@ namespace EnjoyCQRS.UnitTests.Storage
             unitOfWorkMock.Setup(e => e.Commit()).Callback(() =>
             {
                 session.SaveChanges();
-            });
-
-            unitOfWorkMock.Setup(e => e.Rollback()).Callback(() =>
-            {
-                session.Rollback();
             });
 
             _unitOfWork = unitOfWorkMock.Object;

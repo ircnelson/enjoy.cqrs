@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource.Exceptions;
+using EnjoyCQRS.Messages;
 
 namespace EnjoyCQRS.EventSource.Storage
 {
@@ -13,7 +14,7 @@ namespace EnjoyCQRS.EventSource.Storage
         private readonly IEventPublisher _eventPublisher;
         private readonly List<Aggregate> _aggregates = new List<Aggregate>();
 
-        public bool InTransaction { get; private set; }
+        private bool _externalTransaction { get; set; }
 
         public Session(IEventStore eventStore, IEventPublisher eventPublisher)
         {
@@ -60,16 +61,16 @@ namespace EnjoyCQRS.EventSource.Storage
 
         public void BeginTransaction()
         {
-            if (InTransaction) throw new InvalidOperationException("The transaction already was open.");
+            if (_externalTransaction) throw new InvalidOperationException("The transaction already was open.");
 
-            InTransaction = true;
+            _externalTransaction = true;
             _eventStore.BeginTransaction();
         }
 
         public void Commit()
         {
             _eventStore.Commit();
-            InTransaction = false;
+            _externalTransaction = false;
         }
 
         /// <summary>
@@ -77,27 +78,40 @@ namespace EnjoyCQRS.EventSource.Storage
         /// </summary>
         public virtual void SaveChanges()
         {
-            if (!InTransaction)
+            if (!_externalTransaction)
             {
                 _eventStore.BeginTransaction();
             }
 
-            foreach (var aggregate in _aggregates)
+            // If transaction called externally, the client should care with transaction.
+            try
             {
-                var changes = aggregate.UncommitedEvents.ToList();
-                
-                _eventStore.Save(changes);
+                foreach (var aggregate in _aggregates)
+                {
+                    var changes = aggregate.UncommitedEvents.ToList();
 
-                _eventPublisher.Publish<IDomainEvent>(changes);
+                    _eventStore.Save(changes);
 
-                aggregate.ClearUncommitedEvents();
+                    _eventPublisher.Publish<IDomainEvent>(changes);
+
+                    aggregate.ClearUncommitedEvents();
+                }
+
+                _aggregates.Clear();
+
+                _eventPublisher.Commit();
             }
+            catch (Exception)
+            {
+                if (!_externalTransaction)
+                {
+                    Rollback();
+                }
 
-            _aggregates.Clear();
-
-            _eventPublisher.Commit();
-
-            if (!InTransaction)
+                throw;
+            }
+            
+            if (!_externalTransaction)
             {
                 _eventStore.Commit();
             }

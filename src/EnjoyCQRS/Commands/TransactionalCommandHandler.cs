@@ -23,18 +23,9 @@ namespace EnjoyCQRS.Commands
 
         public void Execute(TCommand command)
         {
-            try
-            {
-                _commandHandler.Execute(command);
+            _commandHandler.Execute(command);
 
-                _unitOfWork.Commit();
-            }
-
-            catch (Exception)
-            {
-                _unitOfWork.Rollback();
-                throw;
-            }
+            _unitOfWork.Commit();
         }
     }
 }
