@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace EnjoyCQRS.EventSource.Storage
 {
-    public class AggregateTracker : IAggregateTracker
+    public class AggregateTracker
     {
         private readonly ConcurrentDictionary<Type, Dictionary<Guid, object>> _track = new ConcurrentDictionary<Type, Dictionary<Guid, object>>();
 
@@ -20,7 +20,7 @@ namespace EnjoyCQRS.EventSource.Storage
 
             return (TAggregate)aggregate;
         }
-
+        
         public void Add<TAggregate>(TAggregate aggregateRoot) where TAggregate : Aggregate
         {
             Dictionary<Guid, object> aggregates;

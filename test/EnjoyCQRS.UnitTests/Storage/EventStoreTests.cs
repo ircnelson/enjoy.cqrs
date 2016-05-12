@@ -18,17 +18,14 @@ namespace EnjoyCQRS.UnitTests.Storage
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository _repository;
         private readonly Mock<IEventPublisher> _mockEventPublisher;
-        private readonly IAggregateTracker _aggregateTracker;
 
         public EventStoreTests()
         {
             _mockEventPublisher = new Mock<IEventPublisher>();
             _mockEventPublisher.Setup(e => e.Publish(It.IsAny<IEnumerable<IDomainEvent>>()));
-
-            _aggregateTracker = new AggregateTracker();
             
-            var session = new Session(_aggregateTracker, _inMemoryDomainEventStore, _mockEventPublisher.Object);
-            _repository = new Repository(session, _aggregateTracker);
+            var session = new Session(_inMemoryDomainEventStore, _mockEventPublisher.Object);
+            _repository = new Repository(session);
 
             var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(e => e.Commit()).Callback(() =>

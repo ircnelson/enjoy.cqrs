@@ -58,7 +58,6 @@
     <Compile Include="EventSource\IUnitOfWork.cs" />
     <Compile Include="EventSource\Route.cs" />
     <Compile Include="EventSource\Storage\AggregateTracker.cs" />
-    <Compile Include="EventSource\Storage\IAggregateTracker.cs" />
     <Compile Include="EventSource\Storage\IEventStore.cs" />
     <Compile Include="EventSource\Storage\IRepository.cs" />
     <Compile Include="EventSource\Storage\ISession.cs" />

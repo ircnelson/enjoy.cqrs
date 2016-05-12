@@ -24,7 +24,7 @@ namespace EnjoyCQRS.IntegrationTests
         
         [Fact]
         [Trait(CategoryName, CategoryValue)]
-        public void Should_retrieves_the_aggregate_from_tracking()
+        public void Should_simulate_application()
         {
             using (var scope = _fixture.Container.BeginLifetimeScope())
             {
@@ -33,59 +33,13 @@ namespace EnjoyCQRS.IntegrationTests
                 DoDispatch(scope, command);
                 
                 var repository = scope.Resolve<IRepository>();
-                var aggregateTracker = scope.Resolve<IAggregateTracker>();
-
-                var aggregateFromTracking = aggregateTracker.GetById<FakePerson>(command.AggregateId);
-                var aggregateFromRepository = repository.GetById<FakePerson>(command.AggregateId);
                 
-                aggregateFromTracking.Should().BeSameAs(aggregateFromRepository);
+                var aggregateFromRepository = repository.GetById<FakePerson>(command.AggregateId);
+
+                aggregateFromRepository.Should().NotBeNull();
             }
         }
-
-        [Fact]
-        [Trait(CategoryName, CategoryValue)]
-        public void Aggregate_cannot_exists_in_tracking_on_another_scope()
-        {
-            var aggregateId = Guid.NewGuid();
-
-            using (var scope = _fixture.Container.BeginLifetimeScope())
-            {
-                var command = new CreateFakePersonCommand(aggregateId, "Fake");
-
-                DoDispatch(scope, command);
-            }
-
-            using (var scope = _fixture.Container.BeginLifetimeScope())
-            {
-                var aggregateTracker = scope.Resolve<IAggregateTracker>();
-                var aggregateFromTracking = aggregateTracker.GetById<FakePerson>(aggregateId);
-
-                aggregateFromTracking.Should().BeNull();
-            }
-        }
-
-        [Fact]
-        [Trait(CategoryName, CategoryValue)]
-        public void Should_retrieves_an_aggregate_from_EventStore_When_it_was_not_tracked()
-        {
-            var aggregateId = Guid.NewGuid();
-
-            using (var scope = _fixture.Container.BeginLifetimeScope())
-            {
-                var command = new CreateFakePersonCommand(aggregateId, "Fake");
-
-                DoDispatch(scope, command);
-            }
-
-            using (var scope = _fixture.Container.BeginLifetimeScope())
-            {
-                var aggregateTracker = scope.Resolve<IAggregateTracker>();
-                var aggregateFromTracking = aggregateTracker.GetById<FakePerson>(aggregateId);
-
-                aggregateFromTracking.Should().BeNull();
-            }
-        }
-
+        
         private void DoDispatch(ILifetimeScope scope, ICommand command)
         {
             if (scope == null) throw new ArgumentNullException(nameof(scope));

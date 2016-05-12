@@ -8,20 +8,20 @@ namespace EnjoyCQRS.EventSource.Storage
 {
     public class Session : ISession
     {
-        private readonly IAggregateTracker _aggregateTracker;
+        private readonly AggregateTracker _aggregateTracker;
         private readonly IEventStore _eventStore;
         private readonly IEventPublisher _eventPublisher;
         private readonly List<Aggregate> _aggregates = new List<Aggregate>();
 
         public bool InTransaction { get; private set; }
 
-        public Session(IAggregateTracker aggregateTracker, IEventStore eventStore, IEventPublisher eventPublisher)
+        public Session(IEventStore eventStore, IEventPublisher eventPublisher)
         {
-            _aggregateTracker = aggregateTracker;
+            _aggregateTracker = new AggregateTracker();
             _eventStore = eventStore;
             _eventPublisher = eventPublisher;
         }
-
+        
         /// <summary>
         /// Retrieves an aggregate, load your historical events and add to tracking.
         /// </summary>
@@ -31,11 +31,15 @@ namespace EnjoyCQRS.EventSource.Storage
         /// <exception cref="AggregateNotFoundException"></exception>
         public TAggregate GetById<TAggregate>(Guid id) where TAggregate : Aggregate, new()
         {
+            TAggregate aggregate = _aggregateTracker.GetById<TAggregate>(id);
+
+            if (aggregate != null) return aggregate;
+            
             var events = _eventStore.GetAllEvents(id);
 
             if (events == null) throw new AggregateNotFoundException(typeof(TAggregate).Name, id);
 
-            var aggregate = new TAggregate();
+            aggregate = new TAggregate();
 
             aggregate.LoadFromHistory(events);
 

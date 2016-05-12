@@ -16,7 +16,7 @@ namespace EnjoyCQRS.EventSource.Storage
         TAggregate GetById<TAggregate>(Guid id) where TAggregate : Aggregate, new();
 
         /// <summary>
-        /// Add an instance of <typeparam name="TAggregate"></typeparam> in event store.
+        /// Add an instance of <typeparam name="TAggregate"></typeparam>.
         /// </summary>
         /// <typeparam name="TAggregate"></typeparam>
         /// <param name="aggregate"></param>
