@@ -1,8 +1,10 @@
-﻿namespace EnjoyCQRS.Bus
+﻿using System.Threading.Tasks;
+
+namespace EnjoyCQRS.Bus
 {
     public interface ITransactionalMessageBus
     {
-        void Commit();
+        Task CommitAsync();
         void Rollback();
     }
 }

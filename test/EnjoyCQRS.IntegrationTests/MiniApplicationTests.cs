@@ -44,15 +44,15 @@ namespace EnjoyCQRS.IntegrationTests
             }
         }
         
-        private void DoDispatch(ILifetimeScope scope, ICommand command)
+        private async void DoDispatch(ILifetimeScope scope, ICommand command)
         {
             if (scope == null) throw new ArgumentNullException(nameof(scope));
             if (command == null) throw new ArgumentNullException(nameof(command));
 
             var commandDispatcher = scope.Resolve<ICommandDispatcher>();
 
-            commandDispatcher.Dispatch(command);
-            commandDispatcher.Commit();
+            await commandDispatcher.DispatchAsync(command);
+            await commandDispatcher.CommitAsync();
         }
     }
 }

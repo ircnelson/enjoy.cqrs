@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using EnjoyCQRS.Messages;
 
 namespace EnjoyCQRS.Bus.InProcess
 {
     public interface IQueue<TMessage>
     {
-        void Put(TMessage item);
-        void Pop(Action<TMessage> popAction);
+        Task PutAsync(TMessage item);
+        Task PopAsync(Action<TMessage> popAction);
     }
 
     public class InMemoryQueue<TMessage> : IQueue<TMessage>
@@ -22,7 +23,7 @@ namespace EnjoyCQRS.Bus.InProcess
             _listenerQueue = new Queue<Action<TMessage>>(32);
         }
 
-        public void Put(TMessage item)
+        public async Task PutAsync(TMessage item)
         {
             if (_listenerQueue.Count == 0)
             {
@@ -34,7 +35,7 @@ namespace EnjoyCQRS.Bus.InProcess
             listener(item);
         }
 
-        public void Pop(Action<TMessage> popAction)
+        public async Task PopAsync(Action<TMessage> popAction)
         {
             if (_itemQueue.Count == 0)
             {

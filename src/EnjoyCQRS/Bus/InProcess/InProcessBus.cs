@@ -14,33 +14,33 @@ namespace EnjoyCQRS.Bus.InProcess
         {   
             _preCommitQueue = new Queue<IMessage>(32);
             _postCommitQueue = new InMemoryQueue<IMessage>();
-            _postCommitQueue.Pop(DoPublish);
-        }
-        
-        protected void Send(IMessage command)
-        {
-            lock (_lockObject)
-            {
-                _preCommitQueue.Enqueue(command);
-            }
+
+            Initialize();
         }
 
-        protected void Send(IEnumerable<IMessage> messages)
+        private async void Initialize()
+        {
+            await _postCommitQueue.PopAsync(DoPublish);
+        }
+        
+        protected async Task SendAsync(IMessage command)
+        {
+            _preCommitQueue.Enqueue(command);
+        }
+
+        protected async Task SendAsync(IEnumerable<IMessage> messages)
         {
             foreach (var message in messages)
             {
-                Send(message);
+                await SendAsync(message);
             }
         }
         
-        public void Commit()
+        public async Task CommitAsync()
         {
-            lock (_lockObject)
+            while (_preCommitQueue.Count > 0)
             {
-                while (_preCommitQueue.Count > 0)
-                {
-                    _postCommitQueue.Put(_preCommitQueue.Dequeue());
-                }
+                await _postCommitQueue.PutAsync(_preCommitQueue.Dequeue());
             }
         }
 
@@ -54,15 +54,15 @@ namespace EnjoyCQRS.Bus.InProcess
 
         protected abstract Task RouteAsync(dynamic message);
 
-        private void DoPublish(dynamic message)
+        private async void DoPublish(dynamic message)
         {
             try
             {
-                RouteAsync(message);
+                await RouteAsync(message);
             }
             finally
             {
-                _postCommitQueue.Pop(DoPublish);
+                await _postCommitQueue.PopAsync(DoPublish);
             }
         }
     }

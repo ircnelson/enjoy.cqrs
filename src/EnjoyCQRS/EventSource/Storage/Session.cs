@@ -95,14 +95,14 @@ namespace EnjoyCQRS.EventSource.Storage
 
                     await _eventStore.SaveAsync(changes);
 
-                    _eventPublisher.Publish<IDomainEvent>(changes);
+                    await _eventPublisher.PublishAsync<IDomainEvent>(changes);
 
                     aggregate.ClearUncommitedEvents();
                 }
 
                 _aggregates.Clear();
 
-                _eventPublisher.Commit();
+                await _eventPublisher.CommitAsync();
             }
             catch (Exception)
             {

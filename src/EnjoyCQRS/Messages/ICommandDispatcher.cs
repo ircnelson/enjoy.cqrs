@@ -1,4 +1,5 @@
-﻿using EnjoyCQRS.Bus;
+﻿using System.Threading.Tasks;
+using EnjoyCQRS.Bus;
 using EnjoyCQRS.Commands;
 
 namespace EnjoyCQRS.Messages
@@ -8,6 +9,6 @@ namespace EnjoyCQRS.Messages
         /// <summary>
         /// Dispatch the command to the handler.
         /// </summary>
-        void Dispatch<TCommand>(TCommand command) where TCommand : ICommand;
+        Task DispatchAsync<TCommand>(TCommand command) where TCommand : ICommand;
     }
 }

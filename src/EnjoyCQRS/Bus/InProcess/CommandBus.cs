@@ -13,9 +13,9 @@ namespace EnjoyCQRS.Bus.InProcess
             _router = router;
         }
         
-        public void Dispatch<TCommand>(TCommand command) where TCommand : ICommand
+        public async Task DispatchAsync<TCommand>(TCommand command) where TCommand : ICommand
         {
-            Send(command);
+            await SendAsync(command);
         }
 
         protected override async Task RouteAsync(dynamic message)

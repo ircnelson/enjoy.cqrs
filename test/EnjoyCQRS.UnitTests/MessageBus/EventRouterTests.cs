@@ -18,7 +18,7 @@ namespace EnjoyCQRS.UnitTests.MessageBus
 
         [Fact]
         [Trait(CategoryName, CategoryValue)]
-        public void When_a_single_event_is_published_to_the_bus_containing_a_single_EventHandler()
+        public async void When_a_single_event_is_published_to_the_bus_containing_a_single_EventHandler()
         {
             var handler = new FirstTestEventHandler();
 
@@ -34,21 +34,21 @@ namespace EnjoyCQRS.UnitTests.MessageBus
                 {
                     action((TestEvent)@event);
                 }));
-            });
+            }).Returns(Task.CompletedTask);
 
             var testEvent = new TestEvent(Guid.NewGuid());
             
             EventBus directMessageBus = new EventBus(eventRouterMock.Object);
 
-            directMessageBus.Publish<IDomainEvent>(new[] { testEvent });
-            directMessageBus.Commit();
+            await directMessageBus.PublishAsync<IDomainEvent>(new[] { testEvent });
+            await directMessageBus.CommitAsync();
 
             handler.Ids.First().Should().Be(testEvent.AggregateId);
         }
 
         [Fact]
         [Trait(CategoryName, CategoryValue)]
-        public void When_a_single_event_is_published_to_the_bus_containing_multiple_EventHandlers()
+        public async void When_a_single_event_is_published_to_the_bus_containing_multiple_EventHandlers()
         {
             var handler1 = new FirstTestEventHandler();
             var handler2 = new SecondTestEventHandler();
@@ -64,16 +64,16 @@ namespace EnjoyCQRS.UnitTests.MessageBus
             {
                 handlers.ForEach((action =>
                 {
-                    action((TestEvent)@event);
+                    action((TestEvent) @event);
                 }));
-            });
+            }).Returns(Task.CompletedTask);
 
             EventBus directMessageBus = new EventBus(eventRouterMock.Object);
 
             var testEvent = new TestEvent(Guid.NewGuid());
 
-            directMessageBus.Publish<IDomainEvent>(new[] { testEvent });
-            directMessageBus.Commit();
+            await directMessageBus.PublishAsync<IDomainEvent>(new[] { testEvent });
+            await directMessageBus.CommitAsync();
 
             handler1.Ids.First().Should().Be(testEvent.AggregateId);
             handler2.Ids.First().Should().Be(testEvent.AggregateId);

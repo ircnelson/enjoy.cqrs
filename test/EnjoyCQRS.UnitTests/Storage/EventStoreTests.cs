@@ -24,7 +24,7 @@ namespace EnjoyCQRS.UnitTests.Storage
         public EventStoreTests()
         {
             _mockEventPublisher = new Mock<IEventPublisher>();
-            _mockEventPublisher.Setup(e => e.Publish(It.IsAny<IEnumerable<IDomainEvent>>()));
+            _mockEventPublisher.Setup(e => e.PublishAsync(It.IsAny<IEnumerable<IDomainEvent>>())).Returns(Task.CompletedTask);
             
             var session = new Session(_inMemoryDomainEventStore, _mockEventPublisher.Object);
             _repository = new Repository(session);
@@ -63,7 +63,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             await _repository.AddAsync(testAggregate);
             await _unitOfWork.CommitAsync();
 
-            _mockEventPublisher.Verify(e => e.Publish(It.IsAny<IEnumerable<IDomainEvent>>()));
+            _mockEventPublisher.Verify(e => e.PublishAsync(It.IsAny<IEnumerable<IDomainEvent>>()));
         }
 
         [Fact]

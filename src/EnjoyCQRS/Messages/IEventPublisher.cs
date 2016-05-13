@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using EnjoyCQRS.Bus;
 using EnjoyCQRS.Events;
 
@@ -9,11 +10,11 @@ namespace EnjoyCQRS.Messages
         /// <summary>
         /// Publishes the event to the handler(s).
         /// </summary>
-        void Publish<TEvent>(TEvent message) where TEvent : IDomainEvent;
+        Task PublishAsync<TEvent>(TEvent message) where TEvent : IDomainEvent;
 
         /// <summary>
         /// Publishes the event to the handler(s).
         /// </summary>
-        void Publish<TEvent>(IEnumerable<TEvent> messages) where TEvent : IDomainEvent;
+        Task PublishAsync<TEvent>(IEnumerable<TEvent> messages) where TEvent : IDomainEvent;
     }
 }

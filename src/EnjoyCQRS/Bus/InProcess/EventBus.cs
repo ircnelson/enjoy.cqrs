@@ -14,16 +14,16 @@ namespace EnjoyCQRS.Bus.InProcess
             _router = router;
         }
         
-        public void Publish<TEvent>(TEvent message) where TEvent : IDomainEvent
+        public async Task PublishAsync<TEvent>(TEvent message) where TEvent : IDomainEvent
         {
-            Send(message);
+            await SendAsync(message);
         }
 
-        public void Publish<TEvent>(IEnumerable<TEvent> messages) where TEvent : IDomainEvent
+        public async Task PublishAsync<TEvent>(IEnumerable<TEvent> messages) where TEvent : IDomainEvent
         {
             foreach (var message in messages)
             {
-                Send(message);
+                await SendAsync(message);
             }
         }
         
