@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource.Exceptions;
 using EnjoyCQRS.Messages;
@@ -14,7 +15,7 @@ namespace EnjoyCQRS.EventSource.Storage
         private readonly IEventPublisher _eventPublisher;
         private readonly List<Aggregate> _aggregates = new List<Aggregate>();
 
-        private bool _externalTransaction { get; set; }
+        private bool _externalTransaction;
 
         public Session(IEventStore eventStore, IEventPublisher eventPublisher)
         {
@@ -22,7 +23,7 @@ namespace EnjoyCQRS.EventSource.Storage
             _eventStore = eventStore;
             _eventPublisher = eventPublisher;
         }
-        
+
         /// <summary>
         /// Retrieves an aggregate, load your historical events and add to tracking.
         /// </summary>
@@ -30,13 +31,13 @@ namespace EnjoyCQRS.EventSource.Storage
         /// <param name="id"></param>
         /// <returns></returns>
         /// <exception cref="AggregateNotFoundException"></exception>
-        public TAggregate GetById<TAggregate>(Guid id) where TAggregate : Aggregate, new()
+        public async Task<TAggregate> GetByIdAsync<TAggregate>(Guid id) where TAggregate : Aggregate, new()
         {
             TAggregate aggregate = _aggregateTracker.GetById<TAggregate>(id);
 
             if (aggregate != null) return aggregate;
             
-            var events = _eventStore.GetAllEvents(id);
+            var events = await _eventStore.GetAllEventsAsync(id);
 
             if (events == null) throw new AggregateNotFoundException(typeof(TAggregate).Name, id);
 
@@ -54,9 +55,11 @@ namespace EnjoyCQRS.EventSource.Storage
         /// </summary>
         /// <typeparam name="TAggregate"></typeparam>
         /// <param name="aggregate"></param>
-        public void Add<TAggregate>(TAggregate aggregate) where TAggregate : Aggregate
+        public Task AddAsync<TAggregate>(TAggregate aggregate) where TAggregate : Aggregate
         {
             RegisterForTracking(aggregate);
+
+            return Task.CompletedTask;
         }
 
         public void BeginTransaction()
@@ -67,16 +70,18 @@ namespace EnjoyCQRS.EventSource.Storage
             _eventStore.BeginTransaction();
         }
 
-        public void Commit()
+        public Task CommitAsync()
         {
-            _eventStore.Commit();
+            _eventStore.CommitAsync();
             _externalTransaction = false;
+
+            return Task.CompletedTask;
         }
 
         /// <summary>
-        /// Call <see cref="IEventStore.Save"/> in <see cref="IEventStore"/> passing aggregates.
+        /// Call <see cref="IEventStore.SaveAsync"/> in <see cref="IEventStore"/> passing aggregates.
         /// </summary>
-        public virtual void SaveChanges()
+        public virtual Task SaveChangesAsync()
         {
             if (!_externalTransaction)
             {
@@ -90,7 +95,7 @@ namespace EnjoyCQRS.EventSource.Storage
                 {
                     var changes = aggregate.UncommitedEvents.ToList();
 
-                    _eventStore.Save(changes);
+                    _eventStore.SaveAsync(changes);
 
                     _eventPublisher.Publish<IDomainEvent>(changes);
 
@@ -113,8 +118,10 @@ namespace EnjoyCQRS.EventSource.Storage
             
             if (!_externalTransaction)
             {
-                _eventStore.Commit();
+                _eventStore.CommitAsync();
             }
+
+            return Task.CompletedTask;
         }
 
         /// <summary>

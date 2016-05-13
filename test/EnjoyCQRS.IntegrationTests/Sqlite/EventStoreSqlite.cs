@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
-using System.IO;
+using System.Linq;
 using System.Runtime.Serialization.Formatters;
+using System.Threading.Tasks;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource.Storage;
 using Newtonsoft.Json;
 
 namespace EnjoyCQRS.IntegrationTests.Sqlite
 {
-    public class EventStoreSqlite : IEventStore, IDisposable
+    public class EventStoreSqlite : IEventStore
     {
         public string FileName { get; }
         private SQLiteConnection Connection { get; set; }
@@ -32,13 +33,15 @@ namespace EnjoyCQRS.IntegrationTests.Sqlite
             Transaction = Connection.BeginTransaction();
         }
 
-        public void Commit()
+        public Task CommitAsync()
         {
             if (Transaction == null) throw new InvalidOperationException("The transaction is not open.");
 
             Transaction.Commit();
             
             Connection.Close();
+
+            return Task.CompletedTask;
         }
 
         public void Rollback()
@@ -47,7 +50,7 @@ namespace EnjoyCQRS.IntegrationTests.Sqlite
                 Transaction.Rollback();
         }
 
-        public IEnumerable<IDomainEvent> GetAllEvents(Guid id)
+        public Task<IEnumerable<IDomainEvent>> GetAllEventsAsync(Guid id)
         {
             var command = Connection.CreateCommand();
             command.CommandText = "SELECT Body FROM Events WHERE AggregateId = @AggregateId ORDER BY Version ASC";
@@ -66,10 +69,10 @@ namespace EnjoyCQRS.IntegrationTests.Sqlite
                 }
             }
 
-            return events;
+            return Task.FromResult(events.AsEnumerable());
         }
         
-        public void Save(IEnumerable<IDomainEvent> events)
+        public Task SaveAsync(IEnumerable<IDomainEvent> events)
         {
             var command = Connection.CreateCommand();
             command.CommandText = "INSERT INTO Events (Id, AggregateId, Timestamp, EventTypeName, Body, Version) VALUES (@Id, @AggregateId, @Timestamp, @EventTypeName, @Body, @Version)";
@@ -96,6 +99,8 @@ namespace EnjoyCQRS.IntegrationTests.Sqlite
                     command.ExecuteNonQuery();
                 }
             }
+
+            return Task.CompletedTask;
         }
         
         private static string Serialize(IDomainEvent @event)

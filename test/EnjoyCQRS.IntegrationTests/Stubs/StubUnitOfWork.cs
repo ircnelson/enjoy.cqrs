@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Storage;
 
@@ -13,15 +14,15 @@ namespace EnjoyCQRS.IntegrationTests.Stubs
             _session = session;
         }
 
-        public void Commit()
+        public Task CommitAsync()
         {
             try
             {
                 _session.BeginTransaction();
 
-                _session.SaveChanges();
+                _session.SaveChangesAsync();
 
-                _session.Commit();
+                _session.CommitAsync();
             }
             catch (Exception)
             {
@@ -29,6 +30,7 @@ namespace EnjoyCQRS.IntegrationTests.Stubs
                 throw;
             }
             
+            return Task.CompletedTask;
         }
     }
 }

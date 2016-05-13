@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource.Storage;
-using Newtonsoft.Json;
 
 namespace EnjoyCQRS.UnitTests.Storage
 {
@@ -17,11 +17,13 @@ namespace EnjoyCQRS.UnitTests.Storage
             InTransaction = true;
         }
 
-        public void Commit()
+        public Task CommitAsync()
         {
             if (!InTransaction) throw new InvalidOperationException("You are not in transaction.");
 
             InTransaction = false;
+
+            return Task.CompletedTask;
         }
 
         public void Rollback()
@@ -29,19 +31,19 @@ namespace EnjoyCQRS.UnitTests.Storage
             InTransaction = false;
         }
 
-        public IEnumerable<IDomainEvent> GetAllEvents(Guid id)
+        public Task<IEnumerable<IDomainEvent>> GetAllEventsAsync(Guid id)
         {
             if (EventStore.ContainsKey(id))
             {
                 var events = EventStore[id];
 
-                return events;
+                return Task.FromResult(events.AsEnumerable());
             }
 
-            return Enumerable.Empty<IDomainEvent>();
+            return Task.FromResult(Enumerable.Empty<IDomainEvent>());
         }
         
-        public void Save(IEnumerable<IDomainEvent> events)
+        public Task SaveAsync(IEnumerable<IDomainEvent> events)
         {
             foreach (var @event in events)
             {
@@ -56,6 +58,8 @@ namespace EnjoyCQRS.UnitTests.Storage
                 }
                 list.Add(@event);
             }
+
+            return Task.CompletedTask;
             
             //else
             //{
@@ -69,6 +73,10 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             //    existingEvents.AddRange(events);
             //}
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

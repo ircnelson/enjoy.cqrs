@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Threading.Tasks;
 using Autofac;
 using EnjoyCQRS.Bus;
 using EnjoyCQRS.Commands;
@@ -14,10 +14,10 @@ namespace EnjoyCQRS.IntegrationTests.Stubs
             _scope = scope;
         }
         
-        public void Route<TCommand>(TCommand command) where TCommand : ICommand
+        public async Task RouteAsync<TCommand>(TCommand command) where TCommand : ICommand
         {
             var handler = _scope.Resolve<ICommandHandler<TCommand>>();
-            handler.Execute(command);
+            await handler.ExecuteAsync(command);
         }
     }
 }

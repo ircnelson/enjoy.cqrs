@@ -1,9 +1,10 @@
-﻿using EnjoyCQRS.Commands;
+﻿using System.Threading.Tasks;
+using EnjoyCQRS.Commands;
 
 namespace EnjoyCQRS.Bus
 {
     public interface ICommandRouter
     {
-        void Route<TCommand>(TCommand command) where TCommand : ICommand;
+        Task RouteAsync<TCommand>(TCommand command) where TCommand : ICommand;
     }
 }

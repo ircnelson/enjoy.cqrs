@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using EnjoyCQRS.Events;
 
 namespace EnjoyCQRS.EventSource.Storage
@@ -7,7 +8,7 @@ namespace EnjoyCQRS.EventSource.Storage
     /// <summary>
     /// Event Store repository abstraction.
     /// </summary>
-    public interface IEventStore
+    public interface IEventStore : IDisposable
     {
         /// <summary>
         /// Start the transaction.
@@ -17,7 +18,7 @@ namespace EnjoyCQRS.EventSource.Storage
         /// <summary>
         /// Confirm modifications.
         /// </summary>
-        void Commit();
+        Task CommitAsync();
 
         /// <summary>
         /// Revert modifications.
@@ -29,12 +30,12 @@ namespace EnjoyCQRS.EventSource.Storage
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        IEnumerable<IDomainEvent> GetAllEvents(Guid id);
+        Task<IEnumerable<IDomainEvent>> GetAllEventsAsync(Guid id);
 
         /// <summary>
         /// Save the events in Event Store.
         /// </summary>
         /// <param name="events"></param>
-        void Save(IEnumerable<IDomainEvent> events);
+        Task SaveAsync(IEnumerable<IDomainEvent> events);
     }
 }

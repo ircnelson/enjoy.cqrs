@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Threading.Tasks;
 using Autofac;
 using EnjoyCQRS.Commands;
 using EnjoyCQRS.EventSource.Storage;
@@ -25,7 +25,7 @@ namespace EnjoyCQRS.IntegrationTests
         
         [Fact]
         [Trait(CategoryName, CategoryValue)]
-        public void Should_simulate_application()
+        public async Task Should_simulate_application()
         {
             using (var scope = _fixture.Container.BeginLifetimeScope())
             {
@@ -35,7 +35,7 @@ namespace EnjoyCQRS.IntegrationTests
                 
                 var repository = scope.Resolve<IRepository>();
                 
-                var aggregateFromRepository = repository.GetById<FakePerson>(command.AggregateId);
+                var aggregateFromRepository = await repository.GetByIdAsync<FakePerson>(command.AggregateId);
 
                 aggregateFromRepository.Should().NotBeNull();
 

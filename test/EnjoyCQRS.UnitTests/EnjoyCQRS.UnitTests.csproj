@@ -84,6 +84,8 @@
     <Compile Include="Domain\Not_registered_event_in_aggregate.cs" />
     <Compile Include="Domain\Registered_event_in_aggregate.cs" />
     <Compile Include="Domain\StubAggregate.cs" />
+    <Compile Include="Handlers\CommandHandlerTests.cs" />
+    <Compile Include="Handlers\EventHandlerTests.cs" />
     <Compile Include="MessageBus\EventRouterTests.cs" />
     <Compile Include="MessageBus\CommandRouterTests.cs" />
     <Compile Include="Storage\EventStoreTests.cs" />

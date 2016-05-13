@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using EnjoyCQRS.Bus;
 using EnjoyCQRS.Bus.InProcess;
 using EnjoyCQRS.Events;
@@ -23,11 +24,11 @@ namespace EnjoyCQRS.UnitTests.MessageBus
 
             var handlers = new List<Action<TestEvent>>
             {
-                evt => handler.Execute(evt)
+                evt => handler.ExecuteAsync(evt)
             };
 
             Mock<IEventRouter> eventRouterMock = new Mock<IEventRouter>();
-            eventRouterMock.Setup(e => e.Route(It.IsAny<TestEvent>())).Callback((IDomainEvent @event) =>
+            eventRouterMock.Setup(e => e.RouteAsync(It.IsAny<TestEvent>())).Callback((IDomainEvent @event) =>
             {
                 handlers.ForEach((action =>
                 {
@@ -54,12 +55,12 @@ namespace EnjoyCQRS.UnitTests.MessageBus
 
             var handlers = new List<Action<TestEvent>>
             {
-                evt => handler1.Execute(evt),
-                evt => handler2.Execute(evt)
+                evt => handler1.ExecuteAsync(evt),
+                evt => handler2.ExecuteAsync(evt)
             };
 
             Mock<IEventRouter> eventRouterMock = new Mock<IEventRouter>();
-            eventRouterMock.Setup(e => e.Route(It.IsAny<TestEvent>())).Callback((IDomainEvent @event) =>
+            eventRouterMock.Setup(e => e.RouteAsync(It.IsAny<TestEvent>())).Callback((IDomainEvent @event) =>
             {
                 handlers.ForEach((action =>
                 {
@@ -82,9 +83,11 @@ namespace EnjoyCQRS.UnitTests.MessageBus
         {
             public List<Guid> Ids { get; } = new List<Guid>();
 
-            public void Execute(TestEvent @event)
+            public Task ExecuteAsync(TestEvent @event)
             {
                 Ids.Add(@event.AggregateId);
+
+                return Task.CompletedTask;
             }
         }
 
@@ -92,9 +95,11 @@ namespace EnjoyCQRS.UnitTests.MessageBus
         {
             public List<Guid> Ids { get; } = new List<Guid>();
 
-            public void Execute(TestEvent @event)
+            public Task ExecuteAsync(TestEvent @event)
             {
                 Ids.Add(@event.AggregateId);
+
+                return Task.CompletedTask;
             }
         }
 

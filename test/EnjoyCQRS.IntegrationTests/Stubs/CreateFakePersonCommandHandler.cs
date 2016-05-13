@@ -1,4 +1,5 @@
-﻿using EnjoyCQRS.Commands;
+﻿using System.Threading.Tasks;
+using EnjoyCQRS.Commands;
 using EnjoyCQRS.EventSource.Storage;
 
 namespace EnjoyCQRS.IntegrationTests.Stubs
@@ -12,11 +13,13 @@ namespace EnjoyCQRS.IntegrationTests.Stubs
             _repository = repository;
         }
 
-        public void Execute(CreateFakePersonCommand command)
+        public Task ExecuteAsync(CreateFakePersonCommand command)
         {
             var fakePerson = new FakePerson(command.AggregateId, command.Name);
 
-            _repository.Add(fakePerson);
+            _repository.AddAsync(fakePerson);
+
+            return Task.CompletedTask;
         }
     }
 }

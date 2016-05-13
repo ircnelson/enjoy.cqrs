@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Storage;
@@ -29,51 +30,53 @@ namespace EnjoyCQRS.UnitTests.Storage
             _repository = new Repository(session);
 
             var unitOfWorkMock = new Mock<IUnitOfWork>();
-            unitOfWorkMock.Setup(e => e.Commit()).Callback(() =>
-            {
-                session.SaveChanges();
-            });
+            unitOfWorkMock.Setup(e => e.CommitAsync())
+                .Callback(async () =>
+                {
+                    await session.SaveChangesAsync();
+                })
+                .Returns(Task.CompletedTask);
 
             _unitOfWork = unitOfWorkMock.Object;
         }
 
         [Fact]
         [Trait(CategoryName, CategoryValue)]
-        public void When_calling_Save_it_will_add_the_domain_events_to_the_domain_event_storage()
+        public async Task When_calling_Save_it_will_add_the_domain_events_to_the_domain_event_storage()
         {
             var testAggregate = StubAggregate.Create();
             testAggregate.DoSomething("Heisenberg");
 
-            _repository.Add(testAggregate);
-            _unitOfWork.Commit();
+            await _repository.AddAsync(testAggregate);
+            await _unitOfWork.CommitAsync();
 
             _inMemoryDomainEventStore.EventStore[testAggregate.Id].Count.Should().Be(2);
         }
 
         [Fact]
         [Trait(CategoryName, CategoryValue)]
-        public void When_calling_Save_the_uncommited_events_should_be_published()
+        public async Task When_calling_Save_the_uncommited_events_should_be_published()
         {
             var testAggregate = StubAggregate.Create();
             testAggregate.DoSomething("Heisenberg");
 
-            _repository.Add(testAggregate);
-            _unitOfWork.Commit();
+            await _repository.AddAsync(testAggregate);
+            await _unitOfWork.CommitAsync();
 
             _mockEventPublisher.Verify(e => e.Publish(It.IsAny<IEnumerable<IDomainEvent>>()));
         }
 
         [Fact]
         [Trait(CategoryName, CategoryValue)]
-        public void When_load_aggregate_should_be_correct_version()
+        public async Task When_load_aggregate_should_be_correct_version()
         {
             var testAggregate = StubAggregate.Create();
             testAggregate.DoSomething("Heisenberg");
 
-            _repository.Add(testAggregate);
-            _unitOfWork.Commit();
+            await _repository.AddAsync(testAggregate);
+            await _unitOfWork.CommitAsync();
 
-            var testAggregate2 = _repository.GetById<StubAggregate>(testAggregate.Id);
+            var testAggregate2 = await _repository.GetByIdAsync<StubAggregate>(testAggregate.Id);
             
             testAggregate.Version.Should().Be(testAggregate2.Version);
         }

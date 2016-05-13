@@ -1,4 +1,5 @@
-﻿using EnjoyCQRS.Commands;
+﻿using System.Threading.Tasks;
+using EnjoyCQRS.Commands;
 using EnjoyCQRS.EventSource.Storage;
 
 namespace EnjoyCQRS.IntegrationTests.Stubs
@@ -12,12 +13,12 @@ namespace EnjoyCQRS.IntegrationTests.Stubs
             _repository = repository;
         }
 
-        public void Execute(ChangeNameCommand command)
+        public async Task ExecuteAsync(ChangeNameCommand command)
         {
-            var aggregate = _repository.GetById<FakePerson>(command.AggregateId);
+            var aggregate = await _repository.GetByIdAsync<FakePerson>(command.AggregateId);
             aggregate.ChangeName(command.Name);
 
-            _repository.Add(aggregate);
+            await _repository.AddAsync(aggregate);
         }
     }
 }

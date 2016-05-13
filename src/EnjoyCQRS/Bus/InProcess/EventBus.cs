@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.Messages;
 
@@ -26,9 +27,9 @@ namespace EnjoyCQRS.Bus.InProcess
             }
         }
         
-        protected override void Route(dynamic message)
+        protected override Task RouteAsync(dynamic message)
         {
-            _router.Route(message);
+            return _router.RouteAsync(message);
         }
     }
 }

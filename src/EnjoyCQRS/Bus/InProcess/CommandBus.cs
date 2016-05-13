@@ -1,4 +1,5 @@
-﻿using EnjoyCQRS.Commands;
+﻿using System.Threading.Tasks;
+using EnjoyCQRS.Commands;
 using EnjoyCQRS.Messages;
 
 namespace EnjoyCQRS.Bus.InProcess
@@ -17,9 +18,9 @@ namespace EnjoyCQRS.Bus.InProcess
             Send(command);
         }
 
-        protected override void Route(dynamic message)
+        protected override Task RouteAsync(dynamic message)
         {
-            _router.Route(message);
+            return _router.RouteAsync(message);
         }
     }
 }

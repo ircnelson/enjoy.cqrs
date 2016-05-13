@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using EnjoyCQRS.Bus;
 using EnjoyCQRS.Bus.InProcess;
 using EnjoyCQRS.Commands;
@@ -24,11 +25,11 @@ namespace EnjoyCQRS.UnitTests.MessageBus
 
             List<Action<TestCommand>> handlers = new List<Action<TestCommand>>
             {
-                command => handler.Execute(command)
+                command => handler.ExecuteAsync(command)
             };
 
             Mock<ICommandRouter> commandRouterMock = new Mock<ICommandRouter>();
-            commandRouterMock.Setup(e => e.Route(It.IsAny<TestCommand>())).Callback((ICommand command) =>
+            commandRouterMock.Setup(e => e.RouteAsync(It.IsAny<TestCommand>())).Callback((ICommand command) =>
             {
                 handlers.ForEach((action =>
                 {
@@ -54,12 +55,12 @@ namespace EnjoyCQRS.UnitTests.MessageBus
 
             List<Action<TestCommand>> handlers = new List<Action<TestCommand>>
             {
-                command => handler1.Execute(command),
-                command => handler2.Execute(command)
+                command => handler1.ExecuteAsync(command),
+                command => handler2.ExecuteAsync(command)
             };
 
             Mock<ICommandRouter> commandRouterMock = new Mock<ICommandRouter>();
-            commandRouterMock.Setup(e => e.Route(It.IsAny<TestCommand>())).Callback((ICommand command) =>
+            commandRouterMock.Setup(e => e.RouteAsync(It.IsAny<TestCommand>())).Callback((ICommand command) =>
             {
                 handlers.ForEach((action =>
                 {
@@ -82,9 +83,11 @@ namespace EnjoyCQRS.UnitTests.MessageBus
         {
             public List<Guid> Ids { get; } = new List<Guid>();
 
-            public void Execute(TestCommand command)
+            public Task ExecuteAsync(TestCommand command)
             {
                 Ids.Add(command.AggregateId);
+
+                return Task.CompletedTask;
             }
         }
 
@@ -92,9 +95,11 @@ namespace EnjoyCQRS.UnitTests.MessageBus
         {
             public List<Guid> Ids { get; } = new List<Guid>();
 
-            public void Execute(TestCommand command)
+            public Task ExecuteAsync(TestCommand command)
             {
                 Ids.Add(command.AggregateId);
+
+                return Task.CompletedTask;
             }
         }
 

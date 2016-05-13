@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using EnjoyCQRS.Messages;
 
 namespace EnjoyCQRS.Bus.InProcess
@@ -16,7 +17,7 @@ namespace EnjoyCQRS.Bus.InProcess
             _postCommitQueue.Pop(DoPublish);
         }
         
-        public void Send(IMessage command)
+        protected void Send(IMessage command)
         {
             lock (_lockObject)
             {
@@ -24,7 +25,7 @@ namespace EnjoyCQRS.Bus.InProcess
             }
         }
 
-        public void Send(IEnumerable<IMessage> messages)
+        protected void Send(IEnumerable<IMessage> messages)
         {
             foreach (var message in messages)
             {
@@ -51,13 +52,13 @@ namespace EnjoyCQRS.Bus.InProcess
             }
         }
 
-        protected abstract void Route(dynamic message);
+        protected abstract Task RouteAsync(dynamic message);
 
         private void DoPublish(dynamic message)
         {
             try
             {
-                Route(message);
+                RouteAsync(message);
             }
             finally
             {

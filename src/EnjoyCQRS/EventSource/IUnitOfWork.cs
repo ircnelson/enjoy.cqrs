@@ -1,4 +1,6 @@
-﻿namespace EnjoyCQRS.EventSource
+﻿using System.Threading.Tasks;
+
+namespace EnjoyCQRS.EventSource
 {
     /// <summary>
     /// Abstraction of the Unit of work.
@@ -8,6 +10,6 @@
         /// <summary>
         /// Save modifications.
         /// </summary>
-        void Commit();
+        Task CommitAsync();
     }
 }

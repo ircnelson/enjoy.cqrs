@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Autofac;
 using EnjoyCQRS.Bus;
 using EnjoyCQRS.Events;
@@ -14,15 +15,17 @@ namespace EnjoyCQRS.IntegrationTests.Stubs
             _scope = scope;
         }
         
-        public void Route<TEvent>(TEvent @event) 
+        public Task RouteAsync<TEvent>(TEvent @event) 
             where TEvent : IDomainEvent
         {
             var handlers = _scope.ResolveOptional<IEnumerable<IEventHandler<TEvent>>>();
 
             foreach (var handler in handlers)
             {
-                handler.Execute(@event);
+                handler.ExecuteAsync(@event);
             }
+
+            return Task.CompletedTask;
         }
     }
 }

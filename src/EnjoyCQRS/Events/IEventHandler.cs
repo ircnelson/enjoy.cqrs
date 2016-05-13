@@ -1,8 +1,9 @@
-﻿namespace EnjoyCQRS.Events
+﻿using System.Threading.Tasks;
+
+namespace EnjoyCQRS.Events
 {
-    public interface IEventHandler<TEvent>
-        where TEvent : IDomainEvent
+    public interface IEventHandler<TEvent> where TEvent : IDomainEvent
     {
-        void Execute(TEvent @event);
+        Task ExecuteAsync(TEvent @event);
     }
 }

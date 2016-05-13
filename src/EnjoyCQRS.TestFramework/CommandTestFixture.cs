@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using EnjoyCQRS.Commands;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource;
@@ -35,16 +36,16 @@ namespace EnjoyCQRS.TestFramework
             AggregateRoot = new TAggregateRoot();
             AggregateRoot.LoadFromHistory(Given());
 
-            CommandHandler = BuildCommandHandler();
+            CommandHandler = BuildHandler();
 
             SetupDependencies();
 
             try
             {
-                CommandHandler.Execute(When());
+                CommandHandler.ExecuteAsync(When());
                 PublishedEvents = AggregateRoot.UncommitedEvents;
             }
-            catch (Exception exception) when(!(exception is UnregisteredDomainEventException))
+            catch (Exception exception)
             {
                 CaughtException = exception;
             }
@@ -59,7 +60,7 @@ namespace EnjoyCQRS.TestFramework
             return (Mock<TType>)_mocks[typeof(TType)];
         }
 
-        private TCommandHandler BuildCommandHandler()
+        private TCommandHandler BuildHandler()
         {
             var constructorInfo = typeof(TCommandHandler).GetConstructors().First();
 
@@ -68,8 +69,8 @@ namespace EnjoyCQRS.TestFramework
                 if (parameter.ParameterType == typeof(IRepository))
                 {
                     var repositoryMock = new Mock<IRepository>();
-                    repositoryMock.Setup(x => x.GetById<TAggregateRoot>(It.IsAny<Guid>())).Returns(AggregateRoot);
-                    repositoryMock.Setup(x => x.Add(It.IsAny<TAggregateRoot>())).Callback<TAggregateRoot>(x => AggregateRoot = x);
+                    repositoryMock.Setup(x => x.GetByIdAsync<TAggregateRoot>(It.IsAny<Guid>())).Returns(Task.FromResult(AggregateRoot));
+                    repositoryMock.Setup(x => x.AddAsync(It.IsAny<TAggregateRoot>())).Callback<TAggregateRoot>(x => AggregateRoot = x);
                     _mocks.Add(parameter.ParameterType, repositoryMock);
                     continue;
                 }
@@ -85,10 +86,6 @@ namespace EnjoyCQRS.TestFramework
             var constructorInfo = typeof(Mock<>).MakeGenericType(type).GetConstructors().First();
             return constructorInfo.Invoke(new object[] { });
         }
-    }
-
-    public class UnregisteredDomainEventException : Exception
-    {
     }
 
     public class ThereWasNoExceptionButOneWasExpectedException : Exception { }
@@ -112,7 +109,11 @@ namespace EnjoyCQRS.TestFramework
 
         public IDomainEvent ToVersion(int version)
         {
-            ((DomainEvent) _domainEvent).Version = version;
+            if (_domainEvent is DomainEvent)
+            {
+                ((DomainEvent) _domainEvent).Version = version;
+            }
+
             return _domainEvent;
         }
     }

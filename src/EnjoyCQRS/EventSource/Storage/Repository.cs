@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace EnjoyCQRS.EventSource.Storage
 {
@@ -11,14 +12,14 @@ namespace EnjoyCQRS.EventSource.Storage
             _session = session;
         }
 
-        public void Add<TAggregate>(TAggregate aggregate) where TAggregate : Aggregate
+        public async Task AddAsync<TAggregate>(TAggregate aggregate) where TAggregate : Aggregate
         {
-            _session.Add(aggregate);
+            await _session.AddAsync(aggregate);
         }
 
-        public TAggregate GetById<TAggregate>(Guid id) where TAggregate : Aggregate, new()
+        public Task<TAggregate> GetByIdAsync<TAggregate>(Guid id) where TAggregate : Aggregate, new()
         {
-            return _session.GetById<TAggregate>(id);
+            return _session.GetByIdAsync<TAggregate>(id);
         }
     }
 }

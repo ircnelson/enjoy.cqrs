@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using EnjoyCQRS.EventSource;
 
 namespace EnjoyCQRS.Commands
@@ -21,11 +22,11 @@ namespace EnjoyCQRS.Commands
             _unitOfWork = unitOfWork;
         }
 
-        public void Execute(TCommand command)
+        public async Task ExecuteAsync(TCommand command)
         {
-            _commandHandler.Execute(command);
+            await _commandHandler.ExecuteAsync(command);
 
-            _unitOfWork.Commit();
+            await _unitOfWork.CommitAsync();
         }
     }
 }
