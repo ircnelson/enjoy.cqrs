@@ -49,7 +49,6 @@
     <Compile Include="Commands\TransactionalCommandHandler.cs" />
     <Compile Include="EventSource\Exceptions\AggregateNotFoundException.cs" />
     <Compile Include="Messages\IEventPublisher.cs" />
-    <Compile Include="Bus\InProcess\RouteNotRegisteredException.cs" />
     <Compile Include="Bus\ITransactionalMessageBus.cs" />
     <Compile Include="Commands\Command.cs" />
     <Compile Include="Commands\ICommand.cs" />
