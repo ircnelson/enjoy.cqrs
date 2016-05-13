@@ -27,9 +27,9 @@ namespace EnjoyCQRS.Bus.InProcess
             }
         }
         
-        protected override Task RouteAsync(dynamic message)
+        protected override async Task RouteAsync(dynamic message)
         {
-            return _router.RouteAsync(message);
+            await _router.RouteAsync(message);
         }
     }
 }

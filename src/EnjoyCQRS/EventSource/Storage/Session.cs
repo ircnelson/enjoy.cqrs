@@ -55,13 +55,11 @@ namespace EnjoyCQRS.EventSource.Storage
         /// </summary>
         /// <typeparam name="TAggregate"></typeparam>
         /// <param name="aggregate"></param>
-        public Task AddAsync<TAggregate>(TAggregate aggregate) where TAggregate : Aggregate
+        public async Task AddAsync<TAggregate>(TAggregate aggregate) where TAggregate : Aggregate
         {
             CheckConcurrency(aggregate);
 
             RegisterForTracking(aggregate);
-
-            return Task.CompletedTask;
         }
 
         public void BeginTransaction()
@@ -72,18 +70,16 @@ namespace EnjoyCQRS.EventSource.Storage
             _eventStore.BeginTransaction();
         }
 
-        public Task CommitAsync()
+        public async Task CommitAsync()
         {
-            _eventStore.CommitAsync();
+            await _eventStore.CommitAsync();
             _externalTransaction = false;
-
-            return Task.CompletedTask;
         }
 
         /// <summary>
         /// Call <see cref="IEventStore.SaveAsync"/> in <see cref="IEventStore"/> passing aggregates.
         /// </summary>
-        public virtual Task SaveChangesAsync()
+        public virtual async Task SaveChangesAsync()
         {
             if (!_externalTransaction)
             {
@@ -97,7 +93,7 @@ namespace EnjoyCQRS.EventSource.Storage
                 {
                     var changes = aggregate.UncommitedEvents.ToList();
 
-                    _eventStore.SaveAsync(changes);
+                    await _eventStore.SaveAsync(changes);
 
                     _eventPublisher.Publish<IDomainEvent>(changes);
 
@@ -120,10 +116,8 @@ namespace EnjoyCQRS.EventSource.Storage
             
             if (!_externalTransaction)
             {
-                _eventStore.CommitAsync();
+                await _eventStore.CommitAsync();
             }
-
-            return Task.CompletedTask;
         }
 
         /// <summary>
