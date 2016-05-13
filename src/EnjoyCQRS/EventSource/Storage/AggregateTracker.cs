@@ -8,7 +8,7 @@ namespace EnjoyCQRS.EventSource.Storage
     {
         private readonly ConcurrentDictionary<Type, Dictionary<Guid, object>> _track = new ConcurrentDictionary<Type, Dictionary<Guid, object>>();
 
-        public TAggregate GetById<TAggregate>(Guid id) where TAggregate : Aggregate, new()
+        public TAggregate GetById<TAggregate>(Guid id) where TAggregate : Aggregate
         {
             Dictionary<Guid, object> aggregates;
             if (!_track.TryGetValue(typeof(TAggregate), out aggregates))

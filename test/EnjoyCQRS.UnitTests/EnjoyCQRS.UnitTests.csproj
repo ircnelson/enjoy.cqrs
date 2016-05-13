@@ -89,6 +89,7 @@
     <Compile Include="MessageBus\EventRouterTests.cs" />
     <Compile Include="MessageBus\CommandRouterTests.cs" />
     <Compile Include="Storage\EventStoreTests.cs" />
+    <Compile Include="Storage\SessionTests.cs" />
     <Compile Include="Storage\StubEventStore.cs" />
     <Compile Include="Domain\Increment_the_EventVersion_When_new_events_are_applied.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

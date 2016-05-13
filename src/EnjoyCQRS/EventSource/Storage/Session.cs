@@ -57,6 +57,8 @@ namespace EnjoyCQRS.EventSource.Storage
         /// <param name="aggregate"></param>
         public Task AddAsync<TAggregate>(TAggregate aggregate) where TAggregate : Aggregate
         {
+            CheckConcurrency(aggregate);
+
             RegisterForTracking(aggregate);
 
             return Task.CompletedTask;
@@ -145,6 +147,18 @@ namespace EnjoyCQRS.EventSource.Storage
         {
             _aggregates.Add(aggregateRoot);
             _aggregateTracker.Add(aggregateRoot);
+        }
+
+        private void CheckConcurrency<TAggregate>(TAggregate aggregateRoot) where TAggregate : Aggregate
+        {
+            var trackedAggregate = _aggregateTracker.GetById<TAggregate>(aggregateRoot.Id);
+
+            if (trackedAggregate == null) return;
+
+            if (trackedAggregate.Version != aggregateRoot.Version)
+            {
+                throw new ExpectedVersionException<TAggregate>(aggregateRoot, trackedAggregate.Version);
+            }
         }
     }
 }

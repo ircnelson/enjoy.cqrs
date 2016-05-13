@@ -55,7 +55,7 @@
     <Compile Include="Commands\ICommandHandler.cs" />
     <Compile Include="EventSource\Aggregate.cs" />
     <Compile Include="EventSource\Exceptions\HandleNotFound.cs" />
-    <Compile Include="EventSource\Exceptions\WrongExpectedVersionException.cs" />
+    <Compile Include="EventSource\Exceptions\ExpectedVersionException.cs" />
     <Compile Include="EventSource\IUnitOfWork.cs" />
     <Compile Include="EventSource\Route.cs" />
     <Compile Include="EventSource\Storage\AggregateTracker.cs" />
