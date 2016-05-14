@@ -39,17 +39,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Bus\InProcess\CommandBus.cs" />
-    <Compile Include="Bus\InProcess\EventBus.cs" />
-    <Compile Include="Bus\InProcess\InProcessBus.cs" />
-    <Compile Include="Bus\InProcess\InMemoryQueue.cs" />
-    <Compile Include="Bus\ICommandRouter.cs" />
+    <Compile Include="Bus\InProcess\EventPublisher.cs" />
     <Compile Include="Bus\IEventRouter.cs" />
     <Compile Include="Messages\ICommandDispatcher.cs" />
     <Compile Include="Commands\TransactionalCommandHandler.cs" />
     <Compile Include="EventSource\Exceptions\AggregateNotFoundException.cs" />
     <Compile Include="Messages\IEventPublisher.cs" />
-    <Compile Include="Bus\ITransactionalMessageBus.cs" />
     <Compile Include="Commands\Command.cs" />
     <Compile Include="Commands\ICommand.cs" />
     <Compile Include="Commands\ICommandHandler.cs" />

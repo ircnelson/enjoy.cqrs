@@ -82,7 +82,6 @@
     <Compile Include="Fixtures\MiniApplicationFixture.cs" />
     <Compile Include="Stubs\ChangeNameCommand.cs" />
     <Compile Include="Stubs\ChangeNameCommandHandler.cs" />
-    <Compile Include="Stubs\CommandRouter.cs" />
     <Compile Include="Extensions\CustomRegistrationExtensions.cs" />
     <Compile Include="Stubs\EventRouter.cs" />
     <Compile Include="MiniApplicationTests.cs" />
@@ -95,6 +94,7 @@
     <Compile Include="Stubs\FakePersonCreatedEvent.cs" />
     <Compile Include="Stubs\FakePersonCreatedEventHandler.cs" />
     <Compile Include="Stubs\NameChangedEvent.cs" />
+    <Compile Include="Stubs\StubCommandBus.cs" />
     <Compile Include="Stubs\StubUnitOfWork.cs" />
   </ItemGroup>
   <ItemGroup>

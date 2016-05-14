@@ -1,21 +1,19 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EnjoyCQRS.Bus;
-using EnjoyCQRS.Bus.InProcess;
 using EnjoyCQRS.Commands;
+using EnjoyCQRS.Messages;
 using FluentAssertions;
 using Moq;
 using Xunit;
 
 namespace EnjoyCQRS.UnitTests.MessageBus
 {
-    public class CommandRouterTests
+    public class CommandDispatcherTests
     {
         private const string CategoryName = "Unit";
-        private const string CategoryValue = "Command router";
+        private const string CategoryValue = "Command dispatcher";
 
         [Fact]
         [Trait(CategoryName, CategoryValue)]
@@ -28,8 +26,8 @@ namespace EnjoyCQRS.UnitTests.MessageBus
                 command => handler.ExecuteAsync(command)
             };
 
-            Mock<ICommandRouter> commandRouterMock = new Mock<ICommandRouter>();
-            commandRouterMock.Setup(e => e.RouteAsync(It.IsAny<TestCommand>())).Callback((ICommand command) =>
+            Mock<ICommandDispatcher> commandDispatcherMock = new Mock<ICommandDispatcher>();
+            commandDispatcherMock.Setup(e => e.DispatchAsync(It.IsAny<TestCommand>())).Callback((ICommand command) =>
             {
                 handlers.ForEach((action =>
                 {
@@ -38,10 +36,10 @@ namespace EnjoyCQRS.UnitTests.MessageBus
             }).Returns(Task.CompletedTask);
 
             var testCommand = new TestCommand(Guid.NewGuid());
-            CommandBus directMessageBus = new CommandBus(commandRouterMock.Object);
 
-            await directMessageBus.DispatchAsync(testCommand);
-            await directMessageBus.CommitAsync();
+            ICommandDispatcher commandDispatcher = commandDispatcherMock.Object;
+
+            await commandDispatcher.DispatchAsync(testCommand);
 
             handler.Ids.First().Should().Be(testCommand.AggregateId);
         }
@@ -59,8 +57,8 @@ namespace EnjoyCQRS.UnitTests.MessageBus
                 command => handler2.ExecuteAsync(command)
             };
 
-            Mock<ICommandRouter> commandRouterMock = new Mock<ICommandRouter>();
-            commandRouterMock.Setup(e => e.RouteAsync(It.IsAny<TestCommand>())).Callback((ICommand command) =>
+            Mock<ICommandDispatcher> commandDispatcherMock = new Mock<ICommandDispatcher>();
+            commandDispatcherMock.Setup(e => e.DispatchAsync(It.IsAny<TestCommand>())).Callback((ICommand command) =>
             {
                 handlers.ForEach((action =>
                 {
@@ -70,10 +68,9 @@ namespace EnjoyCQRS.UnitTests.MessageBus
 
             var testCommand = new TestCommand(Guid.NewGuid());
 
-            CommandBus directMessageBus = new CommandBus(commandRouterMock.Object);
+            ICommandDispatcher commandDispatcher = commandDispatcherMock.Object;
 
-            await directMessageBus.DispatchAsync(testCommand);
-            await directMessageBus.CommitAsync();
+            await commandDispatcher.DispatchAsync(testCommand);
 
             handler1.Ids.First().Should().Be(testCommand.AggregateId);
             handler2.Ids.First().Should().Be(testCommand.AggregateId);

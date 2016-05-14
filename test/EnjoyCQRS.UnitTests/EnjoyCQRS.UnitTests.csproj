@@ -86,8 +86,13 @@
     <Compile Include="Domain\StubAggregate.cs" />
     <Compile Include="Handlers\CommandHandlerTests.cs" />
     <Compile Include="Handlers\EventHandlerTests.cs" />
-    <Compile Include="MessageBus\EventRouterTests.cs" />
-    <Compile Include="MessageBus\CommandRouterTests.cs" />
+    <Compile Include="MessageBus\EventPublisherTests.cs" />
+    <Compile Include="MessageBus\CommandDispatcherTests.cs" />
+    <Compile Include="MessageBus\Stubs\FirstTestEventHandler.cs" />
+    <Compile Include="MessageBus\Stubs\OrderedTestEvent.cs" />
+    <Compile Include="MessageBus\Stubs\OrderTestEventHandler.cs" />
+    <Compile Include="MessageBus\Stubs\SecondTestEventHandler.cs" />
+    <Compile Include="MessageBus\Stubs\TestEvent.cs" />
     <Compile Include="Storage\EventStoreTests.cs" />
     <Compile Include="Storage\SessionTests.cs" />
     <Compile Include="Storage\StubEventStore.cs" />

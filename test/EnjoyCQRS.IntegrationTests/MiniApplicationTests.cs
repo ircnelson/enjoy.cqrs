@@ -52,7 +52,6 @@ namespace EnjoyCQRS.IntegrationTests
             var commandDispatcher = scope.Resolve<ICommandDispatcher>();
 
             await commandDispatcher.DispatchAsync(command);
-            await commandDispatcher.CommitAsync();
         }
     }
 }

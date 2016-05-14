@@ -1,5 +1,6 @@
 ﻿using System;
 using Autofac;
+using Autofac.Features.Variance;
 using EnjoyCQRS.Bus;
 using EnjoyCQRS.Bus.InProcess;
 using EnjoyCQRS.Commands;
@@ -27,13 +28,12 @@ namespace EnjoyCQRS.IntegrationTests.Fixtures
             eventStoreSqliteInitializer.CreateTable();
             
             var builder = new ContainerBuilder();
-
+            
             builder.RegisterType<StubUnitOfWork>().As<IUnitOfWork>().InstancePerLifetimeScope();
             builder.RegisterType<Session>().As<ISession>().InstancePerLifetimeScope();
             builder.RegisterType<Repository>().As<IRepository>();
-            builder.RegisterType<CommandBus>().As<ICommandDispatcher>().InstancePerLifetimeScope();
-            builder.RegisterType<EventBus>().As<IEventPublisher>().InstancePerLifetimeScope();
-            builder.RegisterType<CommandRouter>().As<ICommandRouter>();
+            builder.RegisterType<StubCommandBus>().As<ICommandDispatcher>().InstancePerLifetimeScope();
+            builder.RegisterType<EventPublisher>().As<IEventPublisher>().InstancePerLifetimeScope();
             builder.RegisterType<EventRouter>().As<IEventRouter>();
             builder.Register(c => new EventStoreSqlite(fileName)).As<IEventStore>();
 
