@@ -2,7 +2,7 @@
 
 namespace EnjoyCQRS.EventSource.Snapshots
 {
-    public class Snapshot
+    public abstract class Snapshot
     {
         /// <summary>
         /// Unique identifier of <see cref="Aggregate"/>
