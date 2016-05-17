@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.Messages;
@@ -13,9 +14,11 @@ namespace EnjoyCQRS.Bus.InProcess
 
         public EventPublisher(IEventRouter router)
         {
+            if (router == null) throw new ArgumentNullException(nameof(router));
+
             _router = router;
         }
-        
+
         public async Task PublishAsync<TEvent>(TEvent message) where TEvent : IDomainEvent
         {
             await Enqueue(message);

@@ -19,6 +19,9 @@ namespace EnjoyCQRS.EventSource.Storage
 
         public Session(IEventStore eventStore, IEventPublisher eventPublisher)
         {
+            if (eventStore == null) throw new ArgumentNullException(nameof(eventStore));
+            if (eventPublisher == null) throw new ArgumentNullException(nameof(eventPublisher));
+
             _aggregateTracker = new AggregateTracker();
             _eventStore = eventStore;
             _eventPublisher = eventPublisher;

@@ -18,6 +18,9 @@ namespace EnjoyCQRS.Commands
             ICommandHandler<TCommand> commandHandler,
             IUnitOfWork unitOfWork)
         {
+            if (commandHandler == null) throw new ArgumentNullException(nameof(commandHandler));
+            if (unitOfWork == null) throw new ArgumentNullException(nameof(unitOfWork));
+
             _commandHandler = commandHandler;
             _unitOfWork = unitOfWork;
         }
