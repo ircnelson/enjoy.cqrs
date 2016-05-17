@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using EnjoyCQRS.EventSource;
 using EnjoyCQRS.UnitTests.Domain.AggregateWithEntities.Events;
+using EnjoyCQRS.UnitTests.Domain.Events;
+using EnjoyCQRS.UnitTests.Domain.Snapshots;
 
 namespace EnjoyCQRS.UnitTests.Domain.AggregateWithEntities
 {
-    public class ComplexStubAggregate : Aggregate
+    public class ComplexStubAggregate : SnapshotAggregate<StubAggregateSnapshot>
     {
         private readonly List<SimpleEntity> _entities = new List<SimpleEntity>();
 
@@ -28,6 +30,11 @@ namespace EnjoyCQRS.UnitTests.Domain.AggregateWithEntities
             return new ComplexStubAggregate(Guid.NewGuid(), name);
         }
 
+        public void ChangeName(string name)
+        {
+            Emit(new SomeEvent(Id, name));
+        }
+
         public void AddEntity(string entityName)
         {
             Emit(new ChildCreatedEvent(Guid.NewGuid(), entityName));
@@ -46,6 +53,11 @@ namespace EnjoyCQRS.UnitTests.Domain.AggregateWithEntities
                 Name = x.Name;
             });
 
+            SubscribeTo<SomeEvent>(x =>
+            {
+                Name = x.Name;
+            });
+
             SubscribeTo<ChildCreatedEvent>(x => _entities.Add(new SimpleEntity(x.AggregateId, x.Name)));
 
             SubscribeTo<ChildDisabledEvent>(x =>
@@ -54,5 +66,23 @@ namespace EnjoyCQRS.UnitTests.Domain.AggregateWithEntities
                 entity?.Disable();
             });
         }
+
+        protected override StubAggregateSnapshot CreateSnapshot()
+        {
+            return new StubAggregateSnapshot
+            {
+                Name = Name,
+                SimpleEntities = _entities
+            };
+        }
+
+        protected override void RestoreFromSnapshot(StubAggregateSnapshot snapshot)
+        {
+            Name = snapshot.Name;
+
+            _entities.Clear();
+            _entities.AddRange(snapshot.SimpleEntities);
+        }
+
     }
 }

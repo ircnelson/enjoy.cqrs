@@ -78,17 +78,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Domain\AggregateWithEntities\Events\ChildCreatedEvent.cs" />
-    <Compile Include="Domain\AggregateWithEntities\Events\ChildDisabledEvent.cs" />
-    <Compile Include="Domain\AggregateWithEntities\ComplexStubAggregate.cs" />
-    <Compile Include="Domain\AggregateWithEntities\Events\ComplexStubAggregateCreatedEvent.cs" />
-    <Compile Include="Domain\AggregateWithEntities\SimpleEntity.cs" />
-    <Compile Include="Domain\Events\NotRegisteredEvent.cs" />
-    <Compile Include="Domain\Events\SomeEvent.cs" />
-    <Compile Include="Domain\Events\TestAggregateCreatedEvent.cs" />
+    <Compile Include="Domain\Stubs\Events\ChildCreatedEvent.cs" />
+    <Compile Include="Domain\Stubs\Events\ChildDisabledEvent.cs" />
+    <Compile Include="Domain\Stubs\ComplexStubAggregate.cs" />
+    <Compile Include="Domain\Stubs\Events\ComplexStubAggregateCreatedEvent.cs" />
+    <Compile Include="Domain\Stubs\SimpleEntity.cs" />
+    <Compile Include="Domain\Stubs\Events\NotRegisteredEvent.cs" />
+    <Compile Include="Domain\Stubs\Events\SomeEvent.cs" />
+    <Compile Include="Domain\Stubs\Events\TestAggregateCreatedEvent.cs" />
     <Compile Include="Domain\Not_registered_event_in_aggregate.cs" />
     <Compile Include="Domain\Registered_event_in_aggregate.cs" />
-    <Compile Include="Domain\StubAggregate.cs" />
+    <Compile Include="Domain\Stubs\StubAggregate.cs" />
+    <Compile Include="Domain\Stubs\StubAggregateSnapshot.cs" />
+    <Compile Include="Domain\Stubs\StubAggregateWithSnapshot.cs" />
     <Compile Include="Domain\When_aggregate_have_children.cs" />
     <Compile Include="Domain\When_do_something_on_aggregate.cs" />
     <Compile Include="Handlers\CommandHandlerTests.cs" />
@@ -100,11 +102,14 @@
     <Compile Include="MessageBus\Stubs\OrderTestEventHandler.cs" />
     <Compile Include="MessageBus\Stubs\SecondTestEventHandler.cs" />
     <Compile Include="MessageBus\Stubs\TestEvent.cs" />
+    <Compile Include="Snapshoting\When_restore_snapshot.cs" />
+    <Compile Include="Snapshoting\When_take_snapshot.cs" />
     <Compile Include="Storage\EventStoreTests.cs" />
     <Compile Include="Storage\SessionTests.cs" />
     <Compile Include="Storage\StubEventStore.cs" />
     <Compile Include="Domain\Increment_the_EventVersion_When_new_events_are_applied.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ThenAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -122,9 +127,7 @@
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Snapshot\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

@@ -41,6 +41,9 @@
   <ItemGroup>
     <Compile Include="Bus\InProcess\EventPublisher.cs" />
     <Compile Include="Bus\IEventRouter.cs" />
+    <Compile Include="EventSource\Snapshots\Snapshot.cs" />
+    <Compile Include="EventSource\SnapshotAggregate.cs" />
+    <Compile Include="EventSource\Snapshots\ISnapshotAggregate.cs" />
     <Compile Include="Messages\ICommandDispatcher.cs" />
     <Compile Include="Commands\TransactionalCommandHandler.cs" />
     <Compile Include="EventSource\Exceptions\AggregateNotFoundException.cs" />
@@ -65,6 +68,7 @@
     <Compile Include="Messages\IMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
