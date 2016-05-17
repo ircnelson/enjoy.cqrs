@@ -30,7 +30,8 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             var stubAggregate1 = StubAggregate.Create();
 
-            await session.AddAsync(stubAggregate1);
+            session.Add(stubAggregate1);
+
             await session.SaveChangesAsync();
 
             stubAggregate1.DoSomething("Going to Version 2. Expected Version 1.");
@@ -42,12 +43,12 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             stubAggregate2.DoSomething("Going to Version 2");
 
-            await session.AddAsync(stubAggregate2);
+            session.Add(stubAggregate2);
             await session.SaveChangesAsync();
 
             Func<Task> wrongVersion = async () =>
             {
-                await session.AddAsync(stubAggregate1);
+                session.Add(stubAggregate1);
             };
 
             wrongVersion.ShouldThrow<ExpectedVersionException<StubAggregate>>()
@@ -62,7 +63,8 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             var stubAggregate1 = StubAggregate.Create();
 
-            await session.AddAsync(stubAggregate1);
+            session.Add(stubAggregate1);
+
             await session.SaveChangesAsync();
 
             stubAggregate1.DoSomething("Changes");

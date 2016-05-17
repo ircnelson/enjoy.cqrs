@@ -21,7 +21,7 @@ namespace EnjoyCQRS.EventSource.Storage
         /// </summary>
         /// <typeparam name="TAggregate"></typeparam>
         /// <param name="aggregate"></param>
-        Task AddAsync<TAggregate>(TAggregate aggregate) where TAggregate : Aggregate;
+        void Add<TAggregate>(TAggregate aggregate) where TAggregate : Aggregate;
 
         /// <summary>
         /// Begin the transaction.

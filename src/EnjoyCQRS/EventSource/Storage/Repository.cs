@@ -14,9 +14,9 @@ namespace EnjoyCQRS.EventSource.Storage
             _session = session;
         }
 
-        public async Task AddAsync<TAggregate>(TAggregate aggregate) where TAggregate : Aggregate
+        public void Add<TAggregate>(TAggregate aggregate) where TAggregate : Aggregate
         {
-            await _session.AddAsync(aggregate);
+            _session.Add(aggregate);
         }
 
         public async Task<TAggregate> GetByIdAsync<TAggregate>(Guid id) where TAggregate : Aggregate, new()

@@ -70,7 +70,7 @@ namespace EnjoyCQRS.TestFramework
                 {
                     var repositoryMock = new Mock<IRepository>();
                     repositoryMock.Setup(x => x.GetByIdAsync<TAggregateRoot>(It.IsAny<Guid>())).Returns(Task.FromResult(AggregateRoot));
-                    repositoryMock.Setup(x => x.AddAsync(It.IsAny<TAggregateRoot>())).Callback<TAggregateRoot>(x => AggregateRoot = x);
+                    repositoryMock.Setup(x => x.Add(It.IsAny<TAggregateRoot>())).Callback<TAggregateRoot>(x => AggregateRoot = x);
                     _mocks.Add(parameter.ParameterType, repositoryMock);
                     continue;
                 }

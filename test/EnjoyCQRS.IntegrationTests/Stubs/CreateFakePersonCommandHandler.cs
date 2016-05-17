@@ -17,7 +17,7 @@ namespace EnjoyCQRS.IntegrationTests.Stubs
         {
             var fakePerson = new FakePerson(command.AggregateId, command.Name);
 
-            _repository.AddAsync(fakePerson);
+            _repository.Add(fakePerson);
 
             return Task.CompletedTask;
         }

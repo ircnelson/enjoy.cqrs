@@ -58,7 +58,7 @@ namespace EnjoyCQRS.EventSource.Storage
         /// </summary>
         /// <typeparam name="TAggregate"></typeparam>
         /// <param name="aggregate"></param>
-        public async Task AddAsync<TAggregate>(TAggregate aggregate) where TAggregate : Aggregate
+        public void Add<TAggregate>(TAggregate aggregate) where TAggregate : Aggregate
         {
             CheckConcurrency(aggregate);
 

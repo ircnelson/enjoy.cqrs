@@ -47,7 +47,8 @@ namespace EnjoyCQRS.UnitTests.Storage
             var testAggregate = StubAggregate.Create();
             testAggregate.DoSomething("Heisenberg");
 
-            await _repository.AddAsync(testAggregate);
+            _repository.Add(testAggregate);
+
             await _unitOfWork.CommitAsync();
 
             _inMemoryDomainEventStore.EventStore[testAggregate.Id].Count.Should().Be(2);
@@ -60,7 +61,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             var testAggregate = StubAggregate.Create();
             testAggregate.DoSomething("Heisenberg");
 
-            await _repository.AddAsync(testAggregate);
+            _repository.Add(testAggregate);
             await _unitOfWork.CommitAsync();
 
             _mockEventPublisher.Verify(e => e.PublishAsync(It.IsAny<IEnumerable<IDomainEvent>>()));
@@ -73,7 +74,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             var testAggregate = StubAggregate.Create();
             testAggregate.DoSomething("Heisenberg");
 
-            await _repository.AddAsync(testAggregate);
+            _repository.Add(testAggregate);
             await _unitOfWork.CommitAsync();
 
             var testAggregate2 = await _repository.GetByIdAsync<StubAggregate>(testAggregate.Id);
