@@ -1,7 +1,7 @@
 ﻿using System;
 using EnjoyCQRS.Events;
 
-namespace EnjoyCQRS.UnitTests.Domain.Events
+namespace EnjoyCQRS.UnitTests.Domain.Stubs.Events
 {
     public class TestAggregateCreatedEvent : DomainEvent
     {

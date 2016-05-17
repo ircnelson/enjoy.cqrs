@@ -21,14 +21,14 @@ namespace EnjoyCQRS.UnitTests.Handlers
             return new StubCreatedEvent(_id);
         }
 
-        [Fact]
+        [Then]
         [Trait(CategoryName, CategoryValue)]
         public void Executed_property_should_be_true()
         {
             EventHandler.Executed.Should().Be(true);
         }
 
-        [Fact]
+        [Then]
         [Trait(CategoryName, CategoryValue)]
         public void Should_pass_the_correct_AggregateId()
         {

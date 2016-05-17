@@ -5,6 +5,7 @@ using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Storage;
 using EnjoyCQRS.Messages;
 using EnjoyCQRS.UnitTests.Domain;
+using EnjoyCQRS.UnitTests.Domain.Stubs;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -40,12 +41,12 @@ namespace EnjoyCQRS.UnitTests.Storage
             _unitOfWork = unitOfWorkMock.Object;
         }
 
-        [Fact]
+        [Then]
         [Trait(CategoryName, CategoryValue)]
         public async Task When_calling_Save_it_will_add_the_domain_events_to_the_domain_event_storage()
         {
-            var testAggregate = StubAggregate.Create();
-            testAggregate.DoSomething("Heisenberg");
+            var testAggregate = StubAggregate.Create("Walter White");
+            testAggregate.ChangeName("Heinsenberg");
 
             _repository.Add(testAggregate);
 
@@ -54,12 +55,12 @@ namespace EnjoyCQRS.UnitTests.Storage
             _inMemoryDomainEventStore.EventStore[testAggregate.Id].Count.Should().Be(2);
         }
 
-        [Fact]
+        [Then]
         [Trait(CategoryName, CategoryValue)]
         public async Task When_calling_Save_the_uncommited_events_should_be_published()
         {
-            var testAggregate = StubAggregate.Create();
-            testAggregate.DoSomething("Heisenberg");
+            var testAggregate = StubAggregate.Create("Walter White");
+            testAggregate.ChangeName("Heinsenberg");
 
             _repository.Add(testAggregate);
             await _unitOfWork.CommitAsync();
@@ -67,12 +68,12 @@ namespace EnjoyCQRS.UnitTests.Storage
             _mockEventPublisher.Verify(e => e.PublishAsync(It.IsAny<IEnumerable<IDomainEvent>>()));
         }
 
-        [Fact]
+        [Then]
         [Trait(CategoryName, CategoryValue)]
         public async Task When_load_aggregate_should_be_correct_version()
         {
-            var testAggregate = StubAggregate.Create();
-            testAggregate.DoSomething("Heisenberg");
+            var testAggregate = StubAggregate.Create("Walter White");
+            testAggregate.ChangeName("Heinsenberg");
 
             _repository.Add(testAggregate);
             await _unitOfWork.CommitAsync();

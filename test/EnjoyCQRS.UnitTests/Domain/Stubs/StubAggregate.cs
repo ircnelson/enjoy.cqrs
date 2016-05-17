@@ -1,41 +1,45 @@
 ﻿using System;
 using EnjoyCQRS.EventSource;
-using EnjoyCQRS.UnitTests.Domain.Events;
+using EnjoyCQRS.UnitTests.Domain.Stubs.Events;
 
-namespace EnjoyCQRS.UnitTests.Domain
+namespace EnjoyCQRS.UnitTests.Domain.Stubs
 {
     public class StubAggregate : Aggregate
     {
         public string Name { get; private set; }
         
-        private StubAggregate(Guid newGuid)
+        private StubAggregate(Guid newGuid, string name)
         {
-            Emit(new TestAggregateCreatedEvent(newGuid));
+            Emit(new StubAggregateCreatedEvent(newGuid, name));
         }
 
         public StubAggregate()
         {
         }
 
-        public static StubAggregate Create()
+        public static StubAggregate Create(string name)
         {
-            return new StubAggregate(Guid.NewGuid());
+            return new StubAggregate(Guid.NewGuid(), name);
         }
         
-        public void DoSomething(string name)
+        public void ChangeName(string name)
         {
-            Emit(new SomeEvent(Id, name));
+            Emit(new NameChangedEvent(Id, name));
         }
 
-        public void DoSomethingWithoutEvent()
+        public void DoSomethingWithoutEventSubscription()
         {
             Emit(new NotRegisteredEvent(Id));
         }
 
         protected override void RegisterEvents()
         {
-            SubscribeTo<SomeEvent>(x => { Name = x.Name; });
-            SubscribeTo<TestAggregateCreatedEvent>(x => { Id = x.AggregateId; });
+            SubscribeTo<NameChangedEvent>(x => { Name = x.Name; });
+            SubscribeTo<StubAggregateCreatedEvent>(x =>
+            {
+                Id = x.AggregateId;
+                Name = x.Name;
+            });
         }
     }
 }

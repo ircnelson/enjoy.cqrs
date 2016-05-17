@@ -4,6 +4,7 @@ using EnjoyCQRS.Commands;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.TestFramework;
 using EnjoyCQRS.UnitTests.Domain;
+using EnjoyCQRS.UnitTests.Domain.Stubs;
 using FluentAssertions;
 using Xunit;
 
@@ -23,14 +24,14 @@ namespace EnjoyCQRS.UnitTests.Handlers
             return new CreateStubCommand(_id);
         }
 
-        [Fact]
+        [Then]
         [Trait(CategoryName, CategoryValue)]
         public void Executed_property_should_be_true()
         {
             CommandHandler.Executed.Should().Be(true);
         }
 
-        [Fact]
+        [Then]
         [Trait(CategoryName, CategoryValue)]
         public void Should_pass_the_correct_AggregateId()
         {

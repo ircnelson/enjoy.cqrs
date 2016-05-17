@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using EnjoyCQRS.EventSource.Snapshots;
-using EnjoyCQRS.UnitTests.Domain.AggregateWithEntities;
 
-namespace EnjoyCQRS.UnitTests.Domain.Snapshots
+namespace EnjoyCQRS.UnitTests.Domain.Stubs
 {
     public class StubAggregateSnapshot : Snapshot
     {

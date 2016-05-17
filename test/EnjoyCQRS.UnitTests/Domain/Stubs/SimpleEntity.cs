@@ -1,6 +1,6 @@
 using System;
 
-namespace EnjoyCQRS.UnitTests.Domain.AggregateWithEntities
+namespace EnjoyCQRS.UnitTests.Domain.Stubs
 {
     public class SimpleEntity
     {

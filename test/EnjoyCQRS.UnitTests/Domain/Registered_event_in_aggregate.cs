@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using EnjoyCQRS.TestFramework;
-using EnjoyCQRS.UnitTests.Domain.Events;
+using EnjoyCQRS.UnitTests.Domain.Stubs;
+using EnjoyCQRS.UnitTests.Domain.Stubs.Events;
 using FluentAssertions;
 using Xunit;
 
@@ -13,15 +14,15 @@ namespace EnjoyCQRS.UnitTests.Domain
 
         protected override void When()
         {
-            AggregateRoot = StubAggregate.Create();
-            AggregateRoot.DoSomething("Walter White");
+            AggregateRoot = StubAggregate.Create("Heinsenberg");
+            AggregateRoot.ChangeName("Walter White");
         }
 
-        [Fact]
+        [Then]
         [Trait(CategoryName, CategoryValue)]
         public void Then_some_event_should_be_published()
         {
-            PublishedEvents.Last().Should().BeAssignableTo<SomeEvent>();
+            PublishedEvents.Last().Should().BeAssignableTo<NameChangedEvent>();
         }
     }
 }

@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.TestFramework;
-using EnjoyCQRS.UnitTests.Domain.Events;
+using EnjoyCQRS.UnitTests.Domain.Stubs;
+using EnjoyCQRS.UnitTests.Domain.Stubs.Events;
 using FluentAssertions;
 using Xunit;
 
@@ -15,22 +16,22 @@ namespace EnjoyCQRS.UnitTests.Domain
 
         protected override IEnumerable<IDomainEvent> Given()
         {
-            yield return PrepareDomainEvent.Set(new SomeEvent(Guid.NewGuid(), "Walter White")).ToVersion(1);
+            yield return PrepareDomainEvent.Set(new NameChangedEvent(Guid.NewGuid(), "Walter White")).ToVersion(1);
         }
 
         protected override void When()
         {
-            AggregateRoot.DoSomething("DoSomething");
+            AggregateRoot.ChangeName("DoSomething");
         }
 
-        [Fact]
+        [Then]
         [Trait(CategoryName, CategoryValue)]
         public void Then_the_Version_should_be_1()
         {
             AggregateRoot.Version.Should().Be(1);
         }
 
-        [Fact]
+        [Then]
         [Trait(CategoryName, CategoryValue)]
         public void Then_the_EventVersion_should_be_2()
         {

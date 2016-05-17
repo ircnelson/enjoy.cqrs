@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using EnjoyCQRS.EventSource;
-using EnjoyCQRS.UnitTests.Domain.AggregateWithEntities.Events;
-using EnjoyCQRS.UnitTests.Domain.Events;
-using EnjoyCQRS.UnitTests.Domain.Snapshots;
+using EnjoyCQRS.UnitTests.Domain.Stubs.Events;
 
-namespace EnjoyCQRS.UnitTests.Domain.AggregateWithEntities
+namespace EnjoyCQRS.UnitTests.Domain.Stubs
 {
     public class ComplexStubAggregate : SnapshotAggregate<StubAggregateSnapshot>
     {
@@ -18,7 +16,7 @@ namespace EnjoyCQRS.UnitTests.Domain.AggregateWithEntities
 
         private ComplexStubAggregate(Guid newGuid, string name)
         {
-            Emit(new ComplexStubAggregateCreatedEvent(newGuid, name));
+            Emit(new StubAggregateCreatedEvent(newGuid, name));
         }
 
         public ComplexStubAggregate()
@@ -32,7 +30,7 @@ namespace EnjoyCQRS.UnitTests.Domain.AggregateWithEntities
 
         public void ChangeName(string name)
         {
-            Emit(new SomeEvent(Id, name));
+            Emit(new NameChangedEvent(Id, name));
         }
 
         public void AddEntity(string entityName)
@@ -47,13 +45,13 @@ namespace EnjoyCQRS.UnitTests.Domain.AggregateWithEntities
         
         protected override void RegisterEvents()
         {
-            SubscribeTo<ComplexStubAggregateCreatedEvent>(x =>
+            SubscribeTo<StubAggregateCreatedEvent>(x =>
             {
                 Id = x.AggregateId;
                 Name = x.Name;
             });
 
-            SubscribeTo<SomeEvent>(x =>
+            SubscribeTo<NameChangedEvent>(x =>
             {
                 Name = x.Name;
             });

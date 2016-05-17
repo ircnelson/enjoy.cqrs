@@ -1,6 +1,7 @@
 using EnjoyCQRS.EventSource.Exceptions;
 using EnjoyCQRS.TestFramework;
-using EnjoyCQRS.UnitTests.Domain.Events;
+using EnjoyCQRS.UnitTests.Domain.Stubs;
+using EnjoyCQRS.UnitTests.Domain.Stubs.Events;
 using FluentAssertions;
 using Xunit;
 
@@ -13,17 +14,17 @@ namespace EnjoyCQRS.UnitTests.Domain
 
         protected override void When()
         {
-            AggregateRoot.DoSomethingWithoutEvent();
+            AggregateRoot.DoSomethingWithoutEventSubscription();
         }
 
-        [Fact]
+        [Then]
         [Trait(CategoryName, CategoryValue)]
         public void Then_throws_an_exception()
         {
             CaughtException.Should().BeAssignableTo<HandleNotFound>();
         }
 
-        [Fact]
+        [Then]
         [Trait(CategoryName, CategoryValue)]
         public void Then_the_event_type_should_be_SomeEvent()
         {

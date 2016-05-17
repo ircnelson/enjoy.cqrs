@@ -1,8 +1,6 @@
 using System;
 using EnjoyCQRS.EventSource.Snapshots;
-using EnjoyCQRS.UnitTests.Domain;
-using EnjoyCQRS.UnitTests.Domain.AggregateWithEntities;
-using EnjoyCQRS.UnitTests.Domain.Snapshots;
+using EnjoyCQRS.UnitTests.Domain.Stubs;
 using FluentAssertions;
 using Xunit;
 
@@ -10,6 +8,9 @@ namespace EnjoyCQRS.UnitTests.Snapshoting
 {
     public class When_restore_snapshot
     {
+        public const string CategoryName = "Unit";
+        public const string CategoryValue = "Snapshot";
+
         private StubAggregateSnapshot _snapshot;
         private ComplexStubAggregate _stubAggregate;
 
@@ -26,7 +27,8 @@ namespace EnjoyCQRS.UnitTests.Snapshoting
             ((ISnapshotAggregate<StubAggregateSnapshot>)_stubAggregate).Restore(_snapshot);
         }
 
-        [Fact]
+        [Then]
+        [Trait(CategoryName, CategoryValue)]
         public void Should_set_aggregate_properties()
         {
             _stubAggregate.Name.Should().Be(_snapshot.Name);
