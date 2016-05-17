@@ -31,23 +31,23 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             var stubAggregate1 = StubAggregate.Create("Walter White");
 
-            session.Add(stubAggregate1);
+            await session.AddAsync(stubAggregate1).ConfigureAwait(false);
 
-            await session.SaveChangesAsync();
+            await session.SaveChangesAsync().ConfigureAwait(false);
 
             stubAggregate1.ChangeName("Going to Version 2. Expected Version 1.");
 
             // create second session instance to getting clear tracking
             session = _sessionFactory(eventStore);
 
-            var stubAggregate2 = await session.GetByIdAsync<StubAggregate>(stubAggregate1.Id);
+            var stubAggregate2 = await session.GetByIdAsync<StubAggregate>(stubAggregate1.Id).ConfigureAwait(false);
 
             stubAggregate2.ChangeName("Going to Version 2");
 
-            session.Add(stubAggregate2);
-            await session.SaveChangesAsync();
+            await session.AddAsync(stubAggregate2).ConfigureAwait(false);
+            await session.SaveChangesAsync().ConfigureAwait(false);
 
-            Action wrongVersion = () => session.Add(stubAggregate1);
+            Func<Task> wrongVersion = async () => await session.AddAsync(stubAggregate1).ConfigureAwait(false);
 
             wrongVersion.ShouldThrow<ExpectedVersionException<StubAggregate>>()
                 .And.Aggregate.Should().Be(stubAggregate1);
@@ -61,13 +61,13 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             var stubAggregate1 = StubAggregate.Create("Walter White");
 
-            session.Add(stubAggregate1);
+            await session.AddAsync(stubAggregate1).ConfigureAwait(false);
 
-            await session.SaveChangesAsync();
+            await session.SaveChangesAsync().ConfigureAwait(false);
 
             stubAggregate1.ChangeName("Changes");
             
-            var stubAggregate2 = await session.GetByIdAsync<StubAggregate>(stubAggregate1.Id);
+            var stubAggregate2 = await session.GetByIdAsync<StubAggregate>(stubAggregate1.Id).ConfigureAwait(false);
 
             stubAggregate2.ChangeName("More changes");
 

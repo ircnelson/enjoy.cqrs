@@ -40,7 +40,7 @@ namespace EnjoyCQRS.EventSource.Storage
 
             if (aggregate != null) return aggregate;
             
-            var events = await _eventStore.GetAllEventsAsync(id);
+            var events = await _eventStore.GetAllEventsAsync(id).ConfigureAwait(false);
 
             if (events == null) throw new AggregateNotFoundException(typeof(TAggregate).Name, id);
 
@@ -58,11 +58,13 @@ namespace EnjoyCQRS.EventSource.Storage
         /// </summary>
         /// <typeparam name="TAggregate"></typeparam>
         /// <param name="aggregate"></param>
-        public void Add<TAggregate>(TAggregate aggregate) where TAggregate : Aggregate
+        public Task AddAsync<TAggregate>(TAggregate aggregate) where TAggregate : Aggregate
         {
             CheckConcurrency(aggregate);
 
             RegisterForTracking(aggregate);
+
+            return Task.CompletedTask;
         }
 
         public void BeginTransaction()
@@ -75,7 +77,7 @@ namespace EnjoyCQRS.EventSource.Storage
 
         public async Task CommitAsync()
         {
-            await _eventStore.CommitAsync();
+            await _eventStore.CommitAsync().ConfigureAwait(false);
             _externalTransaction = false;
         }
 
@@ -96,16 +98,16 @@ namespace EnjoyCQRS.EventSource.Storage
                 {
                     var changes = aggregate.UncommitedEvents.ToList();
 
-                    await _eventStore.SaveAsync(changes);
+                    await _eventStore.SaveAsync(changes).ConfigureAwait(false);
 
-                    await _eventPublisher.PublishAsync<IDomainEvent>(changes);
+                    await _eventPublisher.PublishAsync<IDomainEvent>(changes).ConfigureAwait(false);
 
                     aggregate.ClearUncommitedEvents();
                 }
 
                 _aggregates.Clear();
 
-                await _eventPublisher.CommitAsync();
+                await _eventPublisher.CommitAsync().ConfigureAwait(false);
             }
             catch (Exception)
             {
@@ -119,7 +121,7 @@ namespace EnjoyCQRS.EventSource.Storage
             
             if (!_externalTransaction)
             {
-                await _eventStore.CommitAsync();
+                await _eventStore.CommitAsync().ConfigureAwait(false);
             }
         }
 

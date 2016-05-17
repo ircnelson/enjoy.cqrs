@@ -35,7 +35,7 @@ namespace EnjoyCQRS.IntegrationTests
                 
                 var repository = scope.Resolve<IRepository>();
                 
-                var aggregateFromRepository = await repository.GetByIdAsync<FakePerson>(command.AggregateId);
+                var aggregateFromRepository = await repository.GetByIdAsync<FakePerson>(command.AggregateId).ConfigureAwait(false);
 
                 aggregateFromRepository.Should().NotBeNull();
 
@@ -51,7 +51,7 @@ namespace EnjoyCQRS.IntegrationTests
 
             var commandDispatcher = scope.Resolve<ICommandDispatcher>();
 
-            await commandDispatcher.DispatchAsync(command);
+            await commandDispatcher.DispatchAsync(command).ConfigureAwait(false);
         }
     }
 }

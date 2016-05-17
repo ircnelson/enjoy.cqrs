@@ -27,9 +27,9 @@ namespace EnjoyCQRS.Commands
 
         public async Task ExecuteAsync(TCommand command)
         {
-            await _commandHandler.ExecuteAsync(command);
+            await _commandHandler.ExecuteAsync(command).ConfigureAwait(false);
 
-            await _unitOfWork.CommitAsync();
+            await _unitOfWork.CommitAsync().ConfigureAwait(false);
         }
     }
 }

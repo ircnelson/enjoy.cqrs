@@ -14,14 +14,14 @@ namespace EnjoyCQRS.EventSource.Storage
             _session = session;
         }
 
-        public void Add<TAggregate>(TAggregate aggregate) where TAggregate : Aggregate
+        public async Task AddAsync<TAggregate>(TAggregate aggregate) where TAggregate : Aggregate
         {
-            _session.Add(aggregate);
+            await _session.AddAsync(aggregate);
         }
 
         public async Task<TAggregate> GetByIdAsync<TAggregate>(Guid id) where TAggregate : Aggregate, new()
         {
-            return await _session.GetByIdAsync<TAggregate>(id);
+            return await _session.GetByIdAsync<TAggregate>(id).ConfigureAwait(false);
         }
     }
 }
