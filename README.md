@@ -6,38 +6,35 @@ The motivation to create this project was born through the curiosity about CQRS 
 I'm tired to build software using classical architecture, then I decided to start adventure in this world.
 The new way of thinking about the area where everything occurs are events, like a timeline in real life is very cool and different!
 
-Obviously, has much paradigms and fears that should be left over the long of the time, but never is too late.
-
-The implementation is not complete, e.g. need to implement the abstraction for Snapshot.
+Obviously, have much paradigms and fears that should be left over the long of the time, but never is too late.
 
 Any suggestion is welcome.
 
 ## Features
 
-* Direct Bus (publish Commands & Events with transaction)
 * Unit of Work
+    - You can work with BASE or ACID
+* Command router abstraction
+* Event publisher
+* Event Store abstraction
+* Snapshot (in progress)
 
 ## Architecture
 
 ![CQRS high level architecture](http://s32.postimg.org/ty18uww45/090615_1544_introductio1_png_w_604.png)
 
-## Installing (or restore) by Nuget
+## Nuget
+    
+    Install-Package EnjoyCQRS -Source https://www.myget.org/F/enjoy/api/v3/index.json
 
-If you don't have a nuget.exe installed, please download [here](https://dist.nuget.org/win-x86-commandline/latest/nuget.exe).
-
-to install: 
-
-    nuget.exe install EnjoyCQRS -Source https://www.myget.org/F/enjoy/api/v3/index.json
-
-to restore:
-
-    nuget.exe restore EnjoyCQRS -Source https://www.myget.org/F/enjoy/api/v3/index.json
+---
 
 ## References
 ### People
 * Michael Plöd [@bitboss](https://twitter.com/bitboss)
 * Greg Young [@gregyoung](https://twitter.com/gregyoung)
 * Mark Nijhof [@MarkNijhof](https://twitter.com/MarkNijhof)
+* Udi Dahan [@UdiDahan](https://twitter.com/UdiDahan)
 
 ### Presentations
 * http://www.infoq.com/presentations/microservices-event-sourcing-cqrs
@@ -46,6 +43,7 @@ to restore:
 * http://pt.slideshare.net/dbellettini/cqrs-and-event-sourcing-with-mongodb-and-php
 * http://pt.slideshare.net/ziobrando/loosely-coupled-complexity-unleash-the-power-of-your-domain-model-with-command-query-responsibility-segregation-and-event-sourcing
 * http://ookami86.github.io/event-sourcing-in-practice/index.html
+* https://www.youtube.com/watch?v=EkEz3pcLdgY
 
 ### Blogs
 * http://danielwhittaker.me/
