@@ -27,7 +27,7 @@ namespace EnjoyCQRS.EventSource
     public abstract class SnapshotAggregate<TSnapshot> : Aggregate, ISnapshotAggregate<TSnapshot> 
         where TSnapshot : Snapshot
     {
-        TSnapshot ISnapshotAggregate<TSnapshot>.TakeSnapshot()
+        TSnapshot ISnapshotAggregate<TSnapshot>.CreateSnapshot()
         {
             var snapshot = CreateSnapshot();
             

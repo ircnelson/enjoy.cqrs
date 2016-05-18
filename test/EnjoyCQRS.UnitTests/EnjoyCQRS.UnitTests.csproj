@@ -101,7 +101,7 @@
     <Compile Include="MessageBus\Stubs\SecondTestEventHandler.cs" />
     <Compile Include="MessageBus\Stubs\TestEvent.cs" />
     <Compile Include="Snapshoting\When_restore_snapshot.cs" />
-    <Compile Include="Snapshoting\When_take_snapshot.cs" />
+    <Compile Include="Snapshoting\When_create_snapshot.cs" />
     <Compile Include="Storage\EventStoreTests.cs" />
     <Compile Include="Storage\SessionTests.cs" />
     <Compile Include="Storage\StubEventStore.cs" />
