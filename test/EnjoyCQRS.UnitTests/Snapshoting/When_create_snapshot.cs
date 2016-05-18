@@ -5,19 +5,19 @@ using Xunit;
 
 namespace EnjoyCQRS.UnitTests.Snapshoting
 {
-    public class When_take_snapshot
+    public class When_create_snapshot
     {
         public const string CategoryName = "Unit";
         public const string CategoryValue = "Snapshot";
 
         private StubAggregateSnapshot _snapshot;
         
-        public When_take_snapshot()
+        public When_create_snapshot()
         {
             var stubSnapshotAggregate = ComplexStubAggregate.Create("Superman");
             stubSnapshotAggregate.ChangeName("Batman");
 
-            _snapshot = ((ISnapshotAggregate<StubAggregateSnapshot>) stubSnapshotAggregate).TakeSnapshot();
+            _snapshot = ((ISnapshotAggregate<StubAggregateSnapshot>) stubSnapshotAggregate).CreateSnapshot();
         }
 
         [Then]
