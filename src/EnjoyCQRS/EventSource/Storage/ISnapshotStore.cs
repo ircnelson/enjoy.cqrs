@@ -21,32 +21,40 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource.Snapshots;
 
-namespace EnjoyCQRS.EventSource
+namespace EnjoyCQRS.EventSource.Storage
 {
-    public abstract class SnapshotAggregate<TSnapshot> : Aggregate, ISnapshotAggregate
-        where TSnapshot : Snapshot
+    /// <summary>
+    /// Stores the snapshots.
+    /// </summary>
+    public interface ISnapshotStore
     {
-        ISnapshot ISnapshotAggregate.CreateSnapshot()
-        {
-            var snapshot = CreateSnapshot();
+        /// <summary>
+        /// Save the aggregate's snapshot.
+        /// </summary>
+        /// <typeparam name="TSnapshot"></typeparam>
+        /// <param name="snapshot"></param>
+        /// <returns></returns>
+        Task SaveSnapshotAsync<TSnapshot>(TSnapshot snapshot) where TSnapshot : ISnapshot;
 
-            snapshot.AggregateId = Id;
-            snapshot.Version = EventVersion;
+        /// <summary>
+        /// Retrieves the latest aggregate's snapshot.
+        /// </summary>
+        /// <typeparam name="TSnapshot"></typeparam>
+        /// <param name="aggregateId"></param>
+        /// <returns></returns>
+        Task<TSnapshot> GetSnapshotByIdAsync<TSnapshot>(Guid aggregateId) where TSnapshot : ISnapshot;
 
-            return snapshot;
-        }
-
-        void ISnapshotAggregate.Restore(ISnapshot snapshot)
-        {
-            Id = snapshot.AggregateId;
-            Version = snapshot.Version;
-
-            RestoreFromSnapshot((TSnapshot)snapshot);
-        }
-        
-        protected abstract TSnapshot CreateSnapshot();
-        protected abstract void RestoreFromSnapshot(TSnapshot snapshot);
+        /// <summary>
+        /// Retrieves the forward events from <param name="version"></param>.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="version"></param>
+        /// <returns></returns>
+        Task<IEnumerable<IDomainEvent>> GetEventsForwardAsync(Guid id, int version);
     }
 }

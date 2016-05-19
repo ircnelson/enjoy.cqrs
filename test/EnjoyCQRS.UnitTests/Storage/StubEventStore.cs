@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EnjoyCQRS.Events;
+using EnjoyCQRS.EventSource;
+using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;
 
 namespace EnjoyCQRS.UnitTests.Storage
@@ -10,8 +13,10 @@ namespace EnjoyCQRS.UnitTests.Storage
     public class StubEventStore : IEventStore
     {
         public readonly Dictionary<Guid, List<IDomainEvent>> EventStore = new Dictionary<Guid, List<IDomainEvent>>();
+        public readonly ConcurrentDictionary<Guid, List<ISnapshot>> SnapshotStore = new ConcurrentDictionary<Guid, List<ISnapshot>>();
+
         public bool InTransaction;
-        
+
         public void BeginTransaction()
         {
             InTransaction = true;
@@ -75,6 +80,25 @@ namespace EnjoyCQRS.UnitTests.Storage
             //}
         }
 
+
+        public Task SaveSnapshotAsync<TSnapshot>(TSnapshot snapshot) where TSnapshot : ISnapshot
+        {
+            List<ISnapshot> snapshots = new List<ISnapshot>();
+            SnapshotStore.GetOrAdd(snapshot.AggregateId, snapshots);
+            snapshots.Add(snapshot);
+
+            return Task.CompletedTask;
+        }
+
+        public Task<TSnapshot> GetSnapshotByIdAsync<TSnapshot>(Guid aggregateId) where TSnapshot : ISnapshot
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<IDomainEvent>> GetEventsForwardAsync(Guid id, int version)
+        {
+            throw new NotImplementedException();
+        }
         public void Dispose()
         {
         }

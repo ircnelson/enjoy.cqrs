@@ -30,7 +30,7 @@ namespace EnjoyCQRS.EventSource.Storage
     /// <summary>
     /// Event Store repository abstraction.
     /// </summary>
-    public interface IEventStore : IDisposable
+    public interface IEventStore : ISnapshotStore, IDisposable
     {
         /// <summary>
         /// Start the transaction.

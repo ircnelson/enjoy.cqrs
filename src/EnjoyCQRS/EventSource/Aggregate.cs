@@ -27,7 +27,7 @@ using EnjoyCQRS.Events;
 
 namespace EnjoyCQRS.EventSource
 {
-    public abstract class Aggregate
+    public abstract class Aggregate : IAggregate
     {
         private readonly List<IDomainEvent> _uncommitedEvents = new List<IDomainEvent>();
         private readonly Route<IDomainEvent> _routeEvents = new Route<IDomainEvent>();

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters;
 using System.Threading.Tasks;
 using EnjoyCQRS.Events;
+using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;
 using Newtonsoft.Json;
 
@@ -138,6 +139,21 @@ namespace EnjoyCQRS.IntegrationTests.Sqlite
 
             Connection = null;
             Transaction = null;
+        }
+
+        public Task SaveSnapshotAsync<TSnapshot>(TSnapshot snapshot) where TSnapshot : ISnapshot
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<TSnapshot> GetSnapshotByIdAsync<TSnapshot>(Guid aggregateId) where TSnapshot : ISnapshot
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<IDomainEvent>> GetEventsForwardAsync(Guid id, int version)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -26,6 +26,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource.Exceptions;
+using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.Messages;
 
 namespace EnjoyCQRS.EventSource.Storage
@@ -119,6 +120,15 @@ namespace EnjoyCQRS.EventSource.Storage
                 foreach (var aggregate in _aggregates)
                 {
                     var changes = aggregate.UncommitedEvents.ToList();
+
+                    #warning extract this to Strategy abstraction - its only for going to fast Green
+
+                    if (aggregate is ISnapshotAggregate)
+                    {
+                        var snapshot = ((ISnapshotAggregate) aggregate).CreateSnapshot();
+
+                        await _eventStore.SaveSnapshotAsync(snapshot).ConfigureAwait(false);
+                    }
 
                     await _eventStore.SaveAsync(changes).ConfigureAwait(false);
 

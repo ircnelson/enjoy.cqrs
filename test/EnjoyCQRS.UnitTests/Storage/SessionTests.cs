@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using EnjoyCQRS.EventSource.Exceptions;
 using EnjoyCQRS.EventSource.Storage;
@@ -21,7 +22,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             return session;
         };
 
-        [Then]
+        [Fact]
         public async Task Should_throw_exception_When_aggregate_version_is_wrong()
         {
             var eventStore = new StubEventStore();
@@ -53,7 +54,7 @@ namespace EnjoyCQRS.UnitTests.Storage
                 .And.Aggregate.Should().Be(stubAggregate1);
         }
 
-        [Then]
+        [Fact]
         public async Task Should_retrieve_the_aggregate_from_tracking()
         {
             var eventStore = new StubEventStore();
@@ -72,6 +73,38 @@ namespace EnjoyCQRS.UnitTests.Storage
             stubAggregate2.ChangeName("More changes");
 
             stubAggregate1.Should().BeSameAs(stubAggregate2);
+        }
+
+        [Fact]
+        public async Task When_SaveChanges_method_called_Should_store_the_snapshot()
+        {
+            // Arrange
+
+            var eventStore = new StubEventStore();
+            var session = _sessionFactory(eventStore);
+
+            var stubAggregate = StubSnapshotAggregate.Create("Snap");
+
+            stubAggregate.AddEntity("Child 1");
+            stubAggregate.AddEntity("Child 2");
+
+            await session.AddAsync(stubAggregate).ConfigureAwait(false);
+            
+
+            // Act
+
+            await session.SaveChangesAsync().ConfigureAwait(false);
+
+
+            // Assert
+
+            eventStore.SnapshotStore[stubAggregate.Id].First().Should().BeOfType<StubSnapshotAggregateSnapshot>();
+
+            var snapshot = eventStore.SnapshotStore[stubAggregate.Id].First().As<StubSnapshotAggregateSnapshot>();
+
+            snapshot.AggregateId.Should().Be(stubAggregate.Id);
+            snapshot.Name.Should().Be(stubAggregate.Name);
+            snapshot.SimpleEntities.Count.Should().Be(stubAggregate.Entities.Count);
         }
     }
 }

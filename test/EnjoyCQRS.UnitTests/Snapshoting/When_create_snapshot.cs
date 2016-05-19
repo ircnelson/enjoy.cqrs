@@ -10,30 +10,32 @@ namespace EnjoyCQRS.UnitTests.Snapshoting
         public const string CategoryName = "Unit";
         public const string CategoryValue = "Snapshot";
 
-        private StubAggregateSnapshot _snapshot;
+        private readonly ISnapshot _snapshot;
         
         public When_create_snapshot()
         {
-            var stubSnapshotAggregate = ComplexStubAggregate.Create("Superman");
+            var stubSnapshotAggregate = StubSnapshotAggregate.Create("Superman");
             stubSnapshotAggregate.ChangeName("Batman");
 
-            _snapshot = ((ISnapshotAggregate<StubAggregateSnapshot>) stubSnapshotAggregate).CreateSnapshot();
+            _snapshot = ((ISnapshotAggregate) stubSnapshotAggregate).CreateSnapshot();
         }
 
         [Then]
         [Trait(CategoryName, CategoryValue)]
         public void Should_create_an_snapshot_object()
         {
-            _snapshot.Should().BeOfType<StubAggregateSnapshot>();
+            _snapshot.Should().BeOfType<StubSnapshotAggregateSnapshot>();
         }
 
         [Then]
         [Trait(CategoryName, CategoryValue)]
         public void Should_verify_snapshot_properties()
         {
-            _snapshot.Name.Should().Be("Batman");
+            var snapshot = (StubSnapshotAggregateSnapshot) _snapshot;
 
-            _snapshot.Version.Should().Be(2);
+            snapshot.Name.Should().Be("Batman");
+
+            snapshot.Version.Should().Be(2);
         }
     }
 }

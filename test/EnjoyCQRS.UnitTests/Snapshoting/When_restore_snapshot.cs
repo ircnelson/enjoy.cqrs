@@ -11,20 +11,20 @@ namespace EnjoyCQRS.UnitTests.Snapshoting
         public const string CategoryName = "Unit";
         public const string CategoryValue = "Snapshot";
 
-        private StubAggregateSnapshot _snapshot;
-        private ComplexStubAggregate _stubAggregate;
+        private StubSnapshotAggregateSnapshot _snapshot;
+        private StubSnapshotAggregate _stubAggregate;
 
         public When_restore_snapshot()
         {
-            _snapshot = new StubAggregateSnapshot
+            _snapshot = new StubSnapshotAggregateSnapshot
             {
                 AggregateId = Guid.NewGuid(),
                 Name = "Coringa",
                 Version = 1
             };
 
-            _stubAggregate = new ComplexStubAggregate();
-            ((ISnapshotAggregate<StubAggregateSnapshot>)_stubAggregate).Restore(_snapshot);
+            _stubAggregate = new StubSnapshotAggregate();
+            ((ISnapshotAggregate)_stubAggregate).Restore(_snapshot);
         }
 
         [Then]
