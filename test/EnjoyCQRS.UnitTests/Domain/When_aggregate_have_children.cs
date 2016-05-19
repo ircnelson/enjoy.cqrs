@@ -10,7 +10,7 @@ using Xunit;
 
 namespace EnjoyCQRS.UnitTests.Domain
 {
-    public class When_aggregate_have_children : AggregateTestFixture<ComplexStubAggregate>
+    public class When_aggregate_have_children : AggregateTestFixture<StubSnapshotAggregate>
     {
         private string newChildName = "New child";
 

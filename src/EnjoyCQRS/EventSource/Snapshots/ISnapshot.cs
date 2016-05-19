@@ -21,32 +21,12 @@
 // SOFTWARE.
 
 using System;
-using EnjoyCQRS.EventSource.Snapshots;
 
-namespace EnjoyCQRS.EventSource
+namespace EnjoyCQRS.EventSource.Snapshots
 {
-    public abstract class SnapshotAggregate<TSnapshot> : Aggregate, ISnapshotAggregate
-        where TSnapshot : Snapshot
+    public interface ISnapshot
     {
-        ISnapshot ISnapshotAggregate.CreateSnapshot()
-        {
-            var snapshot = CreateSnapshot();
-
-            snapshot.AggregateId = Id;
-            snapshot.Version = EventVersion;
-
-            return snapshot;
-        }
-
-        void ISnapshotAggregate.Restore(ISnapshot snapshot)
-        {
-            Id = snapshot.AggregateId;
-            Version = snapshot.Version;
-
-            RestoreFromSnapshot((TSnapshot)snapshot);
-        }
-        
-        protected abstract TSnapshot CreateSnapshot();
-        protected abstract void RestoreFromSnapshot(TSnapshot snapshot);
+        Guid AggregateId { get; set; }
+        int Version { get; set; }
     }
 }

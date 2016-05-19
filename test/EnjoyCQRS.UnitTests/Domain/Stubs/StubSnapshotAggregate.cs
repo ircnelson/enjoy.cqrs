@@ -6,7 +6,7 @@ using EnjoyCQRS.UnitTests.Domain.Stubs.Events;
 
 namespace EnjoyCQRS.UnitTests.Domain.Stubs
 {
-    public class ComplexStubAggregate : SnapshotAggregate<StubAggregateSnapshot>
+    public class StubSnapshotAggregate : SnapshotAggregate<StubSnapshotAggregateSnapshot>
     {
         private readonly List<SimpleEntity> _entities = new List<SimpleEntity>();
 
@@ -14,18 +14,18 @@ namespace EnjoyCQRS.UnitTests.Domain.Stubs
 
         public IReadOnlyList<SimpleEntity> Entities => _entities.AsReadOnly();
 
-        private ComplexStubAggregate(Guid newGuid, string name)
+        private StubSnapshotAggregate(Guid newGuid, string name)
         {
             Emit(new StubAggregateCreatedEvent(newGuid, name));
         }
 
-        public ComplexStubAggregate()
+        public StubSnapshotAggregate()
         {
         }
 
-        public static ComplexStubAggregate Create(string name)
+        public static StubSnapshotAggregate Create(string name)
         {
-            return new ComplexStubAggregate(Guid.NewGuid(), name);
+            return new StubSnapshotAggregate(Guid.NewGuid(), name);
         }
 
         public void ChangeName(string name)
@@ -65,16 +65,16 @@ namespace EnjoyCQRS.UnitTests.Domain.Stubs
             });
         }
 
-        protected override StubAggregateSnapshot CreateSnapshot()
+        protected override StubSnapshotAggregateSnapshot CreateSnapshot()
         {
-            return new StubAggregateSnapshot
+            return new StubSnapshotAggregateSnapshot
             {
                 Name = Name,
                 SimpleEntities = _entities
             };
         }
 
-        protected override void RestoreFromSnapshot(StubAggregateSnapshot snapshot)
+        protected override void RestoreFromSnapshot(StubSnapshotAggregateSnapshot snapshot)
         {
             Name = snapshot.Name;
 

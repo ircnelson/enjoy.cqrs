@@ -80,7 +80,7 @@
   <ItemGroup>
     <Compile Include="Domain\Stubs\Events\ChildCreatedEvent.cs" />
     <Compile Include="Domain\Stubs\Events\ChildDisabledEvent.cs" />
-    <Compile Include="Domain\Stubs\ComplexStubAggregate.cs" />
+    <Compile Include="Domain\Stubs\StubSnapshotAggregate.cs" />
     <Compile Include="Domain\Stubs\Events\StubAggregateCreatedEvent.cs" />
     <Compile Include="Domain\Stubs\SimpleEntity.cs" />
     <Compile Include="Domain\Stubs\Events\NotRegisteredEvent.cs" />
@@ -89,7 +89,7 @@
     <Compile Include="Domain\Not_registered_event_in_aggregate.cs" />
     <Compile Include="Domain\Registered_event_in_aggregate.cs" />
     <Compile Include="Domain\Stubs\StubAggregate.cs" />
-    <Compile Include="Domain\Stubs\StubAggregateSnapshot.cs" />
+    <Compile Include="Domain\Stubs\StubSnapshotAggregateSnapshot.cs" />
     <Compile Include="Domain\When_aggregate_have_children.cs" />
     <Compile Include="Handlers\CommandHandlerTests.cs" />
     <Compile Include="Handlers\EventHandlerTests.cs" />
