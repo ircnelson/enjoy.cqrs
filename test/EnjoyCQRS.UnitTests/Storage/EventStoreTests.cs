@@ -34,7 +34,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             unitOfWorkMock.Setup(e => e.CommitAsync())
                 .Callback(async () =>
                 {
-                    await session.SaveChangesAsync();
+                    await session.SaveChangesAsync().ConfigureAwait(false);
                 })
                 .Returns(Task.CompletedTask);
 
@@ -48,9 +48,9 @@ namespace EnjoyCQRS.UnitTests.Storage
             var testAggregate = StubAggregate.Create("Walter White");
             testAggregate.ChangeName("Heinsenberg");
 
-            _repository.AddAsync(testAggregate);
+            await _repository.AddAsync(testAggregate).ConfigureAwait(false);
 
-            await _unitOfWork.CommitAsync();
+            await _unitOfWork.CommitAsync().ConfigureAwait(false);
 
             _inMemoryDomainEventStore.EventStore[testAggregate.Id].Count.Should().Be(2);
         }
@@ -62,8 +62,8 @@ namespace EnjoyCQRS.UnitTests.Storage
             var testAggregate = StubAggregate.Create("Walter White");
             testAggregate.ChangeName("Heinsenberg");
 
-            _repository.AddAsync(testAggregate);
-            await _unitOfWork.CommitAsync();
+            await _repository.AddAsync(testAggregate).ConfigureAwait(false);
+            await _unitOfWork.CommitAsync().ConfigureAwait(false);
 
             _mockEventPublisher.Verify(e => e.PublishAsync(It.IsAny<IEnumerable<IDomainEvent>>()));
         }
@@ -75,10 +75,10 @@ namespace EnjoyCQRS.UnitTests.Storage
             var testAggregate = StubAggregate.Create("Walter White");
             testAggregate.ChangeName("Heinsenberg");
 
-            _repository.AddAsync(testAggregate);
-            await _unitOfWork.CommitAsync();
+            await _repository.AddAsync(testAggregate).ConfigureAwait(false);
+            await _unitOfWork.CommitAsync().ConfigureAwait(false);
 
-            var testAggregate2 = await _repository.GetByIdAsync<StubAggregate>(testAggregate.Id);
+            var testAggregate2 = await _repository.GetByIdAsync<StubAggregate>(testAggregate.Id).ConfigureAwait(false);
             
             testAggregate.Version.Should().Be(testAggregate2.Version);
         }
