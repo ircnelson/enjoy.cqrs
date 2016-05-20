@@ -22,10 +22,11 @@ namespace EnjoyCQRS.IntegrationTests.Stubs
              * 
              * Use dynamic cast or use MakeGeneric
              */
-            await Routing((dynamic) command);
+             
+            await RoutingAsync((dynamic)command);
         }
 
-        private async Task Routing<TCommand>(TCommand command) where TCommand : ICommand
+        private async Task RoutingAsync<TCommand>(TCommand command) where TCommand : ICommand
         {
             var handler = _scope.Resolve<ICommandHandler<TCommand>>();
 
