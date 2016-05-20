@@ -51,7 +51,7 @@ namespace EnjoyCQRS.EventSource
         /// <summary>
         /// This version is calculated based on Uncommited events.
         /// </summary>
-        public int EventVersion { get; protected set; }
+        public int EventVersion { get; internal set; }
 
         /// <summary>
         /// Aggregate default constructor.
@@ -130,10 +130,14 @@ namespace EnjoyCQRS.EventSource
             {
                 EventVersion = events.Max(e => e.Version);
 
-                Version = EventVersion;
+                UpdateVersion(EventVersion);
             }
         }
 
+        /// <summary>
+        /// Update aggregate's version.
+        /// </summary>
+        /// <param name="version"></param>
         internal void UpdateVersion(int version)
         {
             Version = version;

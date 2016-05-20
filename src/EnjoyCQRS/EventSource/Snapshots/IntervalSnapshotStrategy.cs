@@ -20,32 +20,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using EnjoyCQRS.EventSource.Snapshots;
+using System;
 
-namespace EnjoyCQRS.EventSource
+namespace EnjoyCQRS.EventSource.Snapshots
 {
-    public abstract class SnapshotAggregate<TSnapshot> : Aggregate, ISnapshotAggregate
-        where TSnapshot : Snapshot
+    public class IntervalSnapshotStrategy : ISnapshotStrategy
     {
-        ISnapshot ISnapshotAggregate.CreateSnapshot()
+        public int SnapshotInterval { get; }
+
+        private static readonly Type SnapshotType = typeof (ISnapshotAggregate);
+
+        public IntervalSnapshotStrategy(int snapshotInterval = 100)
         {
-            var snapshot = CreateSnapshot();
-
-            snapshot.AggregateId = Id;
-            snapshot.Version = EventVersion;
-
-            return snapshot;
+            SnapshotInterval = snapshotInterval;
         }
 
-        void ISnapshotAggregate.Restore(ISnapshot snapshot)
+        public bool IsSnapshotable(Type aggregateType)
         {
-            Id = snapshot.AggregateId;
-            Version = snapshot.Version;
+            if (aggregateType.BaseType == null) return false;
 
-            RestoreFromSnapshot((TSnapshot)snapshot);
+            if (SnapshotType.IsAssignableFrom(aggregateType)) return true;
+
+            return IsSnapshotable(aggregateType.BaseType);
         }
-        
-        protected abstract TSnapshot CreateSnapshot();
-        protected abstract void RestoreFromSnapshot(TSnapshot snapshot);
+
+        public bool ShouldMakeSnapshot(IAggregate aggregate)
+        {
+            if (!IsSnapshotable(aggregate.GetType())) return false;
+
+            return (aggregate.EventVersion % SnapshotInterval == 0);
+        }
     }
 }
