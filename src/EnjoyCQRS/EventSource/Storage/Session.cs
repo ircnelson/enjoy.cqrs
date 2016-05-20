@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using EnjoyCQRS.Events;
@@ -37,14 +38,21 @@ namespace EnjoyCQRS.EventSource.Storage
         private readonly IEventStore _eventStore;
         private readonly IEventPublisher _eventPublisher;
         private readonly List<Aggregate> _aggregates = new List<Aggregate>();
+        private readonly ISnapshotStrategy _snapshotStrategy;
 
         private bool _externalTransaction;
 
-        public Session(IEventStore eventStore, IEventPublisher eventPublisher)
+        public Session(IEventStore eventStore, IEventPublisher eventPublisher, ISnapshotStrategy snapshotStrategy = null)
         {
             if (eventStore == null) throw new ArgumentNullException(nameof(eventStore));
             if (eventPublisher == null) throw new ArgumentNullException(nameof(eventPublisher));
+            
+            if (snapshotStrategy == null)
+            {
+                snapshotStrategy = new IntervalSnapshotStrategy();
+            }
 
+            _snapshotStrategy = snapshotStrategy;
             _aggregateTracker = new AggregateTracker();
             _eventStore = eventStore;
             _eventPublisher = eventPublisher;
@@ -67,30 +75,37 @@ namespace EnjoyCQRS.EventSource.Storage
 
             IEnumerable<IDomainEvent> events;
 
-            #warning MOVE IT!
-
-            
-            var snapshotAggregate = aggregate as ISnapshotAggregate;
-            if (snapshotAggregate != null)
+            if (_snapshotStrategy.IsSnapshotable(aggregate.GetType()))
             {
-                var snapshot = await _eventStore.GetSnapshotByIdAsync(id);
+                var snapshotAggregate = aggregate as ISnapshotAggregate;
+                if (snapshotAggregate != null)
+                {
+                    var snapshot = await _eventStore.GetSnapshotByIdAsync(id);
 
-                snapshotAggregate.Restore(snapshot);
+                    snapshotAggregate.Restore(snapshot);
 
-                events = await _eventStore.GetEventsForwardAsync(id, snapshot.Version).ConfigureAwait(false);
+                    events = await _eventStore.GetEventsForwardAsync(id, snapshot.Version).ConfigureAwait(false);
+
+                    LoadAggregate(aggregate, events);
+                }
             }
             else
             {
                 events = await _eventStore.GetAllEventsAsync(id).ConfigureAwait(false);
+
+                LoadAggregate(aggregate, events);
             }
-           
-            aggregate.LoadFromHistory(events);
 
             if (aggregate.Id.Equals(Guid.Empty)) throw new AggregateNotFoundException(typeof(TAggregate).Name, id);
 
             RegisterForTracking(aggregate);
 
             return aggregate;
+        }
+
+        private void LoadAggregate<TAggregate>(TAggregate aggregate, IEnumerable<IDomainEvent> events) where TAggregate : Aggregate
+        {
+            aggregate.LoadFromHistory(events);
         }
 
         /// <summary>
@@ -137,9 +152,12 @@ namespace EnjoyCQRS.EventSource.Storage
                 foreach (var aggregate in _aggregates)
                 {
                     var changes = aggregate.UncommitedEvents.ToList();
-                    
-                    await TakeSnapshot(aggregate);
 
+                    if (_snapshotStrategy.ShouldMakeSnapshot(aggregate))
+                    {
+                        await TakeSnapshot(aggregate);
+                    }
+                    
                     await _eventStore.SaveAsync(changes).ConfigureAwait(false);
 
                     await _eventPublisher.PublishAsync<IDomainEvent>(changes).ConfigureAwait(false);
@@ -171,13 +189,9 @@ namespace EnjoyCQRS.EventSource.Storage
 
         private async Task TakeSnapshot(Aggregate aggregate)
         {
-            var snapshotAggregate = aggregate as ISnapshotAggregate;
-            if (snapshotAggregate != null)
-            {
-                var snapshot = snapshotAggregate.CreateSnapshot();
+            var snapshot = ((ISnapshotAggregate)aggregate).CreateSnapshot();
 
-                await _eventStore.SaveSnapshotAsync(snapshot).ConfigureAwait(false);
-            }
+            await _eventStore.SaveSnapshotAsync(snapshot).ConfigureAwait(false);
         }
 
         /// <summary>

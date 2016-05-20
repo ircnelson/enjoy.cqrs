@@ -43,6 +43,8 @@
     <Compile Include="Bus\IEventRouter.cs" />
     <Compile Include="EventSource\IAggregate.cs" />
     <Compile Include="EventSource\Snapshots\ISnapshot.cs" />
+    <Compile Include="EventSource\Snapshots\IntervalSnapshotStrategy.cs" />
+    <Compile Include="EventSource\Snapshots\ISnapshotStrategy.cs" />
     <Compile Include="EventSource\Storage\ISnapshotStore.cs" />
     <Compile Include="EventSource\Snapshots\Snapshot.cs" />
     <Compile Include="EventSource\SnapshotAggregate.cs" />

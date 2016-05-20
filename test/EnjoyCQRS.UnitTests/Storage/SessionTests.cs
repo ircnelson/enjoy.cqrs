@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Exceptions;
+using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;
 using EnjoyCQRS.Messages;
 using EnjoyCQRS.UnitTests.Domain;
@@ -14,10 +16,10 @@ namespace EnjoyCQRS.UnitTests.Storage
 {
     public class SessionTests
     {
-        private readonly Func<IEventStore, Session> _sessionFactory = (eventStore) =>
+        private readonly Func<IEventStore, ISnapshotStrategy, Session> _sessionFactory = (eventStore, snapshotStrategy) =>
         {
             var eventPublisherMock = new Mock<IEventPublisher>();
-            var session = new Session(eventStore, eventPublisherMock.Object);
+            var session = new Session(eventStore, eventPublisherMock.Object, snapshotStrategy);
 
             return session;
         };
@@ -28,7 +30,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             var eventStore = new StubEventStore();
 
             // create first session instance
-            var session = _sessionFactory(eventStore);
+            var session = _sessionFactory(eventStore, null);
 
             var stubAggregate1 = StubAggregate.Create("Walter White");
 
@@ -39,7 +41,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             stubAggregate1.ChangeName("Going to Version 2. Expected Version 1.");
 
             // create second session instance to getting clear tracking
-            session = _sessionFactory(eventStore);
+            session = _sessionFactory(eventStore, null);
 
             var stubAggregate2 = await session.GetByIdAsync<StubAggregate>(stubAggregate1.Id).ConfigureAwait(false);
 
@@ -58,7 +60,7 @@ namespace EnjoyCQRS.UnitTests.Storage
         public async Task Should_retrieve_the_aggregate_from_tracking()
         {
             var eventStore = new StubEventStore();
-            var session = _sessionFactory(eventStore);
+            var session = _sessionFactory(eventStore, null);
 
             var stubAggregate1 = StubAggregate.Create("Walter White");
 
@@ -80,8 +82,10 @@ namespace EnjoyCQRS.UnitTests.Storage
         {
             // Arrange
 
+            var snapshotStrategy = CreateSnapshotStrategy();
+
             var eventStore = new StubEventStore();
-            var session = _sessionFactory(eventStore);
+            var session = _sessionFactory(eventStore, snapshotStrategy);
 
             var stubAggregate = StubSnapshotAggregate.Create("Snap");
 
@@ -112,8 +116,10 @@ namespace EnjoyCQRS.UnitTests.Storage
         [Fact]
         public async Task Should_restore_aggregate_using_snapshot()
         {
+            var snapshotStrategy = CreateSnapshotStrategy();
+            
             var eventStore = new StubEventStore();
-            var session = _sessionFactory(eventStore);
+            var session = _sessionFactory(eventStore, snapshotStrategy);
 
             var stubAggregate = StubSnapshotAggregate.Create("Snap");
 
@@ -123,7 +129,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             await session.AddAsync(stubAggregate).ConfigureAwait(false);
             await session.SaveChangesAsync().ConfigureAwait(false);
 
-            session = _sessionFactory(eventStore);
+            session = _sessionFactory(eventStore, null);
 
             var aggregate = await session.GetByIdAsync<StubSnapshotAggregate>(stubAggregate.Id).ConfigureAwait(false);
 
@@ -133,12 +139,15 @@ namespace EnjoyCQRS.UnitTests.Storage
             aggregate.Id.Should().Be(stubAggregate.Id);
         }
 
+
         [Fact]
         public async Task Getting_snapshot_and_forward_events()
         {
-            var eventStore = new StubEventStore();
+            var snapshotStrategy = CreateSnapshotStrategy(true);
 
-            var session = _sessionFactory(eventStore);
+            var eventStore = new StubEventStore();
+            
+            var session = _sessionFactory(eventStore, snapshotStrategy);
 
             var stubAggregate = StubSnapshotAggregate.Create("Snap");
 
@@ -147,18 +156,26 @@ namespace EnjoyCQRS.UnitTests.Storage
             
             stubAggregate.ChangeName("Renamed");
             stubAggregate.ChangeName("Renamed again");
-            
+
             // dont make snapshot
-            eventStore.MakeSnapshot = false;
+            snapshotStrategy = CreateSnapshotStrategy(false);
 
             await session.AddAsync(stubAggregate).ConfigureAwait(false);
             await session.SaveChangesAsync().ConfigureAwait(false); // Version 3
 
-            session = _sessionFactory(eventStore);
+            session = _sessionFactory(eventStore, snapshotStrategy);
             
             var stubAggregateFromSnapshot = await session.GetByIdAsync<StubSnapshotAggregate>(stubAggregate.Id);
 
             stubAggregateFromSnapshot.Version.Should().Be(3);
+        }
+        private static ISnapshotStrategy CreateSnapshotStrategy(bool makeSnapshot = true)
+        {
+            var snapshotStrategyMock = new Mock<ISnapshotStrategy>();
+            snapshotStrategyMock.Setup(e => e.IsSnapshotable(It.IsAny<Type>())).Returns(true);
+            snapshotStrategyMock.Setup(e => e.ShouldMakeSnapshot(It.IsAny<IAggregate>())).Returns(makeSnapshot);
+
+            return snapshotStrategyMock.Object;
         }
     }
 }

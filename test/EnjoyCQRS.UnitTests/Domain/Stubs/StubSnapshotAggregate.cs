@@ -22,7 +22,7 @@ namespace EnjoyCQRS.UnitTests.Domain.Stubs
         public StubSnapshotAggregate()
         {
         }
-
+        
         public static StubSnapshotAggregate Create(string name)
         {
             return new StubSnapshotAggregate(Guid.NewGuid(), name);

@@ -1,6 +1,5 @@
 ﻿using System;
 using Autofac;
-using Autofac.Features.Variance;
 using EnjoyCQRS.Bus;
 using EnjoyCQRS.Bus.InProcess;
 using EnjoyCQRS.Commands;
