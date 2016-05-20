@@ -22,6 +22,7 @@
 
 using System;
 using System.Threading.Tasks;
+using EnjoyCQRS.EventSource.Snapshots;
 
 namespace EnjoyCQRS.EventSource.Storage
 {
@@ -37,7 +38,7 @@ namespace EnjoyCQRS.EventSource.Storage
         /// <param name="id"></param>
         /// <returns></returns>
         Task<TAggregate> GetByIdAsync<TAggregate>(Guid id) where TAggregate : Aggregate, new();
-
+        
         /// <summary>
         /// Add an instance of <typeparam name="TAggregate"></typeparam>.
         /// </summary>

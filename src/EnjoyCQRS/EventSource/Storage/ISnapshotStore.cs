@@ -44,17 +44,16 @@ namespace EnjoyCQRS.EventSource.Storage
         /// <summary>
         /// Retrieves the latest aggregate's snapshot.
         /// </summary>
-        /// <typeparam name="TSnapshot"></typeparam>
         /// <param name="aggregateId"></param>
         /// <returns></returns>
-        Task<TSnapshot> GetSnapshotByIdAsync<TSnapshot>(Guid aggregateId) where TSnapshot : ISnapshot;
+        Task<ISnapshot> GetSnapshotByIdAsync(Guid aggregateId);
 
         /// <summary>
         /// Retrieves the forward events from <param name="version"></param>.
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="aggregateId"></param>
         /// <param name="version"></param>
         /// <returns></returns>
-        Task<IEnumerable<IDomainEvent>> GetEventsForwardAsync(Guid id, int version);
+        Task<IEnumerable<IDomainEvent>> GetEventsForwardAsync(Guid aggregateId, int version);
     }
 }

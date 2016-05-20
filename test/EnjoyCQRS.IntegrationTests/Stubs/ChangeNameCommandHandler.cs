@@ -18,7 +18,7 @@ namespace EnjoyCQRS.IntegrationTests.Stubs
             var aggregate = await _repository.GetByIdAsync<FakePerson>(command.AggregateId);
             aggregate.ChangeName(command.Name);
 
-            _repository.AddAsync(aggregate);
+            await _repository.AddAsync(aggregate).ConfigureAwait(false);
         }
     }
 }
