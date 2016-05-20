@@ -64,22 +64,6 @@ namespace EnjoyCQRS.EventSource
         /// <summary>
         /// This method is called internaly and you can put all handlers here.
         /// </summary>
-        /// <example>
-        /// Example:
-        /// <code lang="c#">
-        /// <![CDATA[
-        /// void RegisterEvents() 
-        /// {
-        ///     On<MyEvent>(ApplyMyEvent);
-        /// }
-        /// 
-        /// private void ApplyMyEvent(MyEvent ev)
-        /// {
-        ///     Console.WriteLine(ev);
-        /// }
-        /// ]]>
-        /// </code>
-        /// </example>
         protected abstract void RegisterEvents();
 
         protected void SubscribeTo<T>(Action<T> action)
@@ -145,9 +129,14 @@ namespace EnjoyCQRS.EventSource
             if (events != null && events.Any())
             {
                 EventVersion = events.Max(e => e.Version);
-            }
 
-            Version = EventVersion;
+                Version = EventVersion;
+            }
+        }
+
+        internal void UpdateVersion(int version)
+        {
+            Version = version;
         }
     }
 }

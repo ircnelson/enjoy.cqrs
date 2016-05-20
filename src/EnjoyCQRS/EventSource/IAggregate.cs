@@ -10,7 +10,6 @@ namespace EnjoyCQRS.EventSource
         int EventVersion { get; }
         IReadOnlyCollection<IDomainEvent> UncommitedEvents { get; }
         int Version { get; }
-
         void ClearUncommitedEvents();
         void LoadFromHistory(IEnumerable<IDomainEvent> events);
     }

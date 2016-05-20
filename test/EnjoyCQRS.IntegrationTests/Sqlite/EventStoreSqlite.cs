@@ -146,12 +146,12 @@ namespace EnjoyCQRS.IntegrationTests.Sqlite
             throw new NotImplementedException();
         }
 
-        public Task<TSnapshot> GetSnapshotByIdAsync<TSnapshot>(Guid aggregateId) where TSnapshot : ISnapshot
+        public Task<ISnapshot> GetSnapshotByIdAsync(Guid aggregateId)
         {
             throw new NotImplementedException();
         }
-
-        public Task<IEnumerable<IDomainEvent>> GetEventsForwardAsync(Guid id, int version)
+        
+        public Task<IEnumerable<IDomainEvent>> GetEventsForwardAsync(Guid aggregateId, int version)
         {
             throw new NotImplementedException();
         }

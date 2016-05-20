@@ -15,6 +15,11 @@ namespace EnjoyCQRS.UnitTests.Storage
         public readonly Dictionary<Guid, List<IDomainEvent>> EventStore = new Dictionary<Guid, List<IDomainEvent>>();
         public readonly ConcurrentDictionary<Guid, List<ISnapshot>> SnapshotStore = new ConcurrentDictionary<Guid, List<ISnapshot>>();
 
+        public bool SaveSnapshotMethodCalled { get; private set; }
+        public bool GetSnapshotMethodCalled { get; private set; }
+
+        public bool MakeSnapshot { get; set; } = true;
+
         public bool InTransaction;
 
         public void BeginTransaction()
@@ -65,39 +70,36 @@ namespace EnjoyCQRS.UnitTests.Storage
             }
 
             return Task.CompletedTask;
-            
-            //else
-            //{
-            //    var existingEvents = EventStore[aggregateId];
-            //    var currentversion = existingEvents.Count;
-
-            //    if (currentversion != expectedVersion)
-            //    {
-            //        throw new WrongExpectedVersionException($"Expected version {expectedVersion} but the version is {currentversion}");
-            //    }
-
-            //    existingEvents.AddRange(events);
-            //}
         }
 
 
         public Task SaveSnapshotAsync<TSnapshot>(TSnapshot snapshot) where TSnapshot : ISnapshot
         {
-            List<ISnapshot> snapshots = new List<ISnapshot>();
+            SaveSnapshotMethodCalled = true;
+
+            if (!MakeSnapshot) return Task.CompletedTask;
+
+            var snapshots = new List<ISnapshot>();
             SnapshotStore.GetOrAdd(snapshot.AggregateId, snapshots);
             snapshots.Add(snapshot);
 
             return Task.CompletedTask;
         }
 
-        public Task<TSnapshot> GetSnapshotByIdAsync<TSnapshot>(Guid aggregateId) where TSnapshot : ISnapshot
+        public Task<ISnapshot> GetSnapshotByIdAsync(Guid aggregateId)
         {
-            throw new NotImplementedException();
+            GetSnapshotMethodCalled = true;
+
+            var snapshot = SnapshotStore[aggregateId].OrderBy(o => o.Version).LastOrDefault();
+
+            return Task.FromResult(snapshot);
         }
 
-        public Task<IEnumerable<IDomainEvent>> GetEventsForwardAsync(Guid id, int version)
+        public Task<IEnumerable<IDomainEvent>> GetEventsForwardAsync(Guid aggregateId, int version)
         {
-            throw new NotImplementedException();
+            var events = EventStore[aggregateId].Where(e => e.Version > version);
+
+            return Task.FromResult(events);
         }
         public void Dispose()
         {
