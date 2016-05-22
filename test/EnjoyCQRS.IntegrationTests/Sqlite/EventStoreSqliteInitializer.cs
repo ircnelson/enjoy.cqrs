@@ -20,22 +20,35 @@ namespace EnjoyCQRS.IntegrationTests.Sqlite
             SQLiteConnection.CreateFile(FileName);
         }
 
-        public void CreateTable()
+        public void CreateTables()
         {
             using (var connection = new SQLiteConnection($"Data Source={FileName}"))
             {
                 var command = connection.CreateCommand();
-                command.CommandText = @"CREATE TABLE Events (Id [uniqueidentifier] PRIMARY KEY, 
+
+                string[] commandTexts = new[]
+                {
+                    @"CREATE TABLE Events (Id [uniqueidentifier] PRIMARY KEY, 
                                                              AggregateId [uniqueidentifier] NOT NULL, 
                                                              Timestamp [CURRENT_TIMESTAMP] NOT NULL, 
                                                              EventTypeName [VARCHAR(250)] NOT NULL, 
                                                              Body [TEXT] NOT NULL,
-                                                             Version [INT])";
+                                                             Version [INT])",
+
+                    @"CREATE TABLE Snapshots (AggregateId [uniqueidentifier], 
+                                                                Timestamp [CURRENT_TIMESTAMP] NOT NULL, 
+                                                                Body [TEXT] NOT NULL, 
+                                                                Version [INT])"
+                };
 
                 connection.Open();
 
-                command.ExecuteNonQuery();
-
+                foreach (var commandText in commandTexts)
+                {
+                    command.CommandText = commandText;
+                    command.ExecuteNonQuery();
+                }
+                
                 connection.Close();
             }
         }

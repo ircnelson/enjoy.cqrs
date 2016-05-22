@@ -15,17 +15,15 @@ namespace EnjoyCQRS.IntegrationTests.Stubs
             _scope = scope;
         }
         
-        public Task RouteAsync<TEvent>(TEvent @event) 
+        public async Task RouteAsync<TEvent>(TEvent @event) 
             where TEvent : IDomainEvent
         {
             var handlers = _scope.ResolveOptional<IEnumerable<IEventHandler<TEvent>>>();
 
             foreach (var handler in handlers)
             {
-                handler.ExecuteAsync(@event);
+                await handler.ExecuteAsync(@event).ConfigureAwait(false);
             }
-
-            return Task.CompletedTask;
         }
     }
 }

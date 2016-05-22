@@ -172,7 +172,7 @@ namespace EnjoyCQRS.UnitTests.Storage
         private static ISnapshotStrategy CreateSnapshotStrategy(bool makeSnapshot = true)
         {
             var snapshotStrategyMock = new Mock<ISnapshotStrategy>();
-            snapshotStrategyMock.Setup(e => e.IsSnapshotable(It.IsAny<Type>())).Returns(true);
+            snapshotStrategyMock.Setup(e => e.CheckSnapshotSupport(It.IsAny<Type>())).Returns(true);
             snapshotStrategyMock.Setup(e => e.ShouldMakeSnapshot(It.IsAny<IAggregate>())).Returns(makeSnapshot);
 
             return snapshotStrategyMock.Object;

@@ -4,7 +4,9 @@ using Autofac;
 using EnjoyCQRS.Commands;
 using EnjoyCQRS.EventSource.Storage;
 using EnjoyCQRS.IntegrationTests.Fixtures;
-using EnjoyCQRS.IntegrationTests.Stubs;
+using EnjoyCQRS.IntegrationTests.Sqlite;
+using EnjoyCQRS.IntegrationTests.Stubs.ApplicationLayer;
+using EnjoyCQRS.IntegrationTests.Stubs.DomainLayer;
 using EnjoyCQRS.Messages;
 using FluentAssertions;
 using Xunit;
@@ -25,7 +27,7 @@ namespace EnjoyCQRS.IntegrationTests
         
         [Fact]
         [Trait(CategoryName, CategoryValue)]
-        public async Task Should_simulate_application()
+        public async Task Should_dispatch_command_and_retrieve_aggregate_from_repository()
         {
             using (var scope = _fixture.Container.BeginLifetimeScope())
             {
@@ -43,7 +45,36 @@ namespace EnjoyCQRS.IntegrationTests
                 aggregateFromRepository.Id.Should().Be(command.AggregateId);
             }
         }
-        
+
+        [Fact]
+        [Trait(CategoryName, CategoryValue)]
+        public async Task Should_take_and_restore_snapshot()
+        {
+            var command = new CreateFakeGameCommand(Guid.NewGuid(), "Player 1", "Player 2");
+
+            using (var scope = _fixture.Container.BeginLifetimeScope())
+            {
+                DoDispatch(scope, command);
+
+                _fixture.EventStore.SaveSnapshotCalled.Should().BeTrue();
+            }
+
+            using (var scope = _fixture.Container.BeginLifetimeScope())
+            {
+                var repository = scope.Resolve<IRepository>();
+
+                var aggregateFromRepository = await repository.GetByIdAsync<FakeGame>(command.AggregateId).ConfigureAwait(false);
+
+                aggregateFromRepository.Should().NotBeNull();
+
+                aggregateFromRepository.Id.Should().Be(command.AggregateId);
+                aggregateFromRepository.NamePlayerOne.Should().Be(command.PlayerOneName);
+                aggregateFromRepository.NamePlayerTwo.Should().Be(command.PlayerTwoName);
+
+                _fixture.EventStore.GetSnapshotCalled.Should().BeTrue();
+            }
+        }
+
         private async void DoDispatch(ILifetimeScope scope, ICommand command)
         {
             if (scope == null) throw new ArgumentNullException(nameof(scope));

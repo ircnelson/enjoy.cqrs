@@ -14,23 +14,22 @@ namespace EnjoyCQRS.IntegrationTests.Stubs
             _session = session;
         }
 
-        public Task CommitAsync()
+        public async Task CommitAsync()
         {
+            _session.BeginTransaction();
+
             try
             {
-                _session.BeginTransaction();
+                await _session.SaveChangesAsync().ConfigureAwait(false);
 
-                _session.SaveChangesAsync();
-
-                _session.CommitAsync();
+                await _session.CommitAsync().ConfigureAwait(false);
             }
             catch (Exception)
             {
                 _session.Rollback();
+
                 throw;
             }
-            
-            return Task.CompletedTask;
         }
     }
 }

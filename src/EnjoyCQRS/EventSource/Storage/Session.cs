@@ -22,7 +22,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using EnjoyCQRS.Events;
@@ -75,7 +74,7 @@ namespace EnjoyCQRS.EventSource.Storage
 
             IEnumerable<IDomainEvent> events;
 
-            if (_snapshotStrategy.IsSnapshotable(aggregate.GetType()))
+            if (_snapshotStrategy.CheckSnapshotSupport(aggregate.GetType()))
             {
                 var snapshotAggregate = aggregate as ISnapshotAggregate;
                 if (snapshotAggregate != null)
@@ -155,7 +154,7 @@ namespace EnjoyCQRS.EventSource.Storage
 
                     if (_snapshotStrategy.ShouldMakeSnapshot(aggregate))
                     {
-                        await TakeSnapshot(aggregate);
+                        await TakeSnapshot(aggregate).ConfigureAwait(false);
                     }
                     
                     await _eventStore.SaveAsync(changes).ConfigureAwait(false);

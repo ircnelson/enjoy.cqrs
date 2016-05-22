@@ -56,7 +56,6 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
@@ -80,20 +79,24 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Fixtures\MiniApplicationFixture.cs" />
-    <Compile Include="Stubs\ChangeNameCommand.cs" />
-    <Compile Include="Stubs\ChangeNameCommandHandler.cs" />
+    <Compile Include="Stubs\ApplicationLayer\ChangeNameCommand.cs" />
+    <Compile Include="Stubs\ApplicationLayer\ChangeNameCommandHandler.cs" />
     <Compile Include="Extensions\CustomRegistrationExtensions.cs" />
+    <Compile Include="Stubs\ApplicationLayer\CreateFakeGameCommand.cs" />
+    <Compile Include="Stubs\ApplicationLayer\CreateFakeGameCommandHandler.cs" />
     <Compile Include="Stubs\EventRouter.cs" />
     <Compile Include="MiniApplicationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sqlite\EventStoreSqlite.cs" />
     <Compile Include="Sqlite\EventStoreSqliteInitializer.cs" />
-    <Compile Include="Stubs\CreateFakePersonCommand.cs" />
-    <Compile Include="Stubs\CreateFakePersonCommandHandler.cs" />
-    <Compile Include="Stubs\FakePerson.cs" />
-    <Compile Include="Stubs\FakePersonCreatedEvent.cs" />
-    <Compile Include="Stubs\FakePersonCreatedEventHandler.cs" />
-    <Compile Include="Stubs\NameChangedEvent.cs" />
+    <Compile Include="Stubs\ApplicationLayer\CreateFakePersonCommand.cs" />
+    <Compile Include="Stubs\ApplicationLayer\CreateFakePersonCommandHandler.cs" />
+    <Compile Include="Stubs\DomainLayer\FakeGame.cs" />
+    <Compile Include="Stubs\DomainLayer\FakeGameCreated.cs" />
+    <Compile Include="Stubs\DomainLayer\FakePerson.cs" />
+    <Compile Include="Stubs\DomainLayer\FakePersonCreated.cs" />
+    <Compile Include="Stubs\ReadModelLayer\FakePersonCreatedEventHandler.cs" />
+    <Compile Include="Stubs\DomainLayer\NameChanged.cs" />
     <Compile Include="Stubs\StubCommandBus.cs" />
     <Compile Include="Stubs\StubUnitOfWork.cs" />
   </ItemGroup>

@@ -15,7 +15,7 @@ namespace EnjoyCQRS.UnitTests.Snapshoting
             var snapshotAggregateType = typeof(StubSnapshotAggregate);
             
             var defaultSnapshotStrategy = new IntervalSnapshotStrategy();
-            var hasSupport = defaultSnapshotStrategy.IsSnapshotable(snapshotAggregateType);
+            var hasSupport = defaultSnapshotStrategy.CheckSnapshotSupport(snapshotAggregateType);
 
             hasSupport.Should().BeTrue();
         }
@@ -26,7 +26,7 @@ namespace EnjoyCQRS.UnitTests.Snapshoting
             var snapshotAggregateType = typeof(StubAggregate);
 
             var defaultSnapshotStrategy = new IntervalSnapshotStrategy();
-            var hasSupport = defaultSnapshotStrategy.IsSnapshotable(snapshotAggregateType);
+            var hasSupport = defaultSnapshotStrategy.CheckSnapshotSupport(snapshotAggregateType);
 
             hasSupport.Should().BeFalse();
         }

@@ -5,10 +5,12 @@ using EnjoyCQRS.Bus.InProcess;
 using EnjoyCQRS.Commands;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource;
+using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;
 using EnjoyCQRS.IntegrationTests.Extensions;
 using EnjoyCQRS.IntegrationTests.Sqlite;
 using EnjoyCQRS.IntegrationTests.Stubs;
+using EnjoyCQRS.IntegrationTests.Stubs.DomainLayer;
 using EnjoyCQRS.Messages;
 
 namespace EnjoyCQRS.IntegrationTests.Fixtures
@@ -16,6 +18,9 @@ namespace EnjoyCQRS.IntegrationTests.Fixtures
     public class MiniApplicationFixture : IDisposable
     {
         public IContainer Container { get; private set; }
+        public EventStoreSqlite EventStore { get; set; }
+
+        public IntervalSnapshotStrategy SnapshotStrategy { get; set; } = new IntervalSnapshotStrategy(1);
 
         public MiniApplicationFixture()
         {
@@ -24,17 +29,21 @@ namespace EnjoyCQRS.IntegrationTests.Fixtures
             var eventStoreSqliteInitializer = new EventStoreSqliteInitializer(fileName);
 
             eventStoreSqliteInitializer.CreateDatabase(true);
-            eventStoreSqliteInitializer.CreateTable();
+            eventStoreSqliteInitializer.CreateTables();
             
             var builder = new ContainerBuilder();
             
+            builder.Register(c => SnapshotStrategy).As<ISnapshotStrategy>();
             builder.RegisterType<StubUnitOfWork>().As<IUnitOfWork>().InstancePerLifetimeScope();
             builder.RegisterType<Session>().As<ISession>().InstancePerLifetimeScope();
             builder.RegisterType<Repository>().As<IRepository>();
             builder.RegisterType<StubCommandBus>().As<ICommandDispatcher>().InstancePerLifetimeScope();
             builder.RegisterType<EventPublisher>().As<IEventPublisher>().InstancePerLifetimeScope();
             builder.RegisterType<EventRouter>().As<IEventRouter>();
-            builder.Register(c => new EventStoreSqlite(fileName)).As<IEventStore>();
+            builder.Register(c => new EventStoreSqlite(fileName)).As<IEventStore>().OnActivated(args =>
+            {
+                EventStore = args.Instance;
+            });
 
             var assemblyCommandHandlers = typeof (FakePerson).Assembly;
 
