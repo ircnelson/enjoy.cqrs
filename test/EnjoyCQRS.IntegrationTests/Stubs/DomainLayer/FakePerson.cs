@@ -1,7 +1,7 @@
 ﻿using System;
 using EnjoyCQRS.EventSource;
 
-namespace EnjoyCQRS.IntegrationTests.Stubs
+namespace EnjoyCQRS.IntegrationTests.Stubs.DomainLayer
 {
     public class FakePerson : Aggregate
     {
@@ -11,18 +11,18 @@ namespace EnjoyCQRS.IntegrationTests.Stubs
 
         public FakePerson(Guid id, string name) : this()
         {
-            Emit(new FakePersonCreatedEvent(id, name));
+            Emit(new FakePersonCreated(id, name));
         }
 
         protected override void RegisterEvents()
         {
-            SubscribeTo<FakePersonCreatedEvent>(evt =>
+            SubscribeTo<FakePersonCreated>(evt =>
             {
                 Id = evt.AggregateId;
                 Name = evt.Name;
             });
 
-            SubscribeTo<NameChangedEvent>(evt =>
+            SubscribeTo<NameChanged>(evt =>
             {
                 Name = evt.Name;
             });
@@ -30,7 +30,7 @@ namespace EnjoyCQRS.IntegrationTests.Stubs
 
         public void ChangeName(string name)
         {
-            Emit(new NameChangedEvent(Id, name));
+            Emit(new NameChanged(Id, name));
         }
     }
 }

@@ -28,9 +28,9 @@ namespace EnjoyCQRS.EventSource.Snapshots
     public interface ISnapshotStrategy
     {
         /// <summary>
-        /// Verify if aggregate type have support snapshoting support.
+        /// Verify if aggregate type have support to snapshot.
         /// </summary>
-        bool IsSnapshotable(Type aggregateType);
+        bool CheckSnapshotSupport(Type aggregateType);
 
         /// <summary>
         /// Determines when it should be performed snapshot.

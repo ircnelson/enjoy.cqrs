@@ -24,20 +24,24 @@ using System;
 
 namespace EnjoyCQRS.EventSource.Snapshots
 {
-    public class IntervalSnapshotStrategy : DefaultSnapshotStrategy
+    public class DefaultSnapshotStrategy : ISnapshotStrategy
     {
-        public int SnapshotInterval { get; }
+        private static readonly Type SnapshotType = typeof (ISnapshotAggregate);
         
-        public IntervalSnapshotStrategy(int snapshotInterval = 100)
+        public bool CheckSnapshotSupport(Type aggregateType)
         {
-            SnapshotInterval = snapshotInterval;
+            if (aggregateType.BaseType == null) return false;
+
+            if (SnapshotType.IsAssignableFrom(aggregateType)) return true;
+
+            return CheckSnapshotSupport(aggregateType.BaseType);
         }
-        
-        public override bool ShouldMakeSnapshot(IAggregate aggregate)
+
+        public virtual bool ShouldMakeSnapshot(IAggregate aggregate)
         {
             if (!CheckSnapshotSupport(aggregate.GetType())) return false;
 
-            return (aggregate.EventVersion % SnapshotInterval == 0);
+            return true;
         }
     }
 }

@@ -1,6 +1,6 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/eprwudlh0eskijof?svg=true)](https://ci.appveyor.com/project/nelsoncvjr/enjoy-cqrs) [![myget status](https://www.myget.org/BuildSource/Badge/enjoy?identifier=1427e6c3-0c6f-4a1a-b5bf-2d02e2ad908c)](https://www.myget.org/BuildSource/Badge/enjoy?identifier=1427e6c3-0c6f-4a1a-b5bf-2d02e2ad908c)
 
-# eNJoy CQRS
+# eNJoy CQRS + Event Sourcing
 The motivation to create this project was born through the curiosity about CQRS (Command Query Responsibility Separation) & Event Sourcing architecture.
 
 I'm tired to build software using classical architecture, then I decided to start adventure in this world.
@@ -17,7 +17,7 @@ Any suggestion is welcome.
 * Command router abstraction
 * Event publisher
 * Event Store abstraction
-* Snapshot (in progress)
+* Snapshot (custom strategy implementation)
 
 ## Architecture
 

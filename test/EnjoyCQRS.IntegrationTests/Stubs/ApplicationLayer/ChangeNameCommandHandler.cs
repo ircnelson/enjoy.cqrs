@@ -1,8 +1,9 @@
 ﻿using System.Threading.Tasks;
 using EnjoyCQRS.Commands;
 using EnjoyCQRS.EventSource.Storage;
+using EnjoyCQRS.IntegrationTests.Stubs.DomainLayer;
 
-namespace EnjoyCQRS.IntegrationTests.Stubs
+namespace EnjoyCQRS.IntegrationTests.Stubs.ApplicationLayer
 {
     public class ChangeNameCommandHandler : ICommandHandler<ChangeNameCommand>
     {
