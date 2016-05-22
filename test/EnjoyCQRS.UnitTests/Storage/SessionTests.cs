@@ -5,7 +5,7 @@ using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Exceptions;
 using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;
-using EnjoyCQRS.Messages;
+using EnjoyCQRS.MessageBus;
 using EnjoyCQRS.UnitTests.Domain;
 using EnjoyCQRS.UnitTests.Domain.Stubs;
 using FluentAssertions;

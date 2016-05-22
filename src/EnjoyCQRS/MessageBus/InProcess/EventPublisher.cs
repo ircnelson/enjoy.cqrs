@@ -24,9 +24,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using EnjoyCQRS.Events;
-using EnjoyCQRS.Messages;
 
-namespace EnjoyCQRS.Bus.InProcess
+namespace EnjoyCQRS.MessageBus.InProcess
 {
     public class EventPublisher : IEventPublisher
     {
