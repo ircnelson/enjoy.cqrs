@@ -1,6 +1,6 @@
-ï»¿// The MIT License (MIT)
+// The MIT License (MIT)
 // 
-// Copyright (c) 2016 Nelson CorrÃªa V. JÃºnior
+// Copyright (c) 2016 Nelson Corrêa V. Júnior
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,33 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using EnjoyCQRS.Events;
 
-namespace EnjoyCQRS.Messages
+namespace EnjoyCQRS.MessageBus
 {
-    public interface IEventPublisher
+    public interface IEventRouter
     {
-        /// <summary>
-        /// Publishes the event.
-        /// </summary>
-        Task PublishAsync<TEvent>(TEvent message) where TEvent : IDomainEvent;
-
-        /// <summary>
-        /// Publishes the event.
-        /// </summary>
-        Task PublishAsync<TEvent>(IEnumerable<TEvent> messages) where TEvent : IDomainEvent;
-
-        /// <summary>
-        /// Confirm publications.
-        /// </summary>
-        /// <returns></returns>
-        Task CommitAsync();
-
-        /// <summary>
-        /// Revert publications.
-        /// </summary>
-        void Rollback();
+        Task RouteAsync<TEvent>(TEvent @event) where TEvent : IDomainEvent;
     }
 }

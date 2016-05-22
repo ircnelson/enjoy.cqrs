@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EnjoyCQRS.Bus;
-using EnjoyCQRS.Bus.InProcess;
 using EnjoyCQRS.Events;
+using EnjoyCQRS.MessageBus;
+using EnjoyCQRS.MessageBus.InProcess;
 using EnjoyCQRS.UnitTests.MessageBus.Stubs;
 using FluentAssertions;
 using Moq;

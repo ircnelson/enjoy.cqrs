@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EnjoyCQRS.Commands;
-using EnjoyCQRS.Messages;
+using EnjoyCQRS.MessageBus;
 using FluentAssertions;
 using Moq;
 using Xunit;

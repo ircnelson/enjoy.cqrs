@@ -7,7 +7,7 @@ using EnjoyCQRS.IntegrationTests.Fixtures;
 using EnjoyCQRS.IntegrationTests.Sqlite;
 using EnjoyCQRS.IntegrationTests.Stubs.ApplicationLayer;
 using EnjoyCQRS.IntegrationTests.Stubs.DomainLayer;
-using EnjoyCQRS.Messages;
+using EnjoyCQRS.MessageBus;
 using FluentAssertions;
 using Xunit;
 

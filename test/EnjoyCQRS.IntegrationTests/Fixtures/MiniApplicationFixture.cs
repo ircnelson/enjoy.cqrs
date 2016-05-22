@@ -1,7 +1,5 @@
 ﻿using System;
 using Autofac;
-using EnjoyCQRS.Bus;
-using EnjoyCQRS.Bus.InProcess;
 using EnjoyCQRS.Commands;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource;
@@ -11,7 +9,8 @@ using EnjoyCQRS.IntegrationTests.Extensions;
 using EnjoyCQRS.IntegrationTests.Sqlite;
 using EnjoyCQRS.IntegrationTests.Stubs;
 using EnjoyCQRS.IntegrationTests.Stubs.DomainLayer;
-using EnjoyCQRS.Messages;
+using EnjoyCQRS.MessageBus;
+using EnjoyCQRS.MessageBus.InProcess;
 
 namespace EnjoyCQRS.IntegrationTests.Fixtures
 {

@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Autofac;
 using EnjoyCQRS.Commands;
-using EnjoyCQRS.Messages;
+using EnjoyCQRS.MessageBus;
 
 namespace EnjoyCQRS.IntegrationTests.Stubs
 {

@@ -27,7 +27,7 @@ using System.Threading.Tasks;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource.Exceptions;
 using EnjoyCQRS.EventSource.Snapshots;
-using EnjoyCQRS.Messages;
+using EnjoyCQRS.MessageBus;
 
 namespace EnjoyCQRS.EventSource.Storage
 {

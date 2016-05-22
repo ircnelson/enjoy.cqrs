@@ -21,7 +21,6 @@
 // SOFTWARE.
 
 using System;
-using EnjoyCQRS.Messages;
 
 namespace EnjoyCQRS.Events
 {

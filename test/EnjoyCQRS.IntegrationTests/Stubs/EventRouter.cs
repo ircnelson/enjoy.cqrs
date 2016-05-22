@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Autofac;
-using EnjoyCQRS.Bus;
 using EnjoyCQRS.Events;
+using EnjoyCQRS.MessageBus;
 
 namespace EnjoyCQRS.IntegrationTests.Stubs
 {

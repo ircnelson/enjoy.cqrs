@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Storage;
-using EnjoyCQRS.Messages;
+using EnjoyCQRS.MessageBus;
 using EnjoyCQRS.UnitTests.Domain;
 using EnjoyCQRS.UnitTests.Domain.Stubs;
 using FluentAssertions;

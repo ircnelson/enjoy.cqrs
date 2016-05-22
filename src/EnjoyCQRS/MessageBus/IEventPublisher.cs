@@ -20,16 +20,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using EnjoyCQRS.Commands;
+using EnjoyCQRS.Events;
 
-namespace EnjoyCQRS.Messages
+namespace EnjoyCQRS.MessageBus
 {
-    public interface ICommandDispatcher
+    public interface IEventPublisher
     {
         /// <summary>
-        /// Dispatch the command to the handler.
+        /// Publishes the event.
         /// </summary>
-        Task DispatchAsync<TCommand>(TCommand command) where TCommand : ICommand;
+        Task PublishAsync<TEvent>(TEvent message) where TEvent : IDomainEvent;
+
+        /// <summary>
+        /// Publishes the event.
+        /// </summary>
+        Task PublishAsync<TEvent>(IEnumerable<TEvent> messages) where TEvent : IDomainEvent;
+
+        /// <summary>
+        /// Confirm publications.
+        /// </summary>
+        /// <returns></returns>
+        Task CommitAsync();
+
+        /// <summary>
+        /// Revert publications.
+        /// </summary>
+        void Rollback();
     }
 }

@@ -14,7 +14,7 @@ Any suggestion is welcome.
 
 * Unit of Work
     - You can work with BASE or ACID
-* Command router abstraction
+* Command dispatcher abstraction
 * Event publisher
 * Event Store abstraction
 * Snapshot (custom strategy implementation)
