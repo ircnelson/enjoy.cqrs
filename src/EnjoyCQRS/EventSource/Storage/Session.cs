@@ -161,9 +161,9 @@ namespace EnjoyCQRS.EventSource.Storage
 
                     await _eventPublisher.PublishAsync<IDomainEvent>(changes).ConfigureAwait(false);
 
-                    aggregate.ClearUncommitedEvents();
-
                     aggregate.UpdateVersion(aggregate.EventVersion);
+
+                    aggregate.ClearUncommitedEvents();
                 }
 
                 _aggregates.Clear();

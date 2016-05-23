@@ -49,14 +49,14 @@ namespace EnjoyCQRS.EventSource
         public int Version { get; protected set; }
 
         /// <summary>
-        /// This version is calculated based on Uncommited events.
+        /// This version is calculated based on Version + Uncommited events count.
         /// </summary>
-        public int EventVersion { get; internal set; }
+        public int EventVersion => Version + _uncommitedEvents.Count;
 
         /// <summary>
         /// Aggregate default constructor.
         /// </summary>
-        public Aggregate()
+        protected Aggregate()
         {
             RegisterEvents();
         }
@@ -100,8 +100,6 @@ namespace EnjoyCQRS.EventSource
                 }
 
                 _uncommitedEvents.Add(@event);
-
-                EventVersion = eventVersion;
             }
         }
 
@@ -123,14 +121,10 @@ namespace EnjoyCQRS.EventSource
             {
                 ApplyEvent(@event, false);
             }
-
-            EventVersion = 0;
-
-            if (events != null && events.Any())
+            
+            if (events.Any())
             {
-                EventVersion = events.Max(e => e.Version);
-
-                UpdateVersion(EventVersion);
+                UpdateVersion(events.Max(e => e.Version));
             }
         }
 
