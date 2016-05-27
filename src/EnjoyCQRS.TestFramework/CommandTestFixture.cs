@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EnjoyCQRS.Collections;
 using EnjoyCQRS.Commands;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource;
@@ -56,7 +57,7 @@ namespace EnjoyCQRS.TestFramework
             _mocks = new Dictionary<Type, object>();
             CaughtException = new ThereWasNoExceptionButOneWasExpectedException();
             AggregateRoot = new TAggregateRoot();
-            AggregateRoot.LoadFromHistory(Given());
+            AggregateRoot.LoadFromHistory(new CommitedDomainEventCollection(Given()));
 
             CommandHandler = BuildHandler();
 

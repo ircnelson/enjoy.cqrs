@@ -18,8 +18,8 @@
   </metadata>
 
   <files>
-    <file src="**\src\**\bin\Debug\EnjoyCQRS.dll" target="lib\net461" />
-    <file src="**\src\**\bin\Debug\EnjoyCQRS.pdb" target="lib\net461" />
+    <file src="**\src\**\bin\**\EnjoyCQRS.dll" target="lib\net461" />
+    <file src="**\src\**\bin\**\EnjoyCQRS.pdb" target="lib\net461" />
     <file src="**\src\**\tools\**\*.*" exclude="**\*.log" />
   </files>
 </package>

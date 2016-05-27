@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using EnjoyCQRS.Collections;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource;
 
@@ -43,7 +44,7 @@ namespace EnjoyCQRS.TestFramework
         {   
             CaughtException = new ThereWasNoExceptionButOneWasExpectedException();
             AggregateRoot = new TAggregateRoot();
-            AggregateRoot.LoadFromHistory(Given());
+            AggregateRoot.LoadFromHistory(new CommitedDomainEventCollection(Given()));
 
             try
             {

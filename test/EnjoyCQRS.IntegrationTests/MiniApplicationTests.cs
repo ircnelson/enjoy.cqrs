@@ -4,7 +4,6 @@ using Autofac;
 using EnjoyCQRS.Commands;
 using EnjoyCQRS.EventSource.Storage;
 using EnjoyCQRS.IntegrationTests.Fixtures;
-using EnjoyCQRS.IntegrationTests.Sqlite;
 using EnjoyCQRS.IntegrationTests.Stubs.ApplicationLayer;
 using EnjoyCQRS.IntegrationTests.Stubs.DomainLayer;
 using EnjoyCQRS.MessageBus;

@@ -3,8 +3,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EnjoyCQRS.Collections;
 using EnjoyCQRS.Events;
-using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;
 
@@ -53,22 +53,17 @@ namespace EnjoyCQRS.UnitTests.Storage
             return Task.FromResult(Enumerable.Empty<IDomainEvent>());
         }
         
-        public Task SaveAsync(IEnumerable<IDomainEvent> events)
+        public Task SaveAsync(UncommitedDomainEventCollection collection)
         {
-            foreach (var @event in events)
+            List<IDomainEvent> list;
+            if (!EventStore.TryGetValue(collection.AggregateMetadata.Id, out list))
             {
-                var aggregateId = @event.AggregateId;
-
-                List<IDomainEvent> list;
-                EventStore.TryGetValue(aggregateId, out list);
-                if (list == null)
-                {
-                    list = new List<IDomainEvent>();
-                    EventStore.Add(aggregateId, list);
-                }
-                list.Add(@event);
+                list = new List<IDomainEvent>();
+                EventStore.Add(collection.AggregateMetadata.Id, list); 
             }
 
+            list.AddRange(collection);
+            
             return Task.CompletedTask;
         }
 

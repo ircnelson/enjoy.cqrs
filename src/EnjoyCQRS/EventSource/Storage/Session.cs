@@ -22,8 +22,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using EnjoyCQRS.Collections;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource.Exceptions;
 using EnjoyCQRS.EventSource.Snapshots;
@@ -79,7 +79,7 @@ namespace EnjoyCQRS.EventSource.Storage
                 var snapshotAggregate = aggregate as ISnapshotAggregate;
                 if (snapshotAggregate != null)
                 {
-                    var snapshot = await _eventStore.GetSnapshotByIdAsync(id);
+                    var snapshot = await _eventStore.GetSnapshotByIdAsync(id).ConfigureAwait(false);
 
                     snapshotAggregate.Restore(snapshot);
 
@@ -101,12 +101,7 @@ namespace EnjoyCQRS.EventSource.Storage
 
             return aggregate;
         }
-
-        private void LoadAggregate<TAggregate>(TAggregate aggregate, IEnumerable<IDomainEvent> events) where TAggregate : Aggregate
-        {
-            aggregate.LoadFromHistory(events);
-        }
-
+        
         /// <summary>
         /// Add the aggregate to tracking.
         /// </summary>
@@ -150,16 +145,18 @@ namespace EnjoyCQRS.EventSource.Storage
             {
                 foreach (var aggregate in _aggregates)
                 {
-                    var changes = aggregate.UncommitedEvents.ToList();
+                    var aggregateMetadata = new AggregateMetadata(aggregate.Id, aggregate.GetType());
+
+                    var events = new UncommitedDomainEventCollection(aggregateMetadata, aggregate.UncommitedEvents);
 
                     if (_snapshotStrategy.ShouldMakeSnapshot(aggregate))
                     {
                         await TakeSnapshot(aggregate).ConfigureAwait(false);
                     }
                     
-                    await _eventStore.SaveAsync(changes).ConfigureAwait(false);
+                    await _eventStore.SaveAsync(events).ConfigureAwait(false);
 
-                    await _eventPublisher.PublishAsync<IDomainEvent>(changes).ConfigureAwait(false);
+                    await _eventPublisher.PublishAsync<IDomainEvent>(events).ConfigureAwait(false);
 
                     aggregate.UpdateVersion(aggregate.EventVersion);
 
@@ -226,6 +223,11 @@ namespace EnjoyCQRS.EventSource.Storage
             {
                 throw new ExpectedVersionException<TAggregate>(aggregateRoot, trackedAggregate.Version);
             }
+        }
+
+        private void LoadAggregate<TAggregate>(TAggregate aggregate, IEnumerable<IDomainEvent> events) where TAggregate : Aggregate
+        {
+            aggregate.LoadFromHistory(new CommitedDomainEventCollection(events));
         }
     }
 }

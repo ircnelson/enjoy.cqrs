@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using EnjoyCQRS.Collections;
 using EnjoyCQRS.Events;
 
 namespace EnjoyCQRS.EventSource.Storage
@@ -57,7 +58,7 @@ namespace EnjoyCQRS.EventSource.Storage
         /// <summary>
         /// Save the events in Event Store.
         /// </summary>
-        /// <param name="events"></param>
-        Task SaveAsync(IEnumerable<IDomainEvent> events);
+        /// <param name="collection"></param>
+        Task SaveAsync(UncommitedDomainEventCollection collection);
     }
 }

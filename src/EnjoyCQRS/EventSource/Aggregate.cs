@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using EnjoyCQRS.Collections;
 using EnjoyCQRS.Events;
 
 namespace EnjoyCQRS.EventSource
@@ -78,7 +79,19 @@ namespace EnjoyCQRS.EventSource
         /// <param name="event"></param>
         protected void Emit(IDomainEvent @event)
         {
-            ApplyEvent(@event, true);
+            ApplyEvent(new UncommitedDomainEvent(@event, EventVersion + 1));
+        }
+
+        /// <summary>
+        /// Apply the event in Aggregate and store the event in Uncommited list.
+        /// The last event applied is the current state of the Aggregate.
+        /// </summary>
+        /// <param name="event"></param>
+        private void ApplyEvent(UncommitedDomainEvent @event)
+        {
+            ApplyEvent(@event.OriginalEvent);
+            
+            _uncommitedEvents.Add(@event.OriginalEvent);
         }
 
         /// <summary>
@@ -86,21 +99,9 @@ namespace EnjoyCQRS.EventSource
         /// The last event applied is the current state of the Aggregate.
         /// </summary>
         /// <param name="event"></param>
-        private void ApplyEvent(IDomainEvent @event, bool isNewEvent)
+        private void ApplyEvent(IDomainEvent @event)
         {
             _routeEvents.Handle(@event);
-
-            if (isNewEvent)
-            {
-                var eventVersion = EventVersion + 1;
-
-                if (@event is DomainEvent)
-                {
-                    ((DomainEvent) @event).Version = eventVersion;
-                }
-
-                _uncommitedEvents.Add(@event);
-            }
         }
 
         /// <summary>
@@ -114,17 +115,17 @@ namespace EnjoyCQRS.EventSource
         /// <summary>
         /// Load the events in the Aggregate.
         /// </summary>
-        /// <param name="events"></param>
-        public void LoadFromHistory(IEnumerable<IDomainEvent> events)
+        /// <param name="domainEvents"></param>
+        public void LoadFromHistory(CommitedDomainEventCollection domainEvents)
         {
-            foreach (var @event in events)
+            foreach (var @event in domainEvents)
             {
-                ApplyEvent(@event, false);
+                ApplyEvent(@event);
             }
             
-            if (events.Any())
+            if (domainEvents.Any())
             {
-                UpdateVersion(events.Max(e => e.Version));
+                UpdateVersion(domainEvents.Max(e => e.Version));
             }
         }
 
