@@ -25,7 +25,7 @@ namespace EnjoyCQRS.UnitTests.Storage
         };
 
         [Fact]
-        public async Task Should_throw_exception_When_aggregate_version_is_wrong()
+        public async Task Should_throws_exception_When_aggregate_version_is_wrong()
         {
             var eventStore = new StubEventStore();
 
@@ -143,7 +143,7 @@ namespace EnjoyCQRS.UnitTests.Storage
         [Fact]
         public async Task Getting_snapshot_and_forward_events()
         {
-            var snapshotStrategy = CreateSnapshotStrategy(true);
+            var snapshotStrategy = CreateSnapshotStrategy();
 
             var eventStore = new StubEventStore();
             
@@ -169,6 +169,25 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             stubAggregateFromSnapshot.Version.Should().Be(3);
         }
+
+        [Fact]
+        public Task Should_throws_exception_When_aggregate_was_not_found()
+        {
+            var snapshotStrategy = CreateSnapshotStrategy(true);
+            var eventStore = new StubEventStore();
+
+            var session = _sessionFactory(eventStore, snapshotStrategy);
+
+            Func<Task> act = async () =>
+            {
+                await session.GetByIdAsync<StubAggregate>(Guid.NewGuid());
+            };
+
+            act.ShouldThrowExactly<AggregateNotFoundException>();
+
+            return Task.CompletedTask;
+        }
+
         private static ISnapshotStrategy CreateSnapshotStrategy(bool makeSnapshot = true)
         {
             var snapshotStrategyMock = new Mock<ISnapshotStrategy>();
