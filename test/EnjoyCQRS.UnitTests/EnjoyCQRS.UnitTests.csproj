@@ -104,6 +104,7 @@
     <Compile Include="MessageBus\Stubs\OrderTestEventHandler.cs" />
     <Compile Include="MessageBus\Stubs\SecondTestEventHandler.cs" />
     <Compile Include="MessageBus\Stubs\TestEvent.cs" />
+    <Compile Include="Snapshoting\DefaultSnapshotStrategyTests.cs" />
     <Compile Include="Snapshoting\IntervalSnapshotStrategyTests.cs" />
     <Compile Include="Snapshoting\When_restore_snapshot.cs" />
     <Compile Include="Snapshoting\When_create_snapshot.cs" />

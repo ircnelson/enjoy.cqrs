@@ -14,8 +14,8 @@ namespace EnjoyCQRS.UnitTests.Snapshoting
         {
             var snapshotAggregateType = typeof(StubSnapshotAggregate);
             
-            var defaultSnapshotStrategy = new IntervalSnapshotStrategy();
-            var hasSupport = defaultSnapshotStrategy.CheckSnapshotSupport(snapshotAggregateType);
+            var itervalSnapshotStrategy = new IntervalSnapshotStrategy();
+            var hasSupport = itervalSnapshotStrategy.CheckSnapshotSupport(snapshotAggregateType);
 
             hasSupport.Should().BeTrue();
         }
@@ -40,14 +40,14 @@ namespace EnjoyCQRS.UnitTests.Snapshoting
         [InlineData(2, 5, false)]
         public void Should_make_snapshot(int aggregateEventVersion, int snapshotInterval, bool expected)
         {
-            var defaultSnapshotStrategy = new IntervalSnapshotStrategy(snapshotInterval);
+            var itervalSnapshotStrategy = new IntervalSnapshotStrategy(snapshotInterval);
 
             var snapshotAggregateMock = new Mock<ISnapshotAggregate>();
             snapshotAggregateMock.Setup(e => e.EventVersion).Returns(aggregateEventVersion);
 
             var snapshotAggregate = snapshotAggregateMock.Object;
             
-            var makeSnapshot = defaultSnapshotStrategy.ShouldMakeSnapshot(snapshotAggregate);
+            var makeSnapshot = itervalSnapshotStrategy.ShouldMakeSnapshot(snapshotAggregate);
 
             makeSnapshot.Should().Be(expected);
         }
@@ -55,12 +55,12 @@ namespace EnjoyCQRS.UnitTests.Snapshoting
         [Fact]
         public void Should_not_make_snapshot()
         {
-            var defaultSnapshotStrategy = new IntervalSnapshotStrategy();
+            var itervalSnapshotStrategy = new IntervalSnapshotStrategy();
 
             var aggregateMock = new Mock<IAggregate>();
             var aggregate = aggregateMock.Object;
           
-            var makeSnapshot = defaultSnapshotStrategy.ShouldMakeSnapshot(aggregate);
+            var makeSnapshot = itervalSnapshotStrategy.ShouldMakeSnapshot(aggregate);
 
             makeSnapshot.Should().BeFalse();
         }
