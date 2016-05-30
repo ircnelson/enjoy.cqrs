@@ -5,8 +5,11 @@ namespace EnjoyCQRS.UnitTests.Domain.Stubs.Events
 {
     public class ChildDisabledEvent : DomainEvent
     {
-        public ChildDisabledEvent(Guid entityId) : base(entityId)
+        public Guid EntityId { get; }
+
+        public ChildDisabledEvent(Guid aggregateId, Guid entityId) : base(aggregateId)
         {
+            EntityId = entityId;
         }
     }
 }

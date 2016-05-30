@@ -40,7 +40,7 @@ namespace EnjoyCQRS.UnitTests.Domain.Stubs
 
         public void DisableEntity(Guid entityId)
         {
-            Emit(new ChildDisabledEvent(entityId));
+            Emit(new ChildDisabledEvent(Id, entityId));
         }
         
         protected override void RegisterEvents()

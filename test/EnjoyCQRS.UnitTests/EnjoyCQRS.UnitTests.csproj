@@ -89,12 +89,12 @@
     <Compile Include="Domain\Stubs\SimpleEntity.cs" />
     <Compile Include="Domain\Stubs\Events\NotRegisteredEvent.cs" />
     <Compile Include="Domain\Stubs\Events\NameChangedEvent.cs" />
-    <Compile Include="Domain\Stubs\Events\TestAggregateCreatedEvent.cs" />
     <Compile Include="Domain\Not_registered_event_in_aggregate.cs" />
     <Compile Include="Domain\Registered_event_in_aggregate.cs" />
     <Compile Include="Domain\Stubs\StubAggregate.cs" />
     <Compile Include="Domain\Stubs\StubSnapshotAggregateSnapshot.cs" />
-    <Compile Include="Domain\When_aggregate_have_children.cs" />
+    <Compile Include="Domain\When_aggregate_modify_an_entity.cs" />
+    <Compile Include="Domain\When_aggregate_have_entities.cs" />
     <Compile Include="Handlers\CommandHandlerTests.cs" />
     <Compile Include="Handlers\EventHandlerTests.cs" />
     <Compile Include="MessageBus\EventPublisherTests.cs" />

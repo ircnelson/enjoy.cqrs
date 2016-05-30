@@ -10,7 +10,7 @@ using Xunit;
 
 namespace EnjoyCQRS.UnitTests.Domain
 {
-    public class When_aggregate_have_children : AggregateTestFixture<StubSnapshotAggregate>
+    public class When_aggregate_have_entities : AggregateTestFixture<StubSnapshotAggregate>
     {
         private string newChildName = "New child";
 
@@ -27,13 +27,13 @@ namespace EnjoyCQRS.UnitTests.Domain
         }
 
         [Then]
-        public void Aggregate_should_have_2_children()
+        public void Aggregate_should_have_3_items()
         {
             AggregateRoot.Entities.Should().HaveCount(3);
         }
 
         [Then]
-        public void Should_be_published_an_event_that_child_was_created()
+        public void Should_be_published_an_event_that_entity_was_created()
         {
             PublishedEvents.Last().Should().BeOfType<ChildCreatedEvent>();
         }
