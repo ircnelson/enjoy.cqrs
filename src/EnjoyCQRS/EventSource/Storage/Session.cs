@@ -33,7 +33,7 @@ namespace EnjoyCQRS.EventSource.Storage
 {
     public class Session : ISession
     {
-        private readonly AggregateTracker _aggregateTracker;
+        private readonly AggregateTracker _aggregateTracker = new AggregateTracker();
         private readonly IEventStore _eventStore;
         private readonly IEventPublisher _eventPublisher;
         private readonly List<Aggregate> _aggregates = new List<Aggregate>();
@@ -52,7 +52,6 @@ namespace EnjoyCQRS.EventSource.Storage
             }
 
             _snapshotStrategy = snapshotStrategy;
-            _aggregateTracker = new AggregateTracker();
             _eventStore = eventStore;
             _eventPublisher = eventPublisher;
         }

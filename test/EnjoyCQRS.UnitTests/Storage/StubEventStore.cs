@@ -18,7 +18,7 @@ namespace EnjoyCQRS.UnitTests.Storage
         public bool SaveSnapshotMethodCalled { get; private set; }
         public bool GetSnapshotMethodCalled { get; private set; }
 
-        public bool MakeSnapshot { get; set; } = true;
+        public bool MakeSnapshot { get; } = true;
 
         public bool InTransaction;
 

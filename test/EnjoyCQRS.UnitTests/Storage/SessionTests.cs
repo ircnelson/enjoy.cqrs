@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using EnjoyCQRS.Collections;
 using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Exceptions;
 using EnjoyCQRS.EventSource.Snapshots;
@@ -22,6 +23,26 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             return session;
         };
+
+        [Fact]
+        public void Cannot_pass_null_instance_of_EventStore()
+        {
+            var eventPublisher = Mock.Of<IEventPublisher>();
+
+            Action act = () => new Session(null, eventPublisher);
+
+            act.ShouldThrowExactly<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void Cannot_pass_null_instance_of_EventPublisher()
+        {
+            var eventStore = Mock.Of<IEventStore>();
+            
+            Action act = () => new Session(eventStore, null);
+
+            act.ShouldThrowExactly<ArgumentNullException>();
+        }
 
         [Fact]
         public async Task Should_throws_exception_When_aggregate_version_is_wrong()
@@ -50,7 +71,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             await session.SaveChangesAsync().ConfigureAwait(false);
 
             Func<Task> wrongVersion = async () => await session.AddAsync(stubAggregate1);
-            
+
             wrongVersion.ShouldThrowExactly<ExpectedVersionException<StubAggregate>>().And.Aggregate.Should().Be(stubAggregate1);
         }
 
@@ -67,7 +88,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             await session.SaveChangesAsync().ConfigureAwait(false);
 
             stubAggregate1.ChangeName("Changes");
-            
+
             var stubAggregate2 = await session.GetByIdAsync<StubAggregate>(stubAggregate1.Id).ConfigureAwait(false);
 
             stubAggregate2.ChangeName("More changes");
@@ -91,7 +112,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             stubAggregate.AddEntity("Child 2");
 
             await session.AddAsync(stubAggregate).ConfigureAwait(false);
-            
+
 
             // Act
 
@@ -115,7 +136,7 @@ namespace EnjoyCQRS.UnitTests.Storage
         public async Task Should_restore_aggregate_using_snapshot()
         {
             var snapshotStrategy = CreateSnapshotStrategy();
-            
+
             var eventStore = new StubEventStore();
             var session = _sessionFactory(eventStore, snapshotStrategy);
 
@@ -144,14 +165,14 @@ namespace EnjoyCQRS.UnitTests.Storage
             var snapshotStrategy = CreateSnapshotStrategy();
 
             var eventStore = new StubEventStore();
-            
+
             var session = _sessionFactory(eventStore, snapshotStrategy);
 
             var stubAggregate = StubSnapshotAggregate.Create("Snap");
 
             await session.AddAsync(stubAggregate).ConfigureAwait(false);
             await session.SaveChangesAsync().ConfigureAwait(false); // Version 1
-            
+
             stubAggregate.ChangeName("Renamed");
             stubAggregate.ChangeName("Renamed again");
 
@@ -162,8 +183,8 @@ namespace EnjoyCQRS.UnitTests.Storage
             await session.SaveChangesAsync().ConfigureAwait(false); // Version 3
 
             session = _sessionFactory(eventStore, snapshotStrategy);
-            
-            var stubAggregateFromSnapshot = await session.GetByIdAsync<StubSnapshotAggregate>(stubAggregate.Id);
+
+            var stubAggregateFromSnapshot = await session.GetByIdAsync<StubSnapshotAggregate>(stubAggregate.Id).ConfigureAwait(false);
 
             stubAggregateFromSnapshot.Version.Should().Be(3);
         }
@@ -178,12 +199,91 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             Func<Task> act = async () =>
             {
-                await session.GetByIdAsync<StubAggregate>(Guid.NewGuid());
+                await session.GetByIdAsync<StubAggregate>(Guid.NewGuid()).ConfigureAwait(false);
             };
 
             act.ShouldThrowExactly<AggregateNotFoundException>();
 
             return Task.CompletedTask;
+        }
+
+        [Fact]
+        public async Task Should_internal_rollback_When_exception_was_throw_on_saving()
+        {
+            var snapshotStrategy = CreateSnapshotStrategy(false);
+
+            var eventStoreMock = new Mock<IEventStore>();
+            eventStoreMock.Setup(e => e.SaveAsync(It.IsAny<UncommitedDomainEventCollection>()))
+                .Callback(() => { throw new Exception("Sorry, this is my fault."); })
+                .Returns(Task.CompletedTask);
+
+            var session = _sessionFactory(eventStoreMock.Object, snapshotStrategy);
+
+            var stubAggregate = StubAggregate.Create("Guilty");
+
+            await session.AddAsync(stubAggregate).ConfigureAwait(false);
+
+            try
+            {
+                await session.SaveChangesAsync().ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                eventStoreMock.Verify(e => e.Rollback());
+            }
+        }
+
+        [Fact]
+        public async Task Should_manual_rollback_When_exception_was_throw_on_saving()
+        {
+            var snapshotStrategy = CreateSnapshotStrategy(false);
+
+            var eventStoreMock = new Mock<IEventStore>();
+            eventStoreMock.Setup(e => e.SaveAsync(It.IsAny<UncommitedDomainEventCollection>()))
+                .Callback(() => { throw new Exception("Sorry, this is my fault."); })
+                .Returns(Task.CompletedTask);
+
+            eventStoreMock.Setup(e => e.BeginTransaction());
+            eventStoreMock.Setup(e => e.Rollback());
+
+            var session = _sessionFactory(eventStoreMock.Object, snapshotStrategy);
+
+            var stubAggregate = StubAggregate.Create("Guilty");
+
+            session.BeginTransaction();
+
+            eventStoreMock.Verify(e => e.BeginTransaction(), Times.Once);
+
+            await session.AddAsync(stubAggregate).ConfigureAwait(false);
+
+            try
+            {
+                await session.SaveChangesAsync().ConfigureAwait(false);
+            }
+
+            catch (Exception)
+            {
+                session.Rollback();
+            }
+
+            eventStoreMock.Verify(e => e.Rollback(), Times.Once);
+        }
+
+        [Fact]
+        public void Cannot_BeginTransaction_twice()
+        {
+            var snapshotStrategy = CreateSnapshotStrategy(false);
+
+            var eventStoreMock = new Mock<IEventStore>();
+            eventStoreMock.SetupAllProperties();
+
+            var session = _sessionFactory(eventStoreMock.Object, snapshotStrategy);
+
+            session.BeginTransaction();
+
+            Action act = () => session.BeginTransaction();
+
+            act.ShouldThrowExactly<InvalidOperationException>();
         }
 
         private static ISnapshotStrategy CreateSnapshotStrategy(bool makeSnapshot = true)
