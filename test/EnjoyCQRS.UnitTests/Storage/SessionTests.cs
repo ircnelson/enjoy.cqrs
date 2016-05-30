@@ -6,7 +6,6 @@ using EnjoyCQRS.EventSource.Exceptions;
 using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;
 using EnjoyCQRS.MessageBus;
-using EnjoyCQRS.UnitTests.Domain;
 using EnjoyCQRS.UnitTests.Domain.Stubs;
 using FluentAssertions;
 using Moq;
@@ -50,10 +49,9 @@ namespace EnjoyCQRS.UnitTests.Storage
             await session.AddAsync(stubAggregate2).ConfigureAwait(false);
             await session.SaveChangesAsync().ConfigureAwait(false);
 
-            Func<Task> wrongVersion = async () => await session.AddAsync(stubAggregate1).ConfigureAwait(false);
-
-            wrongVersion.ShouldThrow<ExpectedVersionException<StubAggregate>>()
-                .And.Aggregate.Should().Be(stubAggregate1);
+            Func<Task> wrongVersion = async () => await session.AddAsync(stubAggregate1);
+            
+            wrongVersion.ShouldThrowExactly<ExpectedVersionException<StubAggregate>>().And.Aggregate.Should().Be(stubAggregate1);
         }
 
         [Fact]
@@ -173,7 +171,7 @@ namespace EnjoyCQRS.UnitTests.Storage
         [Fact]
         public Task Should_throws_exception_When_aggregate_was_not_found()
         {
-            var snapshotStrategy = CreateSnapshotStrategy(true);
+            var snapshotStrategy = CreateSnapshotStrategy();
             var eventStore = new StubEventStore();
 
             var session = _sessionFactory(eventStore, snapshotStrategy);
