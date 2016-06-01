@@ -41,8 +41,8 @@ namespace EnjoyCQRS.UnitTests.Storage
             _unitOfWork = unitOfWorkMock.Object;
         }
 
-        [Then]
         [Trait(CategoryName, CategoryValue)]
+        [Then]
         public async Task When_calling_Save_it_will_add_the_domain_events_to_the_domain_event_storage()
         {
             var testAggregate = StubAggregate.Create("Walter White");
@@ -55,8 +55,8 @@ namespace EnjoyCQRS.UnitTests.Storage
             _inMemoryDomainEventStore.EventStore[testAggregate.Id].Count.Should().Be(2);
         }
 
-        [Then]
         [Trait(CategoryName, CategoryValue)]
+        [Then]
         public async Task When_Save_Then_the_uncommited_events_should_be_published()
         {
             var testAggregate = StubAggregate.Create("Walter White");
@@ -68,8 +68,8 @@ namespace EnjoyCQRS.UnitTests.Storage
             _mockEventPublisher.Verify(e => e.PublishAsync(It.IsAny<IEnumerable<IDomainEvent>>()));
         }
 
-        [Then]
         [Trait(CategoryName, CategoryValue)]
+        [Then]
         public async Task When_load_aggregate_should_be_correct_version()
         {
             var testAggregate = StubAggregate.Create("Walter White");

@@ -18,8 +18,8 @@ namespace EnjoyCQRS.UnitTests.Domain
             AggregateRoot.ChangeName("Walter White");
         }
 
-        [Then]
         [Trait(CategoryName, CategoryValue)]
+        [Then]
         public void Then_some_event_should_be_published()
         {
             PublishedEvents.Last().Should().BeAssignableTo<NameChangedEvent>();

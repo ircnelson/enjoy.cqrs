@@ -24,15 +24,15 @@ namespace EnjoyCQRS.UnitTests.Domain
             AggregateRoot.ChangeName("DoSomething");
         }
 
-        [Then]
         [Trait(CategoryName, CategoryValue)]
+        [Then]
         public void Then_the_Version_should_be_1()
         {
             AggregateRoot.Version.Should().Be(1);
         }
 
-        [Then]
         [Trait(CategoryName, CategoryValue)]
+        [Then]
         public void Then_the_EventVersion_should_be_2()
         {
             AggregateRoot.EventVersion.Should().Be(2);

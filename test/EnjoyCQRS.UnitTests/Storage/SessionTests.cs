@@ -16,6 +16,9 @@ namespace EnjoyCQRS.UnitTests.Storage
 {
     public class SessionTests
     {
+        private const string CategoryName = "Unit";
+        private const string CategoryValue = "Session";
+
         private readonly Func<IEventStore, IEventPublisher, ISnapshotStrategy, Session> _sessionFactory = (eventStore, eventPublisher, snapshotStrategy) =>
         {
             var session = new Session(eventStore, eventPublisher, snapshotStrategy);
@@ -30,6 +33,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             _eventPublisherMock = new Mock<IEventPublisher>();
         }
 
+        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public void Cannot_pass_null_instance_of_EventStore()
         {
@@ -40,6 +44,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             act.ShouldThrowExactly<ArgumentNullException>();
         }
 
+        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public void Cannot_pass_null_instance_of_EventPublisher()
         {
@@ -50,6 +55,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             act.ShouldThrowExactly<ArgumentNullException>();
         }
 
+        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public async Task Should_throws_exception_When_aggregate_version_is_wrong()
         {
@@ -81,6 +87,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             wrongVersion.ShouldThrowExactly<ExpectedVersionException<StubAggregate>>().And.Aggregate.Should().Be(stubAggregate1);
         }
 
+        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public async Task Should_retrieve_the_aggregate_from_tracking()
         {
@@ -102,6 +109,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             stubAggregate1.Should().BeSameAs(stubAggregate2);
         }
 
+        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public async Task When_call_SaveChanges_Should_store_the_snapshot()
         {
@@ -137,6 +145,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             snapshot.SimpleEntities.Count.Should().Be(stubAggregate.Entities.Count);
         }
 
+        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public async Task Should_restore_aggregate_using_snapshot()
         {
@@ -163,7 +172,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             aggregate.Id.Should().Be(stubAggregate.Id);
         }
 
-
+        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public async Task Getting_snapshot_and_forward_events()
         {
@@ -194,6 +203,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             stubAggregateFromSnapshot.Version.Should().Be(3);
         }
 
+        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public Task Should_throws_exception_When_aggregate_was_not_found()
         {
@@ -212,6 +222,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             return Task.CompletedTask;
         }
 
+        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public async Task Should_internal_rollback_When_exception_was_throw_on_saving()
         {
@@ -239,6 +250,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             }
         }
 
+        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public async Task Should_manual_rollback_When_exception_was_throw_on_saving()
         {
@@ -276,6 +288,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             _eventPublisherMock.Verify(e => e.Rollback(), Times.Once);
         }
 
+        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public void Cannot_BeginTransaction_twice()
         {

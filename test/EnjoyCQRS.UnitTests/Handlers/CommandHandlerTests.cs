@@ -23,16 +23,16 @@ namespace EnjoyCQRS.UnitTests.Handlers
 
             return new CreateStubCommand(_id);
         }
-
-        [Then]
+        
         [Trait(CategoryName, CategoryValue)]
+        [Then]
         public void Executed_property_should_be_true()
         {
             CommandHandler.Executed.Should().Be(true);
         }
 
-        [Then]
         [Trait(CategoryName, CategoryValue)]
+        [Then]
         public void Should_pass_the_correct_AggregateId()
         {
             CommandHandler.AggregateId.Should().Be(_id);

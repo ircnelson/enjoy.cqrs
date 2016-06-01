@@ -12,6 +12,9 @@ namespace EnjoyCQRS.UnitTests.Domain
 {
     public class When_aggregate_have_entities : AggregateTestFixture<StubSnapshotAggregate>
     {
+        private const string CategoryName = "Unit";
+        private const string CategoryValue = "Snapshot";
+
         private string newChildName = "New child";
 
         protected override IEnumerable<IDomainEvent> Given()
@@ -26,18 +29,21 @@ namespace EnjoyCQRS.UnitTests.Domain
             AggregateRoot.AddEntity(newChildName);
         }
 
+        [Trait(CategoryName, CategoryValue)]
         [Then]
         public void Aggregate_should_have_3_items()
         {
             AggregateRoot.Entities.Should().HaveCount(3);
         }
 
+        [Trait(CategoryName, CategoryValue)]
         [Then]
         public void Should_be_published_an_event_that_entity_was_created()
         {
             PublishedEvents.Last().Should().BeOfType<ChildCreatedEvent>();
         }
 
+        [Trait(CategoryName, CategoryValue)]
         [Then]
         public void Should_verify_last_event_properties()
         {

@@ -17,8 +17,8 @@ namespace EnjoyCQRS.UnitTests.MessageBus
         private const string CategoryName = "Unit";
         private const string CategoryValue = "Event publisher";
 
-        [Then]
         [Trait(CategoryName, CategoryValue)]
+        [Then]
         public async Task When_a_single_event_is_published_to_the_bus_containing_a_single_EventHandler()
         {
             var testEvent = new TestEvent(Guid.NewGuid());
@@ -40,8 +40,8 @@ namespace EnjoyCQRS.UnitTests.MessageBus
             handler.Ids.First().Should().Be(testEvent.AggregateId);
         }
 
-        [Then]
         [Trait(CategoryName, CategoryValue)]
+        [Then]
         public async Task When_a_single_event_is_published_to_the_bus_containing_multiple_EventHandlers()
         {
             var handler1 = new FirstTestEventHandler();
@@ -66,8 +66,8 @@ namespace EnjoyCQRS.UnitTests.MessageBus
             handler2.Ids.First().Should().Be(testEvent.AggregateId);
         }
 
-        [Then]
         [Trait(CategoryName, CategoryValue)]
+        [Then]
         public async Task Events_should_be_published_on_correct_order()
         {
             var ids = new List<Tuple<Guid, int>>();

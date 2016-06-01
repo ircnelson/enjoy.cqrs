@@ -11,8 +11,8 @@ namespace EnjoyCQRS.UnitTests.Snapshoting
         public const string CategoryName = "Unit";
         public const string CategoryValue = "Snapshot";
 
-        private StubSnapshotAggregateSnapshot _snapshot;
-        private StubSnapshotAggregate _stubAggregate;
+        private readonly StubSnapshotAggregateSnapshot _snapshot;
+        private readonly StubSnapshotAggregate _stubAggregate;
 
         public When_restore_snapshot()
         {
@@ -27,8 +27,8 @@ namespace EnjoyCQRS.UnitTests.Snapshoting
             ((ISnapshotAggregate)_stubAggregate).Restore(_snapshot);
         }
 
-        [Then]
         [Trait(CategoryName, CategoryValue)]
+        [Then]
         public void Should_set_aggregate_properties()
         {
             _stubAggregate.Name.Should().Be(_snapshot.Name);

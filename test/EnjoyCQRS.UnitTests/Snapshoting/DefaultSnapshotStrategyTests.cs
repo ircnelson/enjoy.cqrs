@@ -9,6 +9,10 @@ namespace EnjoyCQRS.UnitTests.Snapshoting
 {
     public class DefaultSnapshotStrategyTests
     {
+        private const string CategoryName = "Unit";
+        private const string CategoryValue = "DefaultSnapshotStrategy";
+
+        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public void When_aggregate_type_have_support_snapshoting()
         {
@@ -20,6 +24,7 @@ namespace EnjoyCQRS.UnitTests.Snapshoting
             hasSupport.Should().BeTrue();
         }
 
+        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public void When_aggregate_type_doesnt_have_support_snapshoting()
         {
@@ -31,6 +36,7 @@ namespace EnjoyCQRS.UnitTests.Snapshoting
             hasSupport.Should().BeFalse();
         }
 
+        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public void Should_make_snapshot()
         {
@@ -42,7 +48,8 @@ namespace EnjoyCQRS.UnitTests.Snapshoting
 
             makeSnapshot.Should().BeTrue();
         }
-        
+
+        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public void Should_not_make_snapshot()
         {

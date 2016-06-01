@@ -6,11 +6,15 @@ using EnjoyCQRS.TestFramework;
 using EnjoyCQRS.UnitTests.Domain.Stubs;
 using EnjoyCQRS.UnitTests.Domain.Stubs.Events;
 using FluentAssertions;
+using Xunit;
 
 namespace EnjoyCQRS.UnitTests.Domain
 {
     public class When_aggregate_modify_an_entity : AggregateTestFixture<StubSnapshotAggregate>
     {
+        private const string CategoryName = "Unit";
+        private const string CategoryValue = "Snapshot";
+
         private ChildCreatedEvent Entity2 = new ChildCreatedEvent(Guid.NewGuid(), "Child 2");
 
         protected override IEnumerable<IDomainEvent> Given()
@@ -25,18 +29,21 @@ namespace EnjoyCQRS.UnitTests.Domain
             AggregateRoot.DisableEntity(Entity2.Id);
         }
 
+        [Trait(CategoryName, CategoryValue)]
         [Then]
         public void Aggregate_should_have_2_items()
         {
             AggregateRoot.Entities.Should().HaveCount(2);
         }
 
+        [Trait(CategoryName, CategoryValue)]
         [Then]
         public void Should_be_published_an_event_that_entity_was_disabled()
         {
             PublishedEvents.Last().Should().BeOfType<ChildDisabledEvent>();
         }
 
+        [Trait(CategoryName, CategoryValue)]
         [Then]
         public void Should_verify_last_event_properties()
         {
@@ -45,6 +52,7 @@ namespace EnjoyCQRS.UnitTests.Domain
             childDisabledEvent.EntityId.Should().Be(Entity2.Id);
         }
 
+        [Trait(CategoryName, CategoryValue)]
         [Then]
         public void Entity2_should_be_disabled()
         {

@@ -15,8 +15,8 @@ namespace EnjoyCQRS.UnitTests.MessageBus
         private const string CategoryName = "Unit";
         private const string CategoryValue = "Command dispatcher";
 
-        [Then]
         [Trait(CategoryName, CategoryValue)]
+        [Then]
         public async void When_a_single_Command_is_published_to_the_bus_containing_a_single_CommandHandler()
         {
             var handler = new FirstTestCommandHandler();
@@ -44,8 +44,8 @@ namespace EnjoyCQRS.UnitTests.MessageBus
             handler.Ids.First().Should().Be(testCommand.AggregateId);
         }
 
-        [Then]
         [Trait(CategoryName, CategoryValue)]
+        [Then]
         public async void When_a_single_Command_is_published_to_the_bus_containing_multiple_CommandHandlers()
         {
             var handler1 = new FirstTestCommandHandler();

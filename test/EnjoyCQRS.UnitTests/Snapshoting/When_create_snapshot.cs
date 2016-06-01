@@ -20,15 +20,15 @@ namespace EnjoyCQRS.UnitTests.Snapshoting
             _snapshot = ((ISnapshotAggregate) stubSnapshotAggregate).CreateSnapshot();
         }
 
-        [Then]
         [Trait(CategoryName, CategoryValue)]
+        [Then]
         public void Should_create_an_snapshot_object()
         {
             _snapshot.Should().BeOfType<StubSnapshotAggregateSnapshot>();
         }
 
-        [Then]
         [Trait(CategoryName, CategoryValue)]
+        [Then]
         public void Should_verify_snapshot_properties()
         {
             var snapshot = (StubSnapshotAggregateSnapshot) _snapshot;
