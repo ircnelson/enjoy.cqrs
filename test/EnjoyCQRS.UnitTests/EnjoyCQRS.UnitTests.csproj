@@ -114,6 +114,7 @@
     <Compile Include="Domain\Increment_the_EventVersion_When_new_events_are_applied.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ThenAttribute.cs" />
+    <Compile Include="ValueObjects\ValueObjectTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

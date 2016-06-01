@@ -78,6 +78,7 @@
     <Compile Include="Events\IDomainEvent.cs" />
     <Compile Include="Events\IEventHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ValueObjects\ValueObject.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
