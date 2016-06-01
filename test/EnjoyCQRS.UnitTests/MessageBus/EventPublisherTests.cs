@@ -19,7 +19,7 @@ namespace EnjoyCQRS.UnitTests.MessageBus
 
         [Then]
         [Trait(CategoryName, CategoryValue)]
-        public async void When_a_single_event_is_published_to_the_bus_containing_a_single_EventHandler()
+        public async Task When_a_single_event_is_published_to_the_bus_containing_a_single_EventHandler()
         {
             var testEvent = new TestEvent(Guid.NewGuid());
 
@@ -34,15 +34,15 @@ namespace EnjoyCQRS.UnitTests.MessageBus
 
             EventPublisher eventPublisher = new EventPublisher(eventRouter);
             
-            await eventPublisher.PublishAsync<IDomainEvent>(new[] { testEvent });
-            await eventPublisher.CommitAsync();
+            await eventPublisher.PublishAsync<IDomainEvent>(new[] { testEvent }).ConfigureAwait(false);
+            await eventPublisher.CommitAsync().ConfigureAwait(false);
 
             handler.Ids.First().Should().Be(testEvent.AggregateId);
         }
 
         [Then]
         [Trait(CategoryName, CategoryValue)]
-        public async void When_a_single_event_is_published_to_the_bus_containing_multiple_EventHandlers()
+        public async Task When_a_single_event_is_published_to_the_bus_containing_multiple_EventHandlers()
         {
             var handler1 = new FirstTestEventHandler();
             var handler2 = new SecondTestEventHandler();
@@ -59,8 +59,8 @@ namespace EnjoyCQRS.UnitTests.MessageBus
 
             var testEvent = new TestEvent(Guid.NewGuid());
             
-            await eventPublisher.PublishAsync<IDomainEvent>(new[] { testEvent });
-            await eventPublisher.CommitAsync();
+            await eventPublisher.PublishAsync<IDomainEvent>(new[] { testEvent }).ConfigureAwait(false);
+            await eventPublisher.CommitAsync().ConfigureAwait(false);
 
             handler1.Ids.First().Should().Be(testEvent.AggregateId);
             handler2.Ids.First().Should().Be(testEvent.AggregateId);
@@ -68,7 +68,7 @@ namespace EnjoyCQRS.UnitTests.MessageBus
 
         [Then]
         [Trait(CategoryName, CategoryValue)]
-        public async void Events_should_be_published_on_correct_order()
+        public async Task Events_should_be_published_on_correct_order()
         {
             var ids = new List<Tuple<Guid, int>>();
 
@@ -92,9 +92,9 @@ namespace EnjoyCQRS.UnitTests.MessageBus
                 orderTestEvent,
                 orderTestEvent2,
                 orderTestEvent3
-            });
+            }).ConfigureAwait(false);
 
-            await eventPublisher.CommitAsync();
+            await eventPublisher.CommitAsync().ConfigureAwait(false);
 
             ids[0].Item2.Should().Be(orderTestEvent.Order);
 
