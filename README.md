@@ -35,6 +35,7 @@ Any suggestion is welcome.
 * Greg Young [@gregyoung](https://twitter.com/gregyoung)
 * Mark Nijhof [@MarkNijhof](https://twitter.com/MarkNijhof)
 * Udi Dahan [@UdiDahan](https://twitter.com/UdiDahan)
+* Vaughn Vernon [@VaughnVernon](https://twitter.com/VaughnVernon)
 
 ### Presentations
 * http://www.infoq.com/presentations/microservices-event-sourcing-cqrs
@@ -48,6 +49,7 @@ Any suggestion is welcome.
 ### Blogs
 * http://danielwhittaker.me/
 * http://vadimcomanescu.net/
+* http://vaughnvernon.co/
 
 ### Projects
 * https://github.com/edumentab/cqrs-starter-kit
