@@ -49,7 +49,7 @@ namespace EnjoyCQRS.TestFramework
 
             try
             {
-                EventHandler.ExecuteAsync(When());
+                EventHandler.ExecuteAsync(When()).GetAwaiter().GetResult();
             }
             catch (Exception exception)
             {

@@ -65,7 +65,7 @@ namespace EnjoyCQRS.TestFramework
 
             try
             {
-                CommandHandler.ExecuteAsync(When());
+                CommandHandler.ExecuteAsync(When()).GetAwaiter().GetResult();
                 PublishedEvents = AggregateRoot.UncommitedEvents;
             }
             catch (Exception exception)
@@ -93,7 +93,7 @@ namespace EnjoyCQRS.TestFramework
                 {
                     var repositoryMock = new Mock<IRepository>();
                     repositoryMock.Setup(x => x.GetByIdAsync<TAggregateRoot>(It.IsAny<Guid>())).Returns(Task.FromResult(AggregateRoot));
-                    repositoryMock.Setup(x => x.AddAsync(It.IsAny<TAggregateRoot>())).Callback<TAggregateRoot>(x => AggregateRoot = x);
+                    repositoryMock.Setup(x => x.AddAsync(It.IsAny<TAggregateRoot>())).Callback<TAggregateRoot>(x => AggregateRoot = x).Returns(Task.CompletedTask);
                     _mocks.Add(parameter.ParameterType, repositoryMock);
                     continue;
                 }
