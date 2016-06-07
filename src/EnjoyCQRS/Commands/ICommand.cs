@@ -24,8 +24,14 @@ using System;
 
 namespace EnjoyCQRS.Commands
 {
+    /// <summary>
+    /// Represent the User Intention (UI) abstraction.
+    /// </summary>
     public interface ICommand
     {
+        /// <summary>
+        /// Aggregate identifier.
+        /// </summary>
         Guid AggregateId { get; }
     }
 }

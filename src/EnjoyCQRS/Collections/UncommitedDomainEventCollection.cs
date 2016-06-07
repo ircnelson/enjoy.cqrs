@@ -31,7 +31,7 @@ namespace EnjoyCQRS.Collections
     /// </summary>
     public class UncommitedDomainEventCollection : DomainEventCollection
     {
-        public AggregateMetadata AggregateMetadata { get; protected set; }
+        public AggregateMetadata AggregateMetadata { get; }
 
         public UncommitedDomainEventCollection(AggregateMetadata aggregateMetadata, IEnumerable<IDomainEvent> events) : base(events)
         {
