@@ -22,27 +22,35 @@
 
 using System;
 using System.Threading.Tasks;
+using EnjoyCQRS.Logger;
 
 namespace EnjoyCQRS.EventSource.Storage
 {
     public class Repository : IRepository
     {
         private readonly ISession _session;
-        
-        public Repository(ISession session)
+        private readonly ILogger _logger;
+
+        public Repository(ILoggerFactory loggerFactory, ISession session)
         {
+            if (loggerFactory == null) throw new ArgumentNullException(nameof(loggerFactory));
             if (session == null) throw new ArgumentNullException(nameof(session));
 
+            _logger = loggerFactory.Create(nameof(Repository));
             _session = session;
         }
 
         public async Task AddAsync<TAggregate>(TAggregate aggregate) where TAggregate : Aggregate
         {
+            _logger.Log(LogLevel.Information, $"Called method: {nameof(Repository)}.{nameof(AddAsync)}.");
+
             await _session.AddAsync(aggregate);
         }
 
         public async Task<TAggregate> GetByIdAsync<TAggregate>(Guid id) where TAggregate : Aggregate, new()
         {
+            _logger.Log(LogLevel.Information, $"Called method: {nameof(Repository)}.{nameof(GetByIdAsync)}.");
+
             return await _session.GetByIdAsync<TAggregate>(id).ConfigureAwait(false);
         }
     }
