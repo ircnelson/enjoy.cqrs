@@ -9,6 +9,7 @@ using EnjoyCQRS.IntegrationTests.Extensions;
 using EnjoyCQRS.IntegrationTests.Sqlite;
 using EnjoyCQRS.IntegrationTests.Stubs;
 using EnjoyCQRS.IntegrationTests.Stubs.DomainLayer;
+using EnjoyCQRS.Logger;
 using EnjoyCQRS.MessageBus;
 using EnjoyCQRS.MessageBus.InProcess;
 
@@ -39,6 +40,9 @@ namespace EnjoyCQRS.IntegrationTests.Fixtures
             builder.RegisterType<StubCommandBus>().As<ICommandDispatcher>().InstancePerLifetimeScope();
             builder.RegisterType<EventPublisher>().As<IEventPublisher>().InstancePerLifetimeScope();
             builder.RegisterType<EventRouter>().As<IEventRouter>();
+
+            builder.RegisterType<NoopLoggerFactory>().As<ILoggerFactory>().InstancePerLifetimeScope();
+
             builder.Register(c => new EventStoreSqlite(fileName)).As<IEventStore>().OnActivated(args =>
             {
                 EventStore = args.Instance;

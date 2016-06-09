@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Storage;
+using EnjoyCQRS.Logger;
 using EnjoyCQRS.MessageBus;
 using EnjoyCQRS.UnitTests.Domain;
 using EnjoyCQRS.UnitTests.Domain.Stubs;
@@ -24,11 +26,18 @@ namespace EnjoyCQRS.UnitTests.Storage
 
         public EventStoreTests()
         {
+            var mockLogger = new Mock<ILogger>();
+            mockLogger.Setup(e => e.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
+            mockLogger.Setup(e => e.Log(It.IsAny<LogLevel>(), It.IsAny<string>(), It.IsAny<Exception>()));
+
+            var mockLoggerFactory = new Mock<ILoggerFactory>();
+            mockLoggerFactory.Setup(e => e.Create(It.IsAny<string>())).Returns(mockLogger.Object);
+
             _mockEventPublisher = new Mock<IEventPublisher>();
             _mockEventPublisher.Setup(e => e.PublishAsync(It.IsAny<IEnumerable<IDomainEvent>>())).Returns(Task.CompletedTask);
             
-            var session = new Session(_inMemoryDomainEventStore, _mockEventPublisher.Object);
-            _repository = new Repository(session);
+            var session = new Session(mockLoggerFactory.Object, _inMemoryDomainEventStore, _mockEventPublisher.Object);
+            _repository = new Repository(mockLoggerFactory.Object, session);
 
             var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(e => e.CommitAsync())

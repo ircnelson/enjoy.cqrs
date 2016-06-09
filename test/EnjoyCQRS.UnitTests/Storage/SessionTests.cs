@@ -6,6 +6,7 @@ using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Exceptions;
 using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;
+using EnjoyCQRS.Logger;
 using EnjoyCQRS.MessageBus;
 using EnjoyCQRS.UnitTests.Domain.Stubs;
 using FluentAssertions;
@@ -21,7 +22,7 @@ namespace EnjoyCQRS.UnitTests.Storage
 
         private readonly Func<IEventStore, IEventPublisher, ISnapshotStrategy, Session> _sessionFactory = (eventStore, eventPublisher, snapshotStrategy) =>
         {
-            var session = new Session(eventStore, eventPublisher, snapshotStrategy);
+            var session = new Session(CreateLoggerFactory(CreateLoggerMock().Object), eventStore, eventPublisher, snapshotStrategy);
 
             return session;
         };
@@ -35,11 +36,23 @@ namespace EnjoyCQRS.UnitTests.Storage
 
         [Trait(CategoryName, CategoryValue)]
         [Fact]
+        public void Cannot_pass_null_instance_of_LoggerFactory()
+        {
+            var eventPublisher = Mock.Of<IEventPublisher>();
+            var eventStore = Mock.Of<IEventStore>();
+
+            Action act = () => new Session(null, eventStore, eventPublisher);
+
+            act.ShouldThrowExactly<ArgumentNullException>();
+        }
+
+        [Trait(CategoryName, CategoryValue)]
+        [Fact]
         public void Cannot_pass_null_instance_of_EventStore()
         {
             var eventPublisher = Mock.Of<IEventPublisher>();
 
-            Action act = () => new Session(null, eventPublisher);
+            Action act = () => new Session(CreateLoggerFactory(CreateLoggerMock().Object), null, eventPublisher);
 
             act.ShouldThrowExactly<ArgumentNullException>();
         }
@@ -50,7 +63,7 @@ namespace EnjoyCQRS.UnitTests.Storage
         {
             var eventStore = Mock.Of<IEventStore>();
             
-            Action act = () => new Session(eventStore, null);
+            Action act = () => new Session(CreateLoggerFactory(CreateLoggerMock().Object), eventStore, null);
 
             act.ShouldThrowExactly<ArgumentNullException>();
         }
@@ -305,7 +318,7 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             act.ShouldThrowExactly<InvalidOperationException>();
         }
-
+        
         private static ISnapshotStrategy CreateSnapshotStrategy(bool makeSnapshot = true)
         {
             var snapshotStrategyMock = new Mock<ISnapshotStrategy>();
@@ -313,6 +326,23 @@ namespace EnjoyCQRS.UnitTests.Storage
             snapshotStrategyMock.Setup(e => e.ShouldMakeSnapshot(It.IsAny<IAggregate>())).Returns(makeSnapshot);
 
             return snapshotStrategyMock.Object;
+        }
+
+        private static Mock<ILogger> CreateLoggerMock()
+        {
+            var mockLogger = new Mock<ILogger>();
+            mockLogger.Setup(e => e.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
+            mockLogger.Setup(e => e.Log(It.IsAny<LogLevel>(), It.IsAny<string>(), It.IsAny<Exception>()));
+
+            return mockLogger;
+        }
+
+        private static ILoggerFactory CreateLoggerFactory(ILogger logger)
+        {
+            var mockLoggerFactory = new Mock<ILoggerFactory>();
+            mockLoggerFactory.Setup(e => e.Create(It.IsAny<string>())).Returns(logger);
+
+            return mockLoggerFactory.Object;
         }
     }
 }
