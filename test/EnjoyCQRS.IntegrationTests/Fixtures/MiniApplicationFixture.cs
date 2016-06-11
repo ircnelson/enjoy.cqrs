@@ -34,7 +34,7 @@ namespace EnjoyCQRS.IntegrationTests.Fixtures
             var builder = new ContainerBuilder();
             
             builder.Register(c => SnapshotStrategy).As<ISnapshotStrategy>();
-            builder.RegisterType<StubUnitOfWork>().As<IUnitOfWork>().InstancePerLifetimeScope();
+            builder.RegisterType<UnitOfWork>().As<IUnitOfWork>().InstancePerLifetimeScope();
             builder.RegisterType<Session>().As<ISession>().InstancePerLifetimeScope();
             builder.RegisterType<Repository>().As<IRepository>();
             builder.RegisterType<StubCommandBus>().As<ICommandDispatcher>().InstancePerLifetimeScope();

@@ -98,7 +98,6 @@
     <Compile Include="Stubs\ReadModelLayer\FakePersonCreatedEventHandler.cs" />
     <Compile Include="Stubs\DomainLayer\NameChanged.cs" />
     <Compile Include="Stubs\StubCommandBus.cs" />
-    <Compile Include="Stubs\StubUnitOfWork.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
