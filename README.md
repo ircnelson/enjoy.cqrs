@@ -23,38 +23,8 @@ Any suggestion is welcome.
 
 ![CQRS high level architecture](http://s32.postimg.org/ty18uww45/090615_1544_introductio1_png_w_604.png)
 
-## Nuget
-    
-    Install-Package EnjoyCQRS -Source https://www.myget.org/F/enjoy/api/v3/index.json
+## Concept
 
----
+[![CQRS concept](http://www.conceptmaps.io/maps/0acfabc1-5e39-4dd7-9590-3b32c2918ec8.png)](http://www.conceptmaps.io/maps/0acfabc1-5e39-4dd7-9590-3b32c2918ec8/detail)
 
-## References
-### People
-* Michael Plöd [@bitboss](https://twitter.com/bitboss)
-* Greg Young [@gregyoung](https://twitter.com/gregyoung)
-* Mark Nijhof [@MarkNijhof](https://twitter.com/MarkNijhof)
-* Udi Dahan [@UdiDahan](https://twitter.com/UdiDahan)
-* Vaughn Vernon [@VaughnVernon](https://twitter.com/VaughnVernon)
-
-### Presentations
-* http://www.infoq.com/presentations/microservices-event-sourcing-cqrs
-* https://speakerdeck.com/mploed/microservices-love-domain-driven-design-why-and-how
-* https://www.innoq.com/de/talks/2016/02/topconf2016-microservices-event-sourcing/
-* http://pt.slideshare.net/dbellettini/cqrs-and-event-sourcing-with-mongodb-and-php
-* http://pt.slideshare.net/ziobrando/loosely-coupled-complexity-unleash-the-power-of-your-domain-model-with-command-query-responsibility-segregation-and-event-sourcing
-* http://ookami86.github.io/event-sourcing-in-practice/index.html
-* https://www.youtube.com/watch?v=EkEz3pcLdgY
-
-### Blogs
-* http://danielwhittaker.me/
-* http://vadimcomanescu.net/
-* http://vaughnvernon.co/
-
-### Projects
-* https://github.com/edumentab/cqrs-starter-kit
-* https://github.com/mastoj/CQRSShop
-* https://github.com/EventStore/getting-started-with-event-store
-* https://github.com/gregoryyoung/m-r/
-* https://github.com/MarkNijhof/Fohjin
-* https://github.com/Ookami86/event-sourcing-in-practice
+### [See wiki for more details](https://github.com/ircnelson/enjoy.cqrs/wiki)
