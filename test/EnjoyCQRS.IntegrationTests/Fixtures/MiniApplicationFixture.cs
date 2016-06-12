@@ -37,7 +37,7 @@ namespace EnjoyCQRS.IntegrationTests.Fixtures
             builder.RegisterType<UnitOfWork>().As<IUnitOfWork>().InstancePerLifetimeScope();
             builder.RegisterType<Session>().As<ISession>().InstancePerLifetimeScope();
             builder.RegisterType<Repository>().As<IRepository>();
-            builder.RegisterType<StubCommandBus>().As<ICommandDispatcher>().InstancePerLifetimeScope();
+            builder.RegisterType<StubCommandDispatcher>().As<ICommandDispatcher>().InstancePerLifetimeScope();
             builder.RegisterType<EventPublisher>().As<IEventPublisher>().InstancePerLifetimeScope();
             builder.RegisterType<EventRouter>().As<IEventRouter>();
 

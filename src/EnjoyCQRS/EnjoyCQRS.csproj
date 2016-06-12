@@ -50,6 +50,7 @@
     <Compile Include="Logger\ILoggerFactory.cs" />
     <Compile Include="Logger\LogLevel.cs" />
     <Compile Include="Logger\NoopLogger.cs" />
+    <Compile Include="MessageBus\CommandDispatcher.cs" />
     <Compile Include="MessageBus\InProcess\EventPublisher.cs" />
     <Compile Include="MessageBus\IEventRouter.cs" />
     <Compile Include="EventSource\IAggregate.cs" />
