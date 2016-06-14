@@ -1,16 +1,27 @@
-﻿version: 1.0.{build}
+﻿version: 1.0.0.{build}
 init:
 - git config --global core.autocrlf true
-branches:
-  only:
-  - dev
+clone_folder: c:\projects\enjoycqrs
+environment:
+  COVERALLS_REPO_TOKEN:
+    secure: k131M9lYqPhmepQEei/Q2U5Pz+PJ+PQ0Suz4s6PYE/E+Ssk+NAjqExcGOGqvtx/B
 skip_commits:
   message: /updated readme.*/
-configuration: Debug
+-
+  branches:
+    only: 
+      - master
+  configuration: Release
+-
+  branches:
+    only: 
+      - dev
+  configuration: Debug
+
+-
+  configuration: Debug
 platform: Any CPU
 clone_depth: 1
-nuget:
-  project_feed: true
 before_build:
 - cmd: nuget restore
 build:
