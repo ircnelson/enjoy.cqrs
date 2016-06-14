@@ -4,9 +4,10 @@
     <id>EnjoyCQRS.TestFramework</id>
     <version>0.0.0</version>
     <title>EnjoyCQRS.TestFramework</title>
-    <authors>Nelson C Viana Jr</authors>
-    <owners>Nelson C Viana Jr</owners>
+    <authors>ircnelson</authors>
+    <owners>ircnelson</owners>
     <projectUrl>https://github.com/ircnelson/enjoy.cqrs</projectUrl>
+	<licenseUrl>https://raw.githubusercontent.com/ircnelson/enjoy.cqrs/master/LICENSE</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
 
     <summary>CQRS Test Framework.</summary>
@@ -18,15 +19,14 @@
 
     <dependencies>
       <group targetFramework="net461">
-        <dependency id="Moq" version="4.2.1510.2205" />
+        <dependency id="Moq" version="4.5.8" />
       </group>
     </dependencies>
   </metadata>
 
   <files>
-    <file src="**\src\**\bin\**\*.dll" target="lib\net461" />
-    <file src="**\src\**\bin\**\*.pdb" target="lib\net461" />
-    <file src="**\src\**\tools\**\*.*" exclude="**\*.log" />
+    <file src="bin\release\*.dll" target="lib\net461" />
+    <file src="tools\release\*.*" exclude="**\*.log" />
   </files>
 
 </package>

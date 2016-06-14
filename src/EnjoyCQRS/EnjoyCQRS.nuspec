@@ -4,9 +4,10 @@
     <id>EnjoyCQRS</id>
     <version>0.0.0</version>
     <title>EnjoyCQRS</title>
-    <authors>Nelson C Viana Jr</authors>
-    <owners>Nelson C Viana Jr</owners>
+    <authors>ircnelson</authors>
+    <owners>ircnelson</owners>
     <projectUrl>https://github.com/ircnelson/enjoy.cqrs</projectUrl>
+	<licenseUrl>https://raw.githubusercontent.com/ircnelson/enjoy.cqrs/master/LICENSE</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
 
     <summary>CQRS Framework.</summary>
@@ -18,8 +19,7 @@
   </metadata>
 
   <files>
-    <file src="**\src\**\bin\**\EnjoyCQRS.dll" target="lib\net461" />
-    <file src="**\src\**\bin\**\EnjoyCQRS.pdb" target="lib\net461" />
-    <file src="**\src\**\tools\**\*.*" exclude="**\*.log" />
+    <file src="bin\release\EnjoyCQRS.dll" target="lib\net461" />
+    <file src="tools\**\*.*" exclude="**\*.log" />
   </files>
 </package>
