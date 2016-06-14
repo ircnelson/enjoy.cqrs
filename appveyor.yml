@@ -1,7 +1,11 @@
-version: 1.0.{build}
+﻿version: 1.0.{build}
+init:
+- git config --global core.autocrlf true
 branches:
   only:
   - dev
+skip_commits:
+  message: /updated readme.*/
 configuration: Debug
 platform: Any CPU
 clone_depth: 1
@@ -10,4 +14,7 @@ nuget:
 before_build:
 - cmd: nuget restore
 build:
+  project: EnjoyCQRS.sln
   verbosity: minimal
+test_script:
+- ps: . .\CodeCoverage.ps1 -Configuration $env:configuration
