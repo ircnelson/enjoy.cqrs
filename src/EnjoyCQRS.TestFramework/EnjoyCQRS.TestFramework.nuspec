@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>EnjoyCQRS.TestFramework</id>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <title>EnjoyCQRS.TestFramework</title>
     <authors>ircnelson</authors>
     <owners>ircnelson</owners>
