@@ -1,25 +1,20 @@
 <?xml version="1.0"?>
-<package >
+<package>
   <metadata>
     <id>EnjoyCQRS</id>
-    <version>0.0.0</version>
+    <version>1.0.0</version>
     <title>EnjoyCQRS</title>
     <authors>ircnelson</authors>
     <owners>ircnelson</owners>
     <projectUrl>https://github.com/ircnelson/enjoy.cqrs</projectUrl>
-	<licenseUrl>https://raw.githubusercontent.com/ircnelson/enjoy.cqrs/master/LICENSE</licenseUrl>
+    <licenseUrl>https://raw.githubusercontent.com/ircnelson/enjoy.cqrs/master/LICENSE</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-
     <summary>CQRS Framework.</summary>
     <description><![CDATA[EnjoyCQRS is a framework to provides the minimal infrastructure for CQRS & Event Sourcing architecture.]]></description>
-
     <copyright>Copyright 2016</copyright>
-
     <tags>.NET CQRS EventSource EventSourcing</tags>
   </metadata>
-
   <files>
     <file src="bin\release\EnjoyCQRS.dll" target="lib\net461" />
-    <file src="tools\**\*.*" exclude="**\*.log" />
   </files>
 </package>

@@ -2,7 +2,7 @@
 branches:
   only:
   - dev
-configuration: Debug
+configuration: Release
 init:
 - git config --global core.autocrlf true
 clone_folder: c:\projects\enjoycqrs
@@ -13,10 +13,28 @@ skip_commits:
   message: /updated readme.*/
 platform: Any CPU
 clone_depth: 1
+artifacts:
+- path: src
+  name: src
 before_build:
-- cmd: nuget restore
-build:
-  project: EnjoyCQRS.sln
-  verbosity: minimal
+  - ps: . .\build.ps1 Prepare-Build
+build_script:
+  - ps: . .\build.ps1 Build-Only
+after_build:
+  - ps: . .\build.ps1 Pack-Nuget
 test_script:
-- ps: . .\CodeCoverage.ps1 -Configuration $env:configuration
+  - ps: . .\build.ps1 Test-Coverage
+deploy:
+- provider: NuGet
+  api_key:
+    secure: NAbtRfAbJ7QcwtGR75wAcofcV+ipa6tKWGP798krZRjOYParVolf71xX5JBy+rUR
+  skip_symbols: true
+  on:
+    branch: master
+- provider: NuGet
+  server: https://www.myget.org/F/enjoy/api/v2/package
+  api_key:
+    secure: zPU3TMfMcbGiOTRpcKdNjztuCMOtjdBB0ReA9tkMCs9XKejC9NKMVvEGvz7HFmEP
+  skip_symbols: true
+  on:
+    branch: dev
