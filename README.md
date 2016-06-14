@@ -1,6 +1,10 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/dhjqe9t4s9vel1uu?svg=true)](https://ci.appveyor.com/project/nelsoncvjr/enjoy-cqrs) 
 [![myget status](https://www.myget.org/BuildSource/Badge/enjoy?identifier=1427e6c3-0c6f-4a1a-b5bf-2d02e2ad908c)](https://www.myget.org/BuildSource/Badge/enjoy?identifier=1427e6c3-0c6f-4a1a-b5bf-2d02e2ad908c)
-[![Coverage Status](https://coveralls.io/repos/github/ircnelson/enjoy.cqrs/badge.svg?branch=dev)](https://coveralls.io/github/ircnelson/enjoy.cqrs?branch=dev)
+
+| Test Coverage |                                                                                                                                                                     |
+|---------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| master        | [![CoverageStatus](https://coveralls.io/repos/github/ircnelson/enjoy.cqrs/badge.svg?branch=master)](https://coveralls.io/github/ircnelson/enjoy.cqrs?branch=master) |
+| dev           | [![CoverageStatus](https://coveralls.io/repos/github/ircnelson/enjoy.cqrs/badge.svg?branch=dev)](https://coveralls.io/github/ircnelson/enjoy.cqrs?branch=dev)       |
 
 # eNJoy CQRS + Event Sourcing
 The motivation to create this project was born through the curiosity about CQRS (Command Query Responsibility Separation) & Event Sourcing architecture.
