@@ -1,4 +1,8 @@
 ﻿version: 1.0.0.{build}
+branches:
+  only:
+  - dev
+configuration: Debug
 init:
 - git config --global core.autocrlf true
 clone_folder: c:\projects\enjoycqrs
@@ -7,19 +11,6 @@ environment:
     secure: k131M9lYqPhmepQEei/Q2U5Pz+PJ+PQ0Suz4s6PYE/E+Ssk+NAjqExcGOGqvtx/B
 skip_commits:
   message: /updated readme.*/
--
-  branches:
-    only: 
-      - master
-  configuration: Release
--
-  branches:
-    only: 
-      - dev
-  configuration: Debug
-
--
-  configuration: Debug
 platform: Any CPU
 clone_depth: 1
 before_build:
