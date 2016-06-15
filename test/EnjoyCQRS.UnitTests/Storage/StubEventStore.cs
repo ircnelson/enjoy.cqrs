@@ -12,15 +12,60 @@ namespace EnjoyCQRS.UnitTests.Storage
 {
     public class StubEventStore : IEventStore
     {
-        public readonly Dictionary<Guid, List<IDomainEvent>> EventStore = new Dictionary<Guid, List<IDomainEvent>>();
-        public readonly ConcurrentDictionary<Guid, List<ISnapshot>> SnapshotStore = new ConcurrentDictionary<Guid, List<ISnapshot>>();
+        public readonly ConcurrentDictionary<Guid, List<IDomainEvent>> Events = new ConcurrentDictionary<Guid, List<IDomainEvent>>();
+        public readonly ConcurrentDictionary<Guid, List<ISnapshot>> Snapshots = new ConcurrentDictionary<Guid, List<ISnapshot>>();
+
+        private readonly ConcurrentDictionary<Guid, UncommitedDomainEventCollection> _uncommitedEvents = new ConcurrentDictionary<Guid, UncommitedDomainEventCollection>();
+
+        private readonly List<ISnapshot> _uncommitedSnapshots = new List<ISnapshot>();
 
         public bool SaveSnapshotMethodCalled { get; private set; }
         public bool GetSnapshotMethodCalled { get; private set; }
-
         public bool MakeSnapshot { get; } = true;
-
         public bool InTransaction;
+
+        public Task SaveSnapshotAsync<TSnapshot>(TSnapshot snapshot) where TSnapshot : ISnapshot
+        {
+            SaveSnapshotMethodCalled = true;
+
+            if (!MakeSnapshot) return Task.CompletedTask;
+
+            _uncommitedSnapshots.Add(snapshot);
+
+            return Task.CompletedTask;
+        }
+
+        public Task<ISnapshot> GetSnapshotByIdAsync(Guid aggregateId)
+        {
+            GetSnapshotMethodCalled = true;
+
+            List<ISnapshot> snapshots;
+            if (Snapshots.TryGetValue(aggregateId, out snapshots))
+            {
+                var snapshot = snapshots.OrderByDescending(e => e.Version).Take(1).FirstOrDefault();
+
+                return Task.FromResult(snapshot);
+            }
+
+            return Task.FromResult<ISnapshot>(null);
+        }
+
+        public Task<IEnumerable<IDomainEvent>> GetEventsForwardAsync(Guid aggregateId, int version)
+        {
+            List<IDomainEvent> events;
+            if (Events.TryGetValue(aggregateId, out events))
+            {
+                var forwardEvents = events.Where(e => e.Version > version).OrderBy(e => e.Version);
+
+                return Task.FromResult<IEnumerable<IDomainEvent>>(forwardEvents);
+            }
+
+            return Task.FromResult<IEnumerable<IDomainEvent>>(null);
+        }
+
+        public void Dispose()
+        {
+        }
 
         public void BeginTransaction()
         {
@@ -33,71 +78,67 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             InTransaction = false;
 
+            var groupedEvents = _uncommitedEvents.Values.GroupBy(e => e.AggregateMetadata.Id).Select(e => new { AggregateId = e.Key, Events = e });
+
+            foreach (var uncommitedEvent in groupedEvents)
+            {
+                List<IDomainEvent> events;
+
+                if (!Events.TryGetValue(uncommitedEvent.AggregateId, out events))
+                {
+                    events = new List<IDomainEvent>();
+                }
+
+                events.AddRange(uncommitedEvent.Events.SelectMany(e => e));
+
+                Events[uncommitedEvent.AggregateId] = events;
+            }
+
+            _uncommitedEvents.Clear();
+
+            var snapshotGrouped = _uncommitedSnapshots.GroupBy(e => e.AggregateId).Select(e => new { AggregateId = e.Key, Snapshots = e });
+
+            foreach (var snapshot in snapshotGrouped)
+            {
+                List<ISnapshot> snapshots;
+                if (!Snapshots.TryGetValue(snapshot.AggregateId, out snapshots))
+                {
+                    snapshots = new List<ISnapshot>();
+                }
+
+                snapshots.AddRange(snapshot.Snapshots);
+
+                Snapshots[snapshot.AggregateId] = snapshots;
+            }
+
+            _uncommitedSnapshots.Clear();
+
             return Task.CompletedTask;
         }
 
         public void Rollback()
         {
+            _uncommitedEvents.Clear();
+            _uncommitedSnapshots.Clear();
+
             InTransaction = false;
         }
 
         public Task<IEnumerable<IDomainEvent>> GetAllEventsAsync(Guid id)
         {
-            if (EventStore.ContainsKey(id))
-            {
-                var events = EventStore[id];
+            var events = Events[id].OrderBy(e => e.Version).ToList();
 
-                return Task.FromResult(events.AsEnumerable());
-            }
-
-            return Task.FromResult(Enumerable.Empty<IDomainEvent>());
+            return Task.FromResult<IEnumerable<IDomainEvent>>(events);
         }
-        
+
         public Task SaveAsync(UncommitedDomainEventCollection collection)
         {
-            List<IDomainEvent> list;
-            if (!EventStore.TryGetValue(collection.AggregateMetadata.Id, out list))
+            if (_uncommitedEvents.TryAdd(collection.AggregateMetadata.Id, collection))
             {
-                list = new List<IDomainEvent>();
-                EventStore.Add(collection.AggregateMetadata.Id, list); 
+                return Task.CompletedTask;
             }
 
-            list.AddRange(collection);
-            
             return Task.CompletedTask;
-        }
-
-
-        public Task SaveSnapshotAsync<TSnapshot>(TSnapshot snapshot) where TSnapshot : ISnapshot
-        {
-            SaveSnapshotMethodCalled = true;
-
-            if (!MakeSnapshot) return Task.CompletedTask;
-
-            var snapshots = new List<ISnapshot>();
-            SnapshotStore.GetOrAdd(snapshot.AggregateId, snapshots);
-            snapshots.Add(snapshot);
-
-            return Task.CompletedTask;
-        }
-
-        public Task<ISnapshot> GetSnapshotByIdAsync(Guid aggregateId)
-        {
-            GetSnapshotMethodCalled = true;
-
-            var snapshot = SnapshotStore[aggregateId].OrderBy(o => o.Version).LastOrDefault();
-
-            return Task.FromResult(snapshot);
-        }
-
-        public Task<IEnumerable<IDomainEvent>> GetEventsForwardAsync(Guid aggregateId, int version)
-        {
-            var events = EventStore[aggregateId].Where(e => e.Version > version);
-
-            return Task.FromResult(events);
-        }
-        public void Dispose()
-        {
         }
     }
 }

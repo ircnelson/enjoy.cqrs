@@ -61,7 +61,7 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
 
-            _inMemoryDomainEventStore.EventStore[testAggregate.Id].Count.Should().Be(2);
+            _inMemoryDomainEventStore.Events[testAggregate.Id].Count.Should().Be(2);
         }
 
         [Trait(CategoryName, CategoryValue)]

@@ -149,9 +149,9 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             eventStore.SaveSnapshotMethodCalled.Should().BeTrue();
 
-            eventStore.SnapshotStore[stubAggregate.Id].First().Should().BeOfType<StubSnapshotAggregateSnapshot>();
+            eventStore.Snapshots[stubAggregate.Id].First().Should().BeOfType<StubSnapshotAggregateSnapshot>();
 
-            var snapshot = eventStore.SnapshotStore[stubAggregate.Id].First().As<StubSnapshotAggregateSnapshot>();
+            var snapshot = eventStore.Snapshots[stubAggregate.Id].First().As<StubSnapshotAggregateSnapshot>();
 
             snapshot.AggregateId.Should().Be(stubAggregate.Id);
             snapshot.Name.Should().Be(stubAggregate.Name);
@@ -175,7 +175,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             await session.AddAsync(stubAggregate).ConfigureAwait(false);
             await session.SaveChangesAsync().ConfigureAwait(false);
 
-            session = _sessionFactory(eventStore, _eventPublisherMock.Object, null);
+            session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy);
 
             var aggregate = await session.GetByIdAsync<StubSnapshotAggregate>(stubAggregate.Id).ConfigureAwait(false);
 
@@ -183,6 +183,31 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             aggregate.Version.Should().Be(3);
             aggregate.Id.Should().Be(stubAggregate.Id);
+        }
+
+        [Trait(CategoryName, CategoryValue)]
+        [Then]
+        public async Task When_not_exists_snapshot_yet_Then_aggregate_should_be_constructed_using_your_events()
+        {
+            var snapshotStrategy = CreateSnapshotStrategy(false);
+
+            var eventStore = new StubEventStore();
+            var session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy);
+
+            var stubAggregate = StubSnapshotAggregate.Create("Snap");
+
+            stubAggregate.AddEntity("Child 1");
+            stubAggregate.AddEntity("Child 2");
+
+            await session.AddAsync(stubAggregate).ConfigureAwait(false);
+            await session.SaveChangesAsync().ConfigureAwait(false);
+
+            session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy);
+
+            var aggregate = await session.GetByIdAsync<StubSnapshotAggregate>(stubAggregate.Id).ConfigureAwait(false);
+
+            aggregate.Name.Should().Be(stubAggregate.Name);
+            aggregate.Entities.Count.Should().Be(stubAggregate.Entities.Count);
         }
 
         [Trait(CategoryName, CategoryValue)]
