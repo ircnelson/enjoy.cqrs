@@ -1,9 +1,7 @@
-﻿using System;
-using System.Linq;
+﻿using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using EnjoyCQRS.EventSource.Storage;
-using EnjoyCQRS.Owin.IntegrationTests.Application.Domain.FooAggregate;
 using EnjoyCQRS.Owin.IntegrationTests.Infrastructure;
 using FluentAssertions;
 using Microsoft.Owin.Testing;
@@ -39,7 +37,8 @@ namespace EnjoyCQRS.Owin.IntegrationTests
             var aggregateId = match.Groups[1].Value;
 
             response = await server.CreateRequest($"/command/foo/{aggregateId}/doSomething").PostAsync();
-            result = await response.Content.ReadAsStringAsync();
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
             
             aggregateId.Should().NotBeNullOrWhiteSpace();
         }

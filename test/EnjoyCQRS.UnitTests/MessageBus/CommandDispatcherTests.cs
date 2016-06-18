@@ -29,10 +29,10 @@ namespace EnjoyCQRS.UnitTests.MessageBus
             Mock<ICommandDispatcher> commandDispatcherMock = new Mock<ICommandDispatcher>();
             commandDispatcherMock.Setup(e => e.DispatchAsync(It.IsAny<TestCommand>())).Callback((ICommand command) =>
             {
-                handlers.ForEach((action =>
+                handlers.ForEach(action =>
                 {
                     action((TestCommand) command);
-                }));
+                });
             }).Returns(Task.CompletedTask);
 
             var testCommand = new TestCommand(Guid.NewGuid());
@@ -60,10 +60,10 @@ namespace EnjoyCQRS.UnitTests.MessageBus
             Mock<ICommandDispatcher> commandDispatcherMock = new Mock<ICommandDispatcher>();
             commandDispatcherMock.Setup(e => e.DispatchAsync(It.IsAny<TestCommand>())).Callback((ICommand command) =>
             {
-                handlers.ForEach((action =>
+                handlers.ForEach(action =>
                 {
                     action((TestCommand)command);
-                }));
+                });
             }).Returns(Task.CompletedTask);
 
             var testCommand = new TestCommand(Guid.NewGuid());

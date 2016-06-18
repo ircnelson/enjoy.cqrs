@@ -31,17 +31,13 @@ namespace EnjoyCQRS.Owin.IntegrationTests.Infrastructure
             builder.RegisterType<AutofacEventRouter>().As<IEventRouter>();
             builder.RegisterType<NoopLoggerFactory>().As<ILoggerFactory>().InstancePerRequest();
             builder.Register(c => EventStore).As<IEventStore>();
-
-            var genericCommandHandler = typeof(ICommandHandler<>);
-
+            
             builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
-                   .AsClosedTypesOf(genericCommandHandler)
+                   .AsClosedTypesOf(typeof(ICommandHandler<>))
                    .AsImplementedInterfaces();
-
-            var genericEventHandler = typeof(IEventHandler<>);
-
+            
             builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
-                   .AsClosedTypesOf(genericEventHandler)
+                   .AsClosedTypesOf(typeof(IEventHandler<>))
                    .AsImplementedInterfaces();
 
             builder.RegisterApiControllers(Assembly.GetExecutingAssembly());
