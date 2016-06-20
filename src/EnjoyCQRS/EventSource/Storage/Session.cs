@@ -74,7 +74,7 @@ namespace EnjoyCQRS.EventSource.Storage
             
             var aggregate = _aggregateTracker.GetById<TAggregate>(id);
             
-                _logger.Log(LogLevel.Debug, "Returning an aggregate tracked.");
+            _logger.Log(LogLevel.Debug, "Returning an aggregate tracked.");
 
             if (aggregate != null) return aggregate;
 

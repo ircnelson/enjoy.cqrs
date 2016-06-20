@@ -250,12 +250,17 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             var session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy);
 
+            var newId = Guid.NewGuid();
+
             Func<Task> act = async () =>
             {
-                await session.GetByIdAsync<StubAggregate>(Guid.NewGuid()).ConfigureAwait(false);
+                await session.GetByIdAsync<StubAggregate>(newId).ConfigureAwait(false);
             };
 
-            act.ShouldThrowExactly<AggregateNotFoundException>();
+            var assertion = act.ShouldThrowExactly<AggregateNotFoundException>();
+
+            assertion.Which.AggregateName.Should().Be(typeof(StubAggregate).Name);
+            assertion.Which.AggregateId.Should().Be(newId);
 
             return Task.CompletedTask;
         }

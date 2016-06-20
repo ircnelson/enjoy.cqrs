@@ -19,6 +19,15 @@ namespace EnjoyCQRS.UnitTests.MessageBus
 
         [Trait(CategoryName, CategoryValue)]
         [Then]
+        public void Instance_of_EventRouter_cannot_be_null()
+        {
+            Action act = () => new EventPublisher(null);
+
+            act.ShouldThrowExactly<ArgumentNullException>();
+        }
+
+        [Trait(CategoryName, CategoryValue)]
+        [Then]
         public async Task When_a_single_event_is_published_to_the_bus_containing_a_single_EventHandler()
         {
             var testEvent = new TestEvent(Guid.NewGuid());
@@ -59,7 +68,7 @@ namespace EnjoyCQRS.UnitTests.MessageBus
 
             var testEvent = new TestEvent(Guid.NewGuid());
             
-            await eventPublisher.PublishAsync<IDomainEvent>(new[] { testEvent }).ConfigureAwait(false);
+            await eventPublisher.PublishAsync<IDomainEvent>(testEvent).ConfigureAwait(false);
             await eventPublisher.CommitAsync().ConfigureAwait(false);
 
             handler1.Ids.First().Should().Be(testEvent.AggregateId);
