@@ -1,0 +1,18 @@
+{
+    "version": "0.1.0",
+    "command": "make",
+    "isShellCommand": true,
+    "args": ["html"],
+    "showOutput": "silent",
+        "problemMatcher": {
+        "owner": "restructuredtext",
+        "fileLocation": ["absolute"],
+        "pattern": {
+            "regexp": "^(.*):(\\d+):\\s+(WARNING|ERROR):\\s+(.*)$",
+            "file": 1,
+            "line": 2,
+            "severity": 3,
+            "message": 4
+        }
+    }
+}
