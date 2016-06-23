@@ -14,18 +14,20 @@ namespace EnjoyCQRS.Owin.IntegrationTests
         [Fact]
         public async Task Should_create_foo()
         {
-            var eventStore = new StubEventStore();
+            var eventStore = new InMemoryEventStore();
+
             var server = TestServerFactory(eventStore);
 
             await server.CreateRequest("/command/foo").PostAsync();
 
-            eventStore.Events.Keys.Count.Should().Be(1);
+            eventStore.Events.Count.Should().Be(1);
         }
 
         [Fact]
         public async Task Should_do_something()
         {
-            var eventStore = new StubEventStore();
+            var eventStore = new InMemoryEventStore();
+
             var server = TestServerFactory(eventStore);
 
             var response = await server.CreateRequest("/command/foo").PostAsync();
@@ -42,7 +44,7 @@ namespace EnjoyCQRS.Owin.IntegrationTests
             
             aggregateId.Should().NotBeNullOrWhiteSpace();
         }
-
+        
         private TestServer TestServerFactory(IEventStore eventStore)
         {
             var startup = new Startup

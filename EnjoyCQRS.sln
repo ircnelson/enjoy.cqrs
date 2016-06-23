@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnjoyCQRS.IntegrationTests"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnjoyCQRS.Owin.IntegrationTests", "test\EnjoyCQRS.Owin.IntegrationTests\EnjoyCQRS.Owin.IntegrationTests.csproj", "{FD9D8D17-8826-48C6-B789-11993CFC5838}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnjoyCQRS.IntegrationTests.Shared", "test\EnjoyCQRS.IntegrationTests.Shared\EnjoyCQRS.IntegrationTests.Shared.csproj", "{A7982FC7-1BAB-4ED6-99AE-FACE5E10F5C7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +45,10 @@ Global
 		{FD9D8D17-8826-48C6-B789-11993CFC5838}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FD9D8D17-8826-48C6-B789-11993CFC5838}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FD9D8D17-8826-48C6-B789-11993CFC5838}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7982FC7-1BAB-4ED6-99AE-FACE5E10F5C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7982FC7-1BAB-4ED6-99AE-FACE5E10F5C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7982FC7-1BAB-4ED6-99AE-FACE5E10F5C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7982FC7-1BAB-4ED6-99AE-FACE5E10F5C7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -53,5 +59,6 @@ Global
 		{7CEDD8F7-210D-44FC-B690-9079AF5A12DF} = {1D765E45-6176-4855-AA97-3CFDD6724043}
 		{857E90AD-43C8-4AEB-9064-5EAA4825F1C0} = {BFFED7E8-0A58-46ED-89DE-58D8E350E43D}
 		{FD9D8D17-8826-48C6-B789-11993CFC5838} = {BFFED7E8-0A58-46ED-89DE-58D8E350E43D}
+		{A7982FC7-1BAB-4ED6-99AE-FACE5E10F5C7} = {BFFED7E8-0A58-46ED-89DE-58D8E350E43D}
 	EndGlobalSection
 EndGlobal

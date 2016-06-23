@@ -32,7 +32,7 @@ namespace EnjoyCQRS.EventSource.Snapshots
         public Guid AggregateId { get; set; }
 
         /// <summary>
-        /// <see cref="Aggregate.EventVersion"/>
+        /// <see cref="Aggregate.Sequence"/>
         /// </summary>
         public int Version { get; set; }
     }

@@ -79,25 +79,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Fixtures\MiniApplicationFixture.cs" />
-    <Compile Include="Stubs\ApplicationLayer\ChangeNameCommand.cs" />
-    <Compile Include="Stubs\ApplicationLayer\ChangeNameCommandHandler.cs" />
     <Compile Include="Extensions\CustomRegistrationExtensions.cs" />
-    <Compile Include="Stubs\ApplicationLayer\CreateFakeGameCommand.cs" />
-    <Compile Include="Stubs\ApplicationLayer\CreateFakeGameCommandHandler.cs" />
-    <Compile Include="Stubs\EventRouter.cs" />
+    <Compile Include="Infrastructure\EventRouter.cs" />
     <Compile Include="MiniApplicationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sqlite\EventStoreSqlite.cs" />
     <Compile Include="Sqlite\EventStoreSqliteInitializer.cs" />
-    <Compile Include="Stubs\ApplicationLayer\CreateFakePersonCommand.cs" />
-    <Compile Include="Stubs\ApplicationLayer\CreateFakePersonCommandHandler.cs" />
-    <Compile Include="Stubs\DomainLayer\FakeGame.cs" />
-    <Compile Include="Stubs\DomainLayer\FakeGameCreated.cs" />
-    <Compile Include="Stubs\DomainLayer\FakePerson.cs" />
-    <Compile Include="Stubs\DomainLayer\FakePersonCreated.cs" />
-    <Compile Include="Stubs\ReadModelLayer\FakePersonCreatedEventHandler.cs" />
-    <Compile Include="Stubs\DomainLayer\NameChanged.cs" />
-    <Compile Include="Stubs\StubCommandDispatcher.cs" />
+    <Compile Include="Infrastructure\StubCommandDispatcher.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -106,6 +94,10 @@
     <ProjectReference Include="..\..\src\EnjoyCQRS\EnjoyCQRS.csproj">
       <Project>{7CEDD8F7-210D-44FC-B690-9079AF5A12DF}</Project>
       <Name>EnjoyCQRS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EnjoyCQRS.IntegrationTests.Shared\EnjoyCQRS.IntegrationTests.Shared.csproj">
+      <Project>{A7982FC7-1BAB-4ED6-99AE-FACE5E10F5C7}</Project>
+      <Name>EnjoyCQRS.IntegrationTests.Shared</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

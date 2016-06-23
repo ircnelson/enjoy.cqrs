@@ -54,6 +54,6 @@ namespace EnjoyCQRS.EventSource.Storage
         /// <param name="aggregateId"></param>
         /// <param name="version"></param>
         /// <returns></returns>
-        Task<IEnumerable<IDomainEvent>> GetEventsForwardAsync(Guid aggregateId, int version);
+        Task<IEnumerable<ICommitedEvent>> GetEventsForwardAsync(Guid aggregateId, int version);
     }
 }

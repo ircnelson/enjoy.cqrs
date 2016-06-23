@@ -28,7 +28,7 @@ namespace EnjoyCQRS.Collections
     /// <summary>
     /// Represents collection of commited events.
     /// </summary>
-    public class CommitedDomainEventCollection : DomainEventCollection
+    public class CommitedDomainEventCollection : HashSet<IDomainEvent>
     {
         public CommitedDomainEventCollection(IEnumerable<IDomainEvent> events) : base(events)
         {

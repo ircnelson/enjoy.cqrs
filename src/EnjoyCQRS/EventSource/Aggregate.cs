@@ -22,7 +22,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using EnjoyCQRS.Collections;
 using EnjoyCQRS.Events;
 
@@ -52,7 +51,7 @@ namespace EnjoyCQRS.EventSource
         /// <summary>
         /// This version is calculated based on Version + Uncommited events count.
         /// </summary>
-        public int EventVersion => Version + _uncommitedEvents.Count;
+        public int Sequence => Version + _uncommitedEvents.Count;
 
         /// <summary>
         /// Aggregate default constructor.
@@ -79,7 +78,7 @@ namespace EnjoyCQRS.EventSource
         /// <param name="event"></param>
         protected void Emit(IDomainEvent @event)
         {
-            ApplyEvent(new UncommitedDomainEvent(@event, EventVersion + 1));
+            ApplyEvent(@event, true);
         }
 
         /// <summary>
@@ -87,11 +86,14 @@ namespace EnjoyCQRS.EventSource
         /// The last event applied is the current state of the Aggregate.
         /// </summary>
         /// <param name="event"></param>
-        private void ApplyEvent(UncommitedDomainEvent @event)
+        private void ApplyEvent(IDomainEvent @event, bool isNew = false)
         {
-            ApplyEvent(@event.OriginalEvent);
-            
-            _uncommitedEvents.Add(@event.OriginalEvent);
+            ApplyEvent(@event);
+
+            if (isNew)
+            {
+                _uncommitedEvents.Add(@event);
+            }
         }
 
         /// <summary>
@@ -121,11 +123,6 @@ namespace EnjoyCQRS.EventSource
             foreach (var @event in domainEvents)
             {
                 ApplyEvent(@event);
-            }
-            
-            if (domainEvents.Any())
-            {
-                UpdateVersion(domainEvents.Max(e => e.Version));
             }
         }
 

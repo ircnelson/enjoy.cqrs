@@ -1,14 +1,15 @@
 ﻿using System;
 using Autofac;
 using EnjoyCQRS.Commands;
+using EnjoyCQRS.Core;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;
 using EnjoyCQRS.IntegrationTests.Extensions;
+using EnjoyCQRS.IntegrationTests.Infrastructure;
+using EnjoyCQRS.IntegrationTests.Shared;
 using EnjoyCQRS.IntegrationTests.Sqlite;
-using EnjoyCQRS.IntegrationTests.Stubs;
-using EnjoyCQRS.IntegrationTests.Stubs.DomainLayer;
 using EnjoyCQRS.Logger;
 using EnjoyCQRS.MessageBus;
 using EnjoyCQRS.MessageBus.InProcess;
@@ -20,7 +21,7 @@ namespace EnjoyCQRS.IntegrationTests.Fixtures
         public IContainer Container { get; private set; }
         public EventStoreSqlite EventStore { get; set; }
 
-        public IntervalSnapshotStrategy SnapshotStrategy { get; set; } = new IntervalSnapshotStrategy(1);
+        public IntervalSnapshotStrategy SnapshotStrategy { get; set; } = new IntervalSnapshotStrategy();
 
         public MiniApplicationFixture()
         {
@@ -40,7 +41,8 @@ namespace EnjoyCQRS.IntegrationTests.Fixtures
             builder.RegisterType<StubCommandDispatcher>().As<ICommandDispatcher>().InstancePerLifetimeScope();
             builder.RegisterType<EventPublisher>().As<IEventPublisher>().InstancePerLifetimeScope();
             builder.RegisterType<EventRouter>().As<IEventRouter>();
-
+            builder.RegisterType<EventSerializer>().As<IEventSerializer>();
+            builder.RegisterType<JsonTextSerializer>().As<ITextSerializer>();
             builder.RegisterType<NoopLoggerFactory>().As<ILoggerFactory>().InstancePerLifetimeScope();
 
             builder.Register(c => new EventStoreSqlite(fileName)).As<IEventStore>().OnActivated(args =>
@@ -48,7 +50,7 @@ namespace EnjoyCQRS.IntegrationTests.Fixtures
                 EventStore = args.Instance;
             });
 
-            var assemblyCommandHandlers = typeof (FakePerson).Assembly;
+            var assemblyCommandHandlers = typeof (FooAssembler).Assembly;
 
             // Command handlers
             var genericCommandHandler = typeof (ICommandHandler<>);
@@ -67,7 +69,7 @@ namespace EnjoyCQRS.IntegrationTests.Fixtures
             builder.RegisterAssemblyTypes(assemblyCommandHandlers)
                    .AsClosedTypesOf(genericEventHandler)
                    .AsImplementedInterfaces();
-
+            
             var container = builder.Build();
 
             Container = container;

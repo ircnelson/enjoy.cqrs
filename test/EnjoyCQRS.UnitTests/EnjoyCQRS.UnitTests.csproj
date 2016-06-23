@@ -104,6 +104,8 @@
     <Compile Include="MessageBus\Stubs\OrderTestEventHandler.cs" />
     <Compile Include="MessageBus\Stubs\SecondTestEventHandler.cs" />
     <Compile Include="MessageBus\Stubs\TestEvent.cs" />
+    <Compile Include="Metadata\MetadataCollectionTests.cs" />
+    <Compile Include="Metadata\MetadataProviderTests.cs" />
     <Compile Include="Snapshoting\DefaultSnapshotStrategyTests.cs" />
     <Compile Include="Snapshoting\IntervalSnapshotStrategyTests.cs" />
     <Compile Include="Snapshoting\When_restore_snapshot.cs" />
@@ -111,9 +113,8 @@
     <Compile Include="Storage\EventStoreTests.cs" />
     <Compile Include="Storage\RepositoryTests.cs" />
     <Compile Include="Storage\SessionTests.cs" />
-    <Compile Include="Storage\StubEventStore.cs" />
-    <Compile Include="Domain\Increment_the_EventVersion_When_new_events_are_applied.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Storage\StubEventStore.cs" />
     <Compile Include="Storage\UnitOfWorkTests.cs" />
     <Compile Include="ThenAttribute.cs" />
     <Compile Include="ValueObjects\ValueObjectTests.cs" />
@@ -129,6 +130,10 @@
     <ProjectReference Include="..\..\src\EnjoyCQRS\EnjoyCQRS.csproj">
       <Project>{7CEDD8F7-210D-44FC-B690-9079AF5A12DF}</Project>
       <Name>EnjoyCQRS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EnjoyCQRS.IntegrationTests.Shared\EnjoyCQRS.IntegrationTests.Shared.csproj">
+      <Project>{a7982fc7-1bab-4ed6-99ae-face5e10f5c7}</Project>
+      <Name>EnjoyCQRS.IntegrationTests.Shared</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

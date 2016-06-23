@@ -32,7 +32,7 @@ namespace EnjoyCQRS.EventSource
             var snapshot = CreateSnapshot();
 
             snapshot.AggregateId = Id;
-            snapshot.Version = EventVersion;
+            snapshot.Version = Sequence;
 
             return snapshot;
         }

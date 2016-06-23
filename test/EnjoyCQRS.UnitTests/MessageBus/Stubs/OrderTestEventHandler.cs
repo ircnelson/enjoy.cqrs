@@ -16,7 +16,7 @@ namespace EnjoyCQRS.UnitTests.MessageBus.Stubs
 
         public Task ExecuteAsync(OrderedTestEvent @event)
         {
-            _eventsBag.Add(new Tuple<Guid, int>(@event.Id, @event.Order));
+            _eventsBag.Add(new Tuple<Guid, int>(@event.AggregateId, @event.Order));
 
             return Task.CompletedTask;
         }

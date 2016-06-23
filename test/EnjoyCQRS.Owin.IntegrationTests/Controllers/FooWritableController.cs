@@ -2,8 +2,8 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using EnjoyCQRS.EventSource;
+using EnjoyCQRS.IntegrationTests.Shared.StubApplication.Commands.FooAggregate;
 using EnjoyCQRS.MessageBus;
-using EnjoyCQRS.Owin.IntegrationTests.Application.Commands;
 
 namespace EnjoyCQRS.Owin.IntegrationTests.Controllers
 {

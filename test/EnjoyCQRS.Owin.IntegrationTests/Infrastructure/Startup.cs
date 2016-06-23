@@ -3,13 +3,16 @@ using System.Web.Http;
 using Autofac;
 using Autofac.Integration.WebApi;
 using EnjoyCQRS.Commands;
+using EnjoyCQRS.Core;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;
+using EnjoyCQRS.IntegrationTests.Shared;
 using EnjoyCQRS.Logger;
 using EnjoyCQRS.MessageBus;
 using EnjoyCQRS.MessageBus.InProcess;
+using Microsoft.Owin;
 using Owin;
 
 namespace EnjoyCQRS.Owin.IntegrationTests.Infrastructure
@@ -30,15 +33,26 @@ namespace EnjoyCQRS.Owin.IntegrationTests.Infrastructure
             builder.RegisterType<EventPublisher>().As<IEventPublisher>().InstancePerRequest();
             builder.RegisterType<AutofacEventRouter>().As<IEventRouter>();
             builder.RegisterType<NoopLoggerFactory>().As<ILoggerFactory>().InstancePerRequest();
+            builder.RegisterType<EventSerializer>().As<IEventSerializer>();
+            builder.RegisterType<JsonTextSerializer>().As<ITextSerializer>();
+
             builder.Register(c => EventStore).As<IEventStore>();
             
-            builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
+            builder.RegisterAssemblyTypes(typeof(FooAssembler).Assembly)
                    .AsClosedTypesOf(typeof(ICommandHandler<>))
                    .AsImplementedInterfaces();
             
-            builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
+            builder.RegisterAssemblyTypes(typeof(FooAssembler).Assembly)
                    .AsClosedTypesOf(typeof(IEventHandler<>))
                    .AsImplementedInterfaces();
+
+            var typeOfMetadataProvider = typeof(OwinMetadataProvider);
+
+            builder.RegisterAssemblyTypes(typeOfMetadataProvider.Assembly)
+                .Where(e => typeOfMetadataProvider.IsAssignableFrom(e))
+                .AsImplementedInterfaces();
+
+            builder.RegisterType<OwinContext>().As<IOwinContext>().InstancePerRequest();
 
             builder.RegisterApiControllers(Assembly.GetExecutingAssembly());
             

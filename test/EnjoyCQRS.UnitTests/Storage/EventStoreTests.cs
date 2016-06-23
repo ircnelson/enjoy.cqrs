@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Storage;
+using EnjoyCQRS.IntegrationTests.Shared;
 using EnjoyCQRS.Logger;
 using EnjoyCQRS.MessageBus;
+using EnjoyCQRS.MetadataProviders;
 using EnjoyCQRS.UnitTests.Domain;
 using EnjoyCQRS.UnitTests.Domain.Stubs;
 using FluentAssertions;
@@ -19,13 +22,17 @@ namespace EnjoyCQRS.UnitTests.Storage
         private const string CategoryName = "Unit";
         private const string CategoryValue = "Event store";
 
-        private readonly StubEventStore _inMemoryDomainEventStore = new StubEventStore();
+        private readonly InMemoryEventStore _inMemoryDomainEventStore;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository _repository;
         private readonly Mock<IEventPublisher> _mockEventPublisher;
 
         public EventStoreTests()
         {
+            var eventSerializer = new EventSerializer(new JsonTextSerializer());
+
+            _inMemoryDomainEventStore = new InMemoryEventStore();
+            
             var mockLogger = new Mock<ILogger>();
             mockLogger.Setup(e => e.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
             mockLogger.Setup(e => e.Log(It.IsAny<LogLevel>(), It.IsAny<string>(), It.IsAny<Exception>()));
@@ -36,7 +43,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             _mockEventPublisher = new Mock<IEventPublisher>();
             _mockEventPublisher.Setup(e => e.PublishAsync(It.IsAny<IEnumerable<IDomainEvent>>())).Returns(Task.CompletedTask);
             
-            var session = new Session(mockLoggerFactory.Object, _inMemoryDomainEventStore, _mockEventPublisher.Object);
+            var session = new Session(mockLoggerFactory.Object, _inMemoryDomainEventStore, _mockEventPublisher.Object, eventSerializer);
             _repository = new Repository(mockLoggerFactory.Object, session);
 
             var unitOfWorkMock = new Mock<IUnitOfWork>();
@@ -61,7 +68,9 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
 
-            _inMemoryDomainEventStore.Events[testAggregate.Id].Count.Should().Be(2);
+            var events = await _inMemoryDomainEventStore.GetAllEventsAsync(testAggregate.Id);
+            
+            events.Count().Should().Be(2);
         }
 
         [Trait(CategoryName, CategoryValue)]

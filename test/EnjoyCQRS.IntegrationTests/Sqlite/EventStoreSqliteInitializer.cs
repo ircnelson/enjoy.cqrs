@@ -31,14 +31,16 @@ namespace EnjoyCQRS.IntegrationTests.Sqlite
                     @"CREATE TABLE Events (Id [uniqueidentifier] PRIMARY KEY, 
                                                              AggregateId [uniqueidentifier] NOT NULL, 
                                                              Timestamp [CURRENT_TIMESTAMP] NOT NULL, 
-                                                             EventTypeName [VARCHAR(250)] NOT NULL, 
+                                                             Metadatas [TEXT] NOT NULL, 
                                                              Body [TEXT] NOT NULL,
                                                              Version [INT])",
 
-                    @"CREATE TABLE Snapshots (AggregateId [uniqueidentifier], 
-                                                                Timestamp [CURRENT_TIMESTAMP] NOT NULL, 
-                                                                Body [TEXT] NOT NULL, 
-                                                                Version [INT])"
+                    @"CREATE TABLE Snapshots (Id [uniqueidentifier] PRIMARY KEY,
+                                              AggregateId [uniqueidentifier], 
+                                              Timestamp [CURRENT_TIMESTAMP] NOT NULL, 
+                                              SnapshotClrType [TEXT] NOT NULL,
+                                              Body [TEXT] NOT NULL, 
+                                              Version [INT])"
                 };
 
                 connection.Open();

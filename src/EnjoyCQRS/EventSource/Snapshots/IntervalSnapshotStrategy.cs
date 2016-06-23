@@ -37,7 +37,7 @@ namespace EnjoyCQRS.EventSource.Snapshots
         {
             if (!CheckSnapshotSupport(aggregate.GetType())) return false;
 
-            return (aggregate.EventVersion % SnapshotInterval == 0);
+            return (aggregate.Sequence % SnapshotInterval == 0);
         }
     }
 }

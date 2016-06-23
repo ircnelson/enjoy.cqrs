@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using EnjoyCQRS.Collections;
 using EnjoyCQRS.Events;
@@ -29,6 +30,7 @@ using EnjoyCQRS.EventSource.Exceptions;
 using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.Logger;
 using EnjoyCQRS.MessageBus;
+using EnjoyCQRS.MetadataProviders;
 
 namespace EnjoyCQRS.EventSource.Storage
 {
@@ -37,27 +39,46 @@ namespace EnjoyCQRS.EventSource.Storage
         private readonly AggregateTracker _aggregateTracker = new AggregateTracker();
         private readonly IEventStore _eventStore;
         private readonly IEventPublisher _eventPublisher;
+        private readonly IEventSerializer _eventSerializer;
         private readonly List<Aggregate> _aggregates = new List<Aggregate>();
         private readonly ISnapshotStrategy _snapshotStrategy;
+        private readonly IEnumerable<IMetadataProvider> _metadataProviders;
         private readonly ILogger _logger;
 
         private bool _externalTransaction;
 
-        public Session(ILoggerFactory loggerFactory, IEventStore eventStore, IEventPublisher eventPublisher, ISnapshotStrategy snapshotStrategy = null)
+        public Session(
+            ILoggerFactory loggerFactory, 
+            IEventStore eventStore, 
+            IEventPublisher eventPublisher, 
+            IEventSerializer eventSerializer,
+            IEnumerable<IMetadataProvider> metadataProviders = null,
+            ISnapshotStrategy snapshotStrategy = null)
         {
             if (loggerFactory == null) throw new ArgumentNullException(nameof(loggerFactory));
             if (eventStore == null) throw new ArgumentNullException(nameof(eventStore));
             if (eventPublisher == null) throw new ArgumentNullException(nameof(eventPublisher));
             
+            if (metadataProviders == null) metadataProviders = Enumerable.Empty<IMetadataProvider>();
+
+            metadataProviders = metadataProviders.Concat(new IMetadataProvider[]
+            {
+                new AggregateTypeMetadataProvider(),
+                new EventTypeMetadataProvider(),
+                new CorrelationIdMetadataProvider()
+            });
+
             if (snapshotStrategy == null)
             {
                 snapshotStrategy = new IntervalSnapshotStrategy();
             }
-
+            
             _logger = loggerFactory.Create(nameof(Session));
 
             _snapshotStrategy = snapshotStrategy;
             _eventStore = eventStore;
+            _eventSerializer = eventSerializer;
+            _metadataProviders = metadataProviders;
             _eventPublisher = eventPublisher;
         }
 
@@ -80,7 +101,7 @@ namespace EnjoyCQRS.EventSource.Storage
 
             aggregate = new TAggregate();
 
-            IEnumerable<IDomainEvent> events;
+            IEnumerable<ICommitedEvent> events;
             
             _logger.Log(LogLevel.Debug, "Checking if aggregate has snapshot support.");
             
@@ -192,20 +213,29 @@ namespace EnjoyCQRS.EventSource.Storage
 
                 foreach (var aggregate in _aggregates)
                 {
-                    var aggregateMetadata = new AggregateMetadata(aggregate.Id, aggregate.GetType());
+                    var serializedEvents = aggregate.UncommitedEvents.Select((e, index) =>
+                    {
+                        index++;
 
-                    var events = new UncommitedDomainEventCollection(aggregateMetadata, aggregate.UncommitedEvents);
+                        var metadatas = _metadataProviders.SelectMany(md => md.Provide(aggregate, e, Metadata.Empty)).Concat(new[]
+                            {
+                                new KeyValuePair<string, string>(MetadataKeys.EventId, Guid.NewGuid().ToString()),
+                                new KeyValuePair<string, string>(MetadataKeys.EventVersion, (aggregate.Version + index).ToString())
+                            });
+
+                        return _eventSerializer.Serialize(aggregate, e, new Metadata(metadatas));
+                    });
                     
                     if (_snapshotStrategy.ShouldMakeSnapshot(aggregate))
                     {
                         await TakeSnapshot(aggregate).ConfigureAwait(false);
                     }
                     
-                    await _eventStore.SaveAsync(events).ConfigureAwait(false);
+                    await _eventStore.SaveAsync(serializedEvents).ConfigureAwait(false);
 
-                    await _eventPublisher.PublishAsync<IDomainEvent>(events).ConfigureAwait(false);
+                    await _eventPublisher.PublishAsync<IDomainEvent>(aggregate.UncommitedEvents).ConfigureAwait(false);
 
-                    aggregate.UpdateVersion(aggregate.EventVersion);
+                    aggregate.UpdateVersion(aggregate.Sequence);
 
                     aggregate.ClearUncommitedEvents();
                 }
@@ -288,9 +318,19 @@ namespace EnjoyCQRS.EventSource.Storage
             }
         }
 
-        private void LoadAggregate<TAggregate>(TAggregate aggregate, IEnumerable<IDomainEvent> events) where TAggregate : Aggregate
+        private void LoadAggregate<TAggregate>(TAggregate aggregate, IEnumerable<ICommitedEvent> commitedEvents) where TAggregate : Aggregate
         {
-            aggregate.LoadFromHistory(new CommitedDomainEventCollection(events));
+            var flatten = commitedEvents as ICommitedEvent[] ?? commitedEvents.ToArray();
+
+            
+            if (flatten.Any())
+            {
+                var events = flatten.Select(_eventSerializer.Deserialize);
+
+                aggregate.LoadFromHistory(new CommitedDomainEventCollection(events));
+
+                aggregate.UpdateVersion(flatten.Select(e => e.AggregateVersion).Max());
+            }
         }
     }
 }
