@@ -12,6 +12,7 @@ Contents:
    :titlesonly:
 
    getting-started
+   aggregate-anatomy
 
 
 Indices and tables
