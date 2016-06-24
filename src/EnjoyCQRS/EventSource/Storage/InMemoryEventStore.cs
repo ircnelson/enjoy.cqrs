@@ -28,7 +28,7 @@ namespace EnjoyCQRS.EventSource.Storage
             return Task.CompletedTask;
         }
 
-        public virtual Task<ISnapshot> GetSnapshotByIdAsync(Guid aggregateId)
+        public virtual Task<ISnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
         {
             var snapshot = Snapshots.Where(e => e.AggregateId == aggregateId).OrderByDescending(e => e.Version).Take(1).FirstOrDefault();
 

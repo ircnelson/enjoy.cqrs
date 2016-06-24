@@ -111,7 +111,7 @@ namespace EnjoyCQRS.EventSource.Storage
                 if (snapshotAggregate != null)
                 {
                     int version = 0;
-                    var snapshot = await _eventStore.GetSnapshotByIdAsync(id).ConfigureAwait(false);
+                    var snapshot = await _eventStore.GetLatestSnapshotByIdAsync(id).ConfigureAwait(false);
 
                     if (snapshot != null)
                     {

@@ -144,7 +144,7 @@ namespace EnjoyCQRS.IntegrationTests.Sqlite
             SaveSnapshotCalled = true;
         }
         
-        public async Task<ISnapshot> GetSnapshotByIdAsync(Guid aggregateId)
+        public async Task<ISnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
         {
             var command = Connection.CreateCommand();
             command.CommandText = "SELECT Body, SnapshotClrType FROM Snapshots WHERE AggregateId = @AggregateId ORDER BY Version DESC LIMIT 1";
