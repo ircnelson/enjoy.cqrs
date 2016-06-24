@@ -21,7 +21,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnjoyCQRS.IntegrationTests.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnjoyCQRS.EventStore.MongoDB", "src\EnjoyCQRS.EventStore.MongoDB\EnjoyCQRS.EventStore.MongoDB.csproj", "{B11C43FA-FB09-413F-9674-167971F9A587}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnjoyCQRS.EventStore.MongoDB.IntegrationTests", "test\EnjoyCQRS.EventStore.MongoDB.IntegrationTests\EnjoyCQRS.EventStore.MongoDB.IntegrationTests.csproj", "{502656DB-2CDA-4361-B8BE-813D21F0FC5E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnjoyCQRS.MongoDB.IntegrationTests", "test\EnjoyCQRS.MongoDB.IntegrationTests\EnjoyCQRS.MongoDB.IntegrationTests.csproj", "{502656DB-2CDA-4361-B8BE-813D21F0FC5E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

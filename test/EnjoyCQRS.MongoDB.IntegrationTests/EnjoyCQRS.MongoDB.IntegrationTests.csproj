@@ -8,8 +8,8 @@
     <ProjectGuid>{502656DB-2CDA-4361-B8BE-813D21F0FC5E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EnjoyCQRS.EventStore.MongoDB.IntegrationTests</RootNamespace>
-    <AssemblyName>EnjoyCQRS.EventStore.MongoDB.IntegrationTests</AssemblyName>
+    <RootNamespace>EnjoyCQRS.MongoDB.IntegrationTests</RootNamespace>
+    <AssemblyName>EnjoyCQRS.MongoDB.IntegrationTests</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
@@ -33,6 +33,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FluentAssertions, Version=4.9.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\FluentAssertions.4.9.0\lib\net45\FluentAssertions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FluentAssertions.Core, Version=4.9.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\FluentAssertions.4.9.0\lib\net45\FluentAssertions.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="MongoDB.Bson, Version=2.2.4.26, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\MongoDB.Bson.2.2.4\lib\net45\MongoDB.Bson.dll</HintPath>
       <Private>True</Private>
@@ -45,10 +53,17 @@
       <HintPath>..\..\packages\MongoDB.Driver.Core.2.2.4\lib\net45\MongoDB.Driver.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="MongoDB.Embedded, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\MongoDB.Lightweight.Embedded.1.0.1\lib\net461\MongoDB.Embedded.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
@@ -71,10 +86,28 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EventStore\MongoEventStoreTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\EnjoyCQRS.EventStore.MongoDB\EnjoyCQRS.EventStore.MongoDB.csproj">
+      <Project>{B11C43FA-FB09-413F-9674-167971F9A587}</Project>
+      <Name>EnjoyCQRS.EventStore.MongoDB</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\EnjoyCQRS\EnjoyCQRS.csproj">
+      <Project>{7CEDD8F7-210D-44FC-B690-9079AF5A12DF}</Project>
+      <Name>EnjoyCQRS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EnjoyCQRS.IntegrationTests.Shared\EnjoyCQRS.IntegrationTests.Shared.csproj">
+      <Project>{a7982fc7-1bab-4ed6-99ae-face5e10f5c7}</Project>
+      <Name>EnjoyCQRS.IntegrationTests.Shared</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

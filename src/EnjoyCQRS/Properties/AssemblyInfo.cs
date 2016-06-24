@@ -39,3 +39,4 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("EnjoyCQRS.UnitTests", AllInternalsVisible = true)]
 [assembly: InternalsVisibleTo("EnjoyCQRS.IntegrationTests", AllInternalsVisible = true)]
 [assembly: InternalsVisibleTo("EnjoyCQRS.Owin.IntegrationTests", AllInternalsVisible = true)]
+[assembly: InternalsVisibleTo("EnjoyCQRS.MongoDB.IntegrationTests", AllInternalsVisible = true)]
