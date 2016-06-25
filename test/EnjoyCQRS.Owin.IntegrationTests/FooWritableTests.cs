@@ -44,7 +44,21 @@ namespace EnjoyCQRS.Owin.IntegrationTests
             
             aggregateId.Should().NotBeNullOrWhiteSpace();
         }
-        
+
+        [Fact]
+        public async Task Should_emit_many_events()
+        {
+            var eventStore = new InMemoryEventStore();
+
+            var server = TestServerFactory(eventStore);
+
+            var response = await server.CreateRequest("/command/foo/flood/4").PostAsync();
+
+            eventStore.Events.Count.Should().Be(4);
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
         private TestServer TestServerFactory(IEventStore eventStore)
         {
             var startup = new Startup

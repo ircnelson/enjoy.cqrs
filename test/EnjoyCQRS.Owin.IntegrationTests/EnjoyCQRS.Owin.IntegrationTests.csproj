@@ -119,8 +119,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controllers\FakeGameWritableController.cs" />
-    <Compile Include="FakeGameWritableTests.cs" />
     <Compile Include="Infrastructure\AutofacCommandDispatcher.cs" />
     <Compile Include="Controllers\FooWritableController.cs" />
     <Compile Include="Infrastructure\AutofacEventRouter.cs" />

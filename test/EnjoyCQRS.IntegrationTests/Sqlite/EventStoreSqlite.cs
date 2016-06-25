@@ -32,15 +32,12 @@ namespace EnjoyCQRS.IntegrationTests.Sqlite
         
         private SQLiteConnection Connection { get; set; }
         private SQLiteTransaction Transaction { get; set; }
-
-        public string FileName { get; }
+        
         public bool SaveSnapshotCalled { get; private set; }
         public bool GetSnapshotCalled { get; private set; }
 
         public EventStoreSqlite(string fileName)
         {
-            FileName = fileName;
-
             Connection = new SQLiteConnection($"Data Source={fileName}");
         }
         
@@ -76,20 +73,7 @@ namespace EnjoyCQRS.IntegrationTests.Sqlite
             command.CommandText = "SELECT AggregateId, Version, Body, Metadatas FROM Events WHERE AggregateId = @AggregateId ORDER BY Version ASC";
             command.Parameters.AddWithValue("@AggregateId", id);
 
-            var events = new List<ICommitedEvent>();
-
-            EnsureOpenedConnection();
-
-            using (command)
-            using (var sqlReader = await command.ExecuteReaderAsync().ConfigureAwait(false))
-            {
-                while (sqlReader.Read())
-                {
-                    events.Add(new SqliteCommitedEvent(sqlReader.GetGuid(0), sqlReader.GetInt32(1), sqlReader.GetString(2), sqlReader.GetString(3)));
-                }
-            }
-
-            return events;
+            return await GetEventsAsync(command);
         }
         
         public async Task SaveAsync(IEnumerable<ISerializedEvent> collection)
@@ -176,20 +160,7 @@ namespace EnjoyCQRS.IntegrationTests.Sqlite
             command.Parameters.AddWithValue("@AggregateId", aggregateId);
             command.Parameters.AddWithValue("@Version", version);
 
-            List<ICommitedEvent> events = new List<ICommitedEvent>();
-
-            EnsureOpenedConnection();
-
-            using (command)
-            using (var sqlReader = await command.ExecuteReaderAsync().ConfigureAwait(false))
-            {
-                while (await sqlReader.ReadAsync())
-                {
-                    events.Add(new SqliteCommitedEvent(sqlReader.GetGuid(0), sqlReader.GetInt32(1), sqlReader.GetString(2), sqlReader.GetString(3)));
-                }
-            }
-
-            return events;
+            return await GetEventsAsync(command);
         }
 
         public void Dispose()
@@ -221,6 +192,24 @@ namespace EnjoyCQRS.IntegrationTests.Sqlite
             {
                 Connection.Open();
             }
+        }
+
+        private async Task<IEnumerable<ICommitedEvent>> GetEventsAsync(SQLiteCommand command)
+        {
+            List<ICommitedEvent> events = new List<ICommitedEvent>();
+
+            EnsureOpenedConnection();
+
+            using (command)
+            using (var sqlReader = await command.ExecuteReaderAsync().ConfigureAwait(false))
+            {
+                while (await sqlReader.ReadAsync())
+                {
+                    events.Add(new SqliteCommitedEvent(sqlReader.GetGuid(0), sqlReader.GetInt32(1), sqlReader.GetString(2), sqlReader.GetString(3)));
+                }
+            }
+
+            return events;
         }
     }
 }

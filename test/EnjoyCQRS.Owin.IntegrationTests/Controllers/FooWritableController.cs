@@ -2,7 +2,9 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using EnjoyCQRS.EventSource;
+using EnjoyCQRS.EventSource.Storage;
 using EnjoyCQRS.IntegrationTests.Shared.StubApplication.Commands.FooAggregate;
+using EnjoyCQRS.IntegrationTests.Shared.StubApplication.Domain.FooAggregate;
 using EnjoyCQRS.MessageBus;
 
 namespace EnjoyCQRS.Owin.IntegrationTests.Controllers
@@ -12,11 +14,13 @@ namespace EnjoyCQRS.Owin.IntegrationTests.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICommandDispatcher _dispatcher;
+        private readonly IRepository _repository;
 
-        public FooWritableController(IUnitOfWork unitOfWork, ICommandDispatcher dispatcher)
+        public FooWritableController(IUnitOfWork unitOfWork, ICommandDispatcher dispatcher, IRepository repository)
         {
             _unitOfWork = unitOfWork;
             _dispatcher = dispatcher;
+            _repository = repository;
         }
 
         [Route]
@@ -43,6 +47,26 @@ namespace EnjoyCQRS.Owin.IntegrationTests.Controllers
             await _unitOfWork.CommitAsync();
 
             return Ok(cmd);
+        }
+
+        [Route("flood/{times:int}")]
+        [HttpPost]
+        public async Task<IHttpActionResult> DoFlood(int times)
+        {
+            var create = new CreateFooCommand(Guid.NewGuid());
+
+            await _dispatcher.DispatchAsync(create);
+
+            var aggregate = await _repository.GetByIdAsync<Foo>(create.AggregateId);
+
+            for (var i = 1; i < times; i++)
+            {
+                aggregate.DoSomething();
+            }
+
+            await _unitOfWork.CommitAsync();
+
+            return Ok(create);
         }
     }
 }

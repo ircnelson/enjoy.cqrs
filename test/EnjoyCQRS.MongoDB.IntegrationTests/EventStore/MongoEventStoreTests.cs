@@ -33,7 +33,7 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
         }
 
         [Fact]
-        public async Task Should_case_an_exception_when_MetadataKey_not_found()
+        public void Should_case_an_exception_when_MetadataKey_not_found()
         {
             var stubEvent = new FooCreated(Guid.NewGuid());
 

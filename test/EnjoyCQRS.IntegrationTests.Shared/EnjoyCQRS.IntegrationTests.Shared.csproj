@@ -44,23 +44,23 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FooAssembler.cs" />
-    <Compile Include="StubApplication\Commands\FakeGameAggregate\CreateFakeGameCommand.cs" />
-    <Compile Include="StubApplication\Commands\FakeGameAggregate\CreateFakeGameCommandHandler.cs" />
-    <Compile Include="StubApplication\Commands\FakeGameAggregate\FloodChangePlayerName.cs" />
-    <Compile Include="StubApplication\Commands\FakeGameAggregate\FloodChangePlayerNameHandler.cs" />
+    <Compile Include="StubApplication\Commands\BarAggregate\CreateBarCommand.cs" />
+    <Compile Include="StubApplication\Commands\BarAggregate\SpeakCommand.cs" />
+    <Compile Include="StubApplication\Commands\BarAggregate\BarCommandHandlers.cs" />
     <Compile Include="StubApplication\Commands\FooAggregate\CreateFooCommand.cs" />
     <Compile Include="StubApplication\Commands\FooAggregate\CreateFooCommandHandler.cs" />
+    <Compile Include="StubApplication\Commands\FooAggregate\DoFloodSomethingCommand.cs" />
+    <Compile Include="StubApplication\Commands\FooAggregate\DoFloodSomethingCommandHandler.cs" />
     <Compile Include="StubApplication\Commands\FooAggregate\DoSomethingCommand.cs" />
     <Compile Include="StubApplication\Commands\FooAggregate\DoSomethingCommandHandler.cs" />
-    <Compile Include="StubApplication\Domain\FakeGameAggregate\FakeGame.cs" />
-    <Compile Include="StubApplication\Domain\FakeGameAggregate\FakeGameCreated.cs" />
-    <Compile Include="StubApplication\Domain\FakeGameAggregate\PlayerChangedName.cs" />
+    <Compile Include="StubApplication\Domain\BarAggregate\Bar.cs" />
+    <Compile Include="StubApplication\Domain\BarAggregate\BarCreated.cs" />
+    <Compile Include="StubApplication\Domain\BarAggregate\SpokeSomething.cs" />
     <Compile Include="StubApplication\Domain\FooAggregate\DidSomething.cs" />
     <Compile Include="StubApplication\Domain\FooAggregate\Foo.cs" />
     <Compile Include="StubApplication\Domain\FooAggregate\FooCreated.cs" />
     <Compile Include="StubApplication\Domain\FooAggregate\FooSnapshot.cs" />
     <Compile Include="StubApplication\EventHandlers\FooCreatedHandler.cs" />
-    <Compile Include="CustomCommitedEvent.cs" />
     <Compile Include="JsonTextSerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
