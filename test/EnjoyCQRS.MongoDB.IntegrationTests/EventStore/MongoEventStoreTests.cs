@@ -10,12 +10,7 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
     public class MongoEventStoreTests
     {
         public const string DatabaseName = "test";
-
-        public MongoEventStoreTests()
-        {
-            
-        }
-
+        
         [Fact]
         public void Should_create_database()
         {

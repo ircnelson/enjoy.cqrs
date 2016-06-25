@@ -3,39 +3,19 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 using System.Threading.Tasks;
-using EnjoyCQRS.Core;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;
 using Newtonsoft.Json;
 
-namespace EnjoyCQRS.IntegrationTests.Sqlite
+namespace EnjoyCQRS.EventStore.SQLite
 {
     public class EventStoreSqlite : IEventStore
-    {
-        public class SqliteCommitedEvent : ICommitedEvent
-        {
-            public SqliteCommitedEvent(Guid aggregateId, int aggregateVersion, string serializedData, string serializedMetadata)
-            {
-                AggregateId = aggregateId;
-                AggregateVersion = aggregateVersion;
-                SerializedData = serializedData;
-                SerializedMetadata = serializedMetadata;
-            }
-
-            public Guid AggregateId { get; }
-            public int AggregateVersion { get; }
-            public string SerializedMetadata { get; }
-            public string SerializedData { get; }
-        }
-        
+    {   
         private SQLiteConnection Connection { get; set; }
         private SQLiteTransaction Transaction { get; set; }
         
-        public bool SaveSnapshotCalled { get; private set; }
-        public bool GetSnapshotCalled { get; private set; }
-
         public EventStoreSqlite(string fileName)
         {
             Connection = new SQLiteConnection($"Data Source={fileName}");
@@ -53,7 +33,7 @@ namespace EnjoyCQRS.IntegrationTests.Sqlite
         public Task CommitAsync()
         {
             if (Transaction == null) throw new InvalidOperationException("The transaction is not open.");
-
+            
             Transaction.Commit();
             
             Connection.Close();
@@ -124,8 +104,6 @@ namespace EnjoyCQRS.IntegrationTests.Sqlite
             command.Parameters[4].Value = snapshot.Version;
 
             await command.ExecuteNonQueryAsync().ConfigureAwait(false);
-
-            SaveSnapshotCalled = true;
         }
         
         public async Task<ISnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
@@ -147,9 +125,7 @@ namespace EnjoyCQRS.IntegrationTests.Sqlite
                     break;
                 }
             }
-
-            GetSnapshotCalled = true;
-
+            
             return snapshot;
         }
         
@@ -210,6 +186,22 @@ namespace EnjoyCQRS.IntegrationTests.Sqlite
             }
 
             return events;
+        }
+
+        public class SqliteCommitedEvent : ICommitedEvent
+        {
+            public SqliteCommitedEvent(Guid aggregateId, int aggregateVersion, string serializedData, string serializedMetadata)
+            {
+                AggregateId = aggregateId;
+                AggregateVersion = aggregateVersion;
+                SerializedData = serializedData;
+                SerializedMetadata = serializedMetadata;
+            }
+
+            public Guid AggregateId { get; }
+            public int AggregateVersion { get; }
+            public string SerializedMetadata { get; }
+            public string SerializedData { get; }
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using System;
+using System.Linq;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using EnjoyCQRS.EventSource.Storage;
@@ -18,9 +20,13 @@ namespace EnjoyCQRS.Owin.IntegrationTests
 
             var server = TestServerFactory(eventStore);
 
-            await server.CreateRequest("/command/foo").PostAsync();
+            var response = await server.CreateRequest("/command/foo").PostAsync();
 
-            eventStore.Events.Count.Should().Be(1);
+            var result = await response.Content.ReadAsStringAsync();
+            
+            var aggregateId = ExtractAggregateIdFromResponseContent(result);
+
+            InMemoryEventStore.Events.Count(e => e.AggregateId == aggregateId).Should().Be(1);
         }
 
         [Fact]
@@ -33,16 +39,14 @@ namespace EnjoyCQRS.Owin.IntegrationTests
             var response = await server.CreateRequest("/command/foo").PostAsync();
 
             var result = await response.Content.ReadAsStringAsync();
-
-            var match = Regex.Match(result, "{\"AggregateId\":\"(.*)\"}", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-
-            var aggregateId = match.Groups[1].Value;
+            
+            var aggregateId = ExtractAggregateIdFromResponseContent(result);
 
             response = await server.CreateRequest($"/command/foo/{aggregateId}/doSomething").PostAsync();
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            
-            aggregateId.Should().NotBeNullOrWhiteSpace();
+
+            aggregateId.Should().NotBeEmpty();
         }
 
         [Fact]
@@ -54,7 +58,7 @@ namespace EnjoyCQRS.Owin.IntegrationTests
 
             var response = await server.CreateRequest("/command/foo/flood/4").PostAsync();
 
-            eventStore.Events.Count.Should().Be(4);
+            InMemoryEventStore.Events.Count.Should().Be(4);
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
@@ -69,6 +73,15 @@ namespace EnjoyCQRS.Owin.IntegrationTests
             var testServer = TestServer.Create(startup.Configuration);
 
             return testServer;
+        }
+
+        private Guid ExtractAggregateIdFromResponseContent(string content)
+        {
+            var match = Regex.Match(content, "{\"AggregateId\":\"(.*)\"}", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+            var aggregateId = match.Groups[1].Value;
+
+            return Guid.Parse(aggregateId);
         }
     }
 }

@@ -161,9 +161,9 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             eventStore.SaveSnapshotMethodCalled.Should().BeTrue();
 
-            eventStore.Snapshots.First(e => e.AggregateId == stubAggregate.Id).Should().BeOfType<StubSnapshotAggregateSnapshot>();
+            StubEventStore.Snapshots.First(e => e.AggregateId == stubAggregate.Id).Should().BeOfType<StubSnapshotAggregateSnapshot>();
 
-            var snapshot = eventStore.Snapshots.First(e => e.AggregateId == stubAggregate.Id).As<StubSnapshotAggregateSnapshot>();
+            var snapshot = StubEventStore.Snapshots.First(e => e.AggregateId == stubAggregate.Id).As<StubSnapshotAggregateSnapshot>();
 
             snapshot.AggregateId.Should().Be(stubAggregate.Id);
             snapshot.Name.Should().Be(stubAggregate.Name);

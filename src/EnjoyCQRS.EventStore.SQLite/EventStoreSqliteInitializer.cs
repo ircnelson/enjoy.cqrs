@@ -1,7 +1,7 @@
 ﻿using System.Data.SQLite;
 using System.IO;
 
-namespace EnjoyCQRS.IntegrationTests.Sqlite
+namespace EnjoyCQRS.EventStore.SQLite
 {
     public class EventStoreSqliteInitializer
     {

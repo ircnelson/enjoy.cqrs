@@ -9,11 +9,11 @@ namespace EnjoyCQRS.EventSource.Storage
 {
     public class InMemoryEventStore : IEventStore
     {
-        public IReadOnlyList<ICommitedEvent> Events => _events.AsReadOnly();
-        public IReadOnlyList<ISnapshot> Snapshots => _snapshots.AsReadOnly();
+        public static IReadOnlyList<ICommitedEvent> Events => _events.AsReadOnly();
+        public static IReadOnlyList<ISnapshot> Snapshots => _snapshots.AsReadOnly();
 
-        private readonly List<ICommitedEvent> _events = new List<ICommitedEvent>();
-        private readonly List<ISnapshot> _snapshots = new List<ISnapshot>();
+        private static readonly List<ICommitedEvent> _events = new List<ICommitedEvent>();
+        private static readonly List<ISnapshot> _snapshots = new List<ISnapshot>();
 
         private readonly List<ISerializedEvent> _uncommitedEvents = new List<ISerializedEvent>();
 

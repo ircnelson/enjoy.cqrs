@@ -22,37 +22,37 @@ namespace EnjoyCQRS.IntegrationTests.Shared.TestSuit
 
         public async Task EventTestsAsync()
         {
-            var aggregateId = Guid.NewGuid();
-            var rand = new Random();
-
-            var stubEvent = new FooCreated(Guid.NewGuid());
-
-            var serializedEvents = new List<ISerializedEvent>();
+            var foo = new Foo(Guid.NewGuid());
 
             for (var i = 0; i < 10; i++)
             {
-                serializedEvents.Add(CreateSerializedEvent(stubEvent, aggregateId, rand.Next(0, 5)));
+                foo.DoSomething();
             }
+
+            var serializedEvents = foo.UncommitedEvents.Select((e, i) => CreateSerializedEvent(e, foo.Id, i));
 
             _eventStore.BeginTransaction();
 
             await _eventStore.SaveAsync(serializedEvents);
             await _eventStore.CommitAsync();
 
-            await _eventStore.GetAllEventsAsync(aggregateId);
+            await _eventStore.GetAllEventsAsync(foo.Id);
         }
 
         public async Task SnapshotTestsAsync()
         {
             var foo = new Foo(Guid.NewGuid());
+
             for (var i = 0; i < 10; i++)
             {
                 foo.DoSomething();
             }
-
+            
             var snapshot = ((ISnapshotAggregate)foo).CreateSnapshot();
 
             var serializedEvents = foo.UncommitedEvents.Select((e, i) => CreateSerializedEvent(e, foo.Id, i));
+
+            _eventStore.BeginTransaction();
 
             await _eventStore.SaveAsync(serializedEvents);
             await _eventStore.SaveSnapshotAsync(snapshot);

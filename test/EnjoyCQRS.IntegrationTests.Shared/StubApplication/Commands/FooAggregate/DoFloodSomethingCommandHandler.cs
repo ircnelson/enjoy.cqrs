@@ -18,7 +18,7 @@ namespace EnjoyCQRS.IntegrationTests.Shared.StubApplication.Commands.FooAggregat
         {
             var foo = await _repository.GetByIdAsync<Foo>(command.AggregateId);
 
-            for (var i = 1; i < command.Times; i++)
+            for (var i = 1; i <= command.Times; i++)
             {
                 foo.DoSomething();
             }

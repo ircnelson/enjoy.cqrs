@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Autofac;
 using EnjoyCQRS.Commands;
+using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;
 using EnjoyCQRS.IntegrationTests.Fixtures;
@@ -53,7 +54,7 @@ namespace EnjoyCQRS.IntegrationTests
         {
             const int times = 5;
 
-            _fixture.SnapshotStrategy = new IntervalSnapshotStrategy(times);
+            _fixture.SnapshotStrategy = new IntervalSnapshotStrategy(times + 1);
 
             var aggregateId = Guid.NewGuid();
 
@@ -62,7 +63,7 @@ namespace EnjoyCQRS.IntegrationTests
             using (var scope = _fixture.Container.BeginLifetimeScope())
             {
                 DoDispatch(scope, command);
-
+                
                 _fixture.EventStore.SaveSnapshotCalled.Should().BeFalse();
             }
 
@@ -81,10 +82,10 @@ namespace EnjoyCQRS.IntegrationTests
 
                 aggregateFromRepository.Should().NotBeNull();
 
-                aggregateFromRepository.Id.Should().Be(command.AggregateId);
+                aggregateFromRepository.Id.Should().Be(aggregateId);
 
                 // (times - 1) because already emitted create event...
-                aggregateFromRepository.DidSomethingCounter.Should().Be(times-1);
+                aggregateFromRepository.DidSomethingCounter.Should().Be(times);
 
                 _fixture.EventStore.GetSnapshotCalled.Should().BeTrue();
             }
