@@ -26,7 +26,7 @@ namespace EnjoyCQRS.SQLite.IntegrationTests.EventStore
         }
 
         [Fact]
-        public async Task SQLite_Events()
+        public async Task Test_events()
         {
             var eventStore = new EventStoreSqlite(_fileName);
             
@@ -36,12 +36,21 @@ namespace EnjoyCQRS.SQLite.IntegrationTests.EventStore
         }
 
         [Fact]
-        public async Task SQLite_Snapshot()
+        public async Task Test_snapshot()
         {
             var eventStore = new EventStoreSqlite(_fileName);
             var eventStoreTestSuit = new EventStoreTestSuit(eventStore);
 
             await eventStoreTestSuit.SnapshotTestsAsync();
+        }
+
+        [Fact]
+        public async Task When_any_exception_be_thrown()
+        {
+            var eventStore = new EventStoreSqlite(_fileName);
+            var eventStoreTestSuit = new EventStoreTestSuit(eventStore);
+
+            await eventStoreTestSuit.DoSomeProblemAsync();
         }
     }
 

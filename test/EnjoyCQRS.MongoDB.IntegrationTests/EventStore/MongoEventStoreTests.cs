@@ -27,7 +27,7 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
         }
         
         [Fact]
-        public async Task Mongo_Events()
+        public async Task Test_events()
         {
             using (var embeddedMongoDbServer = new EmbeddedMongoDbServer())
             {
@@ -40,7 +40,7 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
         }
 
         [Fact]
-        public async Task Mongo_Snapshot()
+        public async Task Test_snapshot()
         {
             using (var embeddedMongoDbServer = new EmbeddedMongoDbServer())
             {
@@ -49,6 +49,18 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
                 var eventStoreTestSuit = new EventStoreTestSuit(eventStore);
 
                 await eventStoreTestSuit.SnapshotTestsAsync();
+            }
+        }
+
+        [Fact]
+        public async Task When_any_exception_be_thrown()
+        {
+            using (var embeddedMongoDbServer = new EmbeddedMongoDbServer())
+            {
+                var eventStore = new MongoEventStore(embeddedMongoDbServer.Client, DatabaseName);
+                var eventStoreTestSuit = new EventStoreTestSuit(eventStore);
+
+                await eventStoreTestSuit.DoSomeProblemAsync();
             }
         }
     }

@@ -1,84 +1,133 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;
+using EnjoyCQRS.IntegrationTests.Shared.StubApplication.Domain.BarAggregate;
 using EnjoyCQRS.IntegrationTests.Shared.StubApplication.Domain.FooAggregate;
-using Newtonsoft.Json;
+using EnjoyCQRS.Logger;
+using EnjoyCQRS.MessageBus.InProcess;
+using FluentAssertions;
 
 namespace EnjoyCQRS.IntegrationTests.Shared.TestSuit
 {
     public class EventStoreTestSuit
     {
-        private readonly IEventStore _eventStore;
-
+        private readonly EventStoreWrapper _eventStore;
+        
         public EventStoreTestSuit(IEventStore eventStore)
         {
-            _eventStore = eventStore;
+            _eventStore = new EventStoreWrapper(eventStore);
         }
-
+        
         public async Task EventTestsAsync()
         {
-            var foo = new Foo(Guid.NewGuid());
+            var bar = GenerateBar();
 
-            for (var i = 0; i < 10; i++)
-            {
-                foo.DoSomething();
-            }
+            var session = CreateSession();
+            
+            await session.AddAsync(bar);
+            await session.SaveChangesAsync();
 
-            var serializedEvents = foo.UncommitedEvents.Select((e, i) => CreateSerializedEvent(e, foo.Id, i));
+            session = CreateSession();
 
-            _eventStore.BeginTransaction();
+            var bar2 = await session.GetByIdAsync<Bar>(bar.Id);
 
-            await _eventStore.SaveAsync(serializedEvents);
-            await _eventStore.CommitAsync();
+            var result = _eventStore.CalledMethods.HasFlag(EventStoreMethods.Ctor 
+                | EventStoreMethods.BeginTransaction
+                | EventStoreMethods.SaveAsync 
+                | EventStoreMethods.CommitAsync 
+                | EventStoreMethods.GetAllEventsAsync);
 
-            await _eventStore.GetAllEventsAsync(foo.Id);
+            bar.Id.Should().Be(bar2.Id);
+
+            result.Should().BeTrue();
         }
 
         public async Task SnapshotTestsAsync()
         {
+            var foo = GenerateFoo(9);
+
+            var session = CreateSession();
+
+            await session.AddAsync(foo);
+            await session.SaveChangesAsync();
+
+            session = CreateSession();
+
+            var foo2 = await session.GetByIdAsync<Foo>(foo.Id);
+            
+            var result = _eventStore.CalledMethods.HasFlag(
+                EventStoreMethods.Ctor 
+                | EventStoreMethods.SaveAsync 
+                | EventStoreMethods.SaveSnapshotAsync 
+                | EventStoreMethods.CommitAsync 
+                | EventStoreMethods.GetLatestSnapshotByIdAsync 
+                | EventStoreMethods.GetEventsForwardAsync);
+
+            foo.Id.Should().Be(foo2.Id);
+
+            result.Should().BeTrue();
+        }
+
+        public async Task DoSomeProblemAsync()
+        {
+            var foo = GenerateFoo();
+
+            var session = CreateFaultSession();
+
+            await session.AddAsync(foo);
+            try
+            {
+                await session.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                var result = _eventStore.CalledMethods.HasFlag(EventStoreMethods.Ctor 
+                    | EventStoreMethods.BeginTransaction 
+                    | EventStoreMethods.SaveAsync 
+                    | EventStoreMethods.Rollback);
+
+                result.Should().BeTrue();
+            }
+        }
+
+        private ISession CreateSession()
+        {
+            var session = new Session(new NoopLoggerFactory(), _eventStore, new EventPublisher(StubEventRouter.Ok()), new EventSerializer(new JsonTextSerializer()), null, new IntervalSnapshotStrategy(10));
+
+            return session;
+        }
+
+        private ISession CreateFaultSession()
+        {
+            var faultSession = new Session(new NoopLoggerFactory(), _eventStore, new EventPublisher(StubEventRouter.Fault()), new EventSerializer(new JsonTextSerializer()), null, new IntervalSnapshotStrategy(10));
+
+            return faultSession;
+        }
+
+        private static Foo GenerateFoo(int quantity = 10)
+        {
             var foo = new Foo(Guid.NewGuid());
 
-            for (var i = 0; i < 10; i++)
+            for (var i = 0; i < quantity; i++)
             {
                 foo.DoSomething();
             }
-            
-            var snapshot = ((ISnapshotAggregate)foo).CreateSnapshot();
 
-            var serializedEvents = foo.UncommitedEvents.Select((e, i) => CreateSerializedEvent(e, foo.Id, i));
-
-            _eventStore.BeginTransaction();
-
-            await _eventStore.SaveAsync(serializedEvents);
-            await _eventStore.SaveSnapshotAsync(snapshot);
-            await _eventStore.CommitAsync();
-
-            snapshot = await _eventStore.GetLatestSnapshotByIdAsync(foo.Id);
-
-            await _eventStore.GetEventsForwardAsync(foo.Id, snapshot.Version);
+            return foo;
         }
-        
-        private ISerializedEvent CreateSerializedEvent(IDomainEvent @event, Guid aggregateId, int version)
+
+        private static Bar GenerateBar(int quantity = 10)
         {
-            var metadatas = new[]
+            var bar = Bar.Create(Guid.NewGuid());
+
+            for (var i = 0; i < quantity; i++)
             {
-                new KeyValuePair<string, string>(MetadataKeys.EventId, Guid.NewGuid().ToString()),
-                new KeyValuePair<string, string>(MetadataKeys.EventName, @event.GetType().Name),
-                new KeyValuePair<string, string>(MetadataKeys.EventVersion, version.ToString()),
-                new KeyValuePair<string, string>(MetadataKeys.AggregateId, aggregateId.ToString())
-            };
+                bar.Speak($"Hello number {i}.");
+            }
 
-            var metadata = new Metadata(metadatas);
-            
-            var serializedEvent = JsonConvert.SerializeObject(@event);
-            var serializedMetadata = JsonConvert.SerializeObject(metadata);
-
-            return new SerializedEvent(aggregateId, 1, serializedEvent, serializedMetadata, new Metadata(metadata));
+            return bar;
         }
     }
 }
