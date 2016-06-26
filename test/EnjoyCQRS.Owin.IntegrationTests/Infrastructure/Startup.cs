@@ -34,6 +34,7 @@ namespace EnjoyCQRS.Owin.IntegrationTests.Infrastructure
             builder.RegisterType<AutofacEventRouter>().As<IEventRouter>();
             builder.RegisterType<NoopLoggerFactory>().As<ILoggerFactory>().InstancePerRequest();
             builder.RegisterType<EventSerializer>().As<IEventSerializer>();
+            builder.RegisterType<SnapshotSerializer>().As<ISnapshotSerializer>();
             builder.RegisterType<JsonTextSerializer>().As<ITextSerializer>();
 
             builder.Register(c => EventStore).As<IEventStore>();

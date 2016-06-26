@@ -22,6 +22,7 @@
 
 using System.Collections.Generic;
 using EnjoyCQRS.Events;
+using EnjoyCQRS.EventSource.Snapshots;
 
 namespace EnjoyCQRS.EventSource
 {
@@ -29,5 +30,11 @@ namespace EnjoyCQRS.EventSource
     {
         ISerializedEvent Serialize(IAggregate aggregate, IDomainEvent @event, IEnumerable<KeyValuePair<string, string>> metadatas);
         IDomainEvent Deserialize(ICommitedEvent commitedEvent);
+    }
+
+    public interface ISnapshotSerializer
+    {
+        ISerializedSnapshot Serialize(IAggregate aggregate, ISnapshot snapshot, IEnumerable<KeyValuePair<string, string>> metadatas);
+        ISnapshotRestore Deserialize(ICommitedSnapshot commitedSnapshot);
     }
 }

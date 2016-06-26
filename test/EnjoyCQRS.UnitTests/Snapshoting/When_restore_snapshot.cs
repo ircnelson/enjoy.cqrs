@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.UnitTests.Domain.Stubs;
 using FluentAssertions;
@@ -22,9 +24,9 @@ namespace EnjoyCQRS.UnitTests.Snapshoting
                 Name = "Coringa",
                 Version = 1
             };
-
+            
             _stubAggregate = new StubSnapshotAggregate();
-            ((ISnapshotAggregate)_stubAggregate).Restore(_snapshot);
+            ((ISnapshotAggregate)_stubAggregate).Restore(new SnapshotRestore(_snapshot.AggregateId, _snapshot.Version, _snapshot, EventSource.Metadata.Empty));
         }
 
         [Trait(CategoryName, CategoryValue)]

@@ -34,8 +34,6 @@ namespace EnjoyCQRS.UnitTests.Snapshoting
             var snapshot = (StubSnapshotAggregateSnapshot) _snapshot;
 
             snapshot.Name.Should().Be("Batman");
-
-            snapshot.Version.Should().Be(2);
         }
     }
 }

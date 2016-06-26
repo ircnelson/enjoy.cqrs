@@ -40,6 +40,7 @@ namespace EnjoyCQRS.EventSource.Storage
         private readonly IEventStore _eventStore;
         private readonly IEventPublisher _eventPublisher;
         private readonly IEventSerializer _eventSerializer;
+        private readonly ISnapshotSerializer _snapshotSerializer;
         private readonly List<Aggregate> _aggregates = new List<Aggregate>();
         private readonly ISnapshotStrategy _snapshotStrategy;
         private readonly IEnumerable<IMetadataProvider> _metadataProviders;
@@ -52,6 +53,7 @@ namespace EnjoyCQRS.EventSource.Storage
             IEventStore eventStore, 
             IEventPublisher eventPublisher, 
             IEventSerializer eventSerializer,
+            ISnapshotSerializer snapshotSerializer,
             IEnumerable<IMetadataProvider> metadataProviders = null,
             ISnapshotStrategy snapshotStrategy = null)
         {
@@ -78,6 +80,7 @@ namespace EnjoyCQRS.EventSource.Storage
             _snapshotStrategy = snapshotStrategy;
             _eventStore = eventStore;
             _eventSerializer = eventSerializer;
+            _snapshotSerializer = snapshotSerializer;
             _metadataProviders = metadataProviders;
             _eventPublisher = eventPublisher;
         }
@@ -115,11 +118,13 @@ namespace EnjoyCQRS.EventSource.Storage
 
                     if (snapshot != null)
                     {
-                        version = snapshot.Version;
+                        version = snapshot.AggregateVersion;
 
                         _logger.Log(LogLevel.Debug, "Restoring snapshot.");
 
-                        snapshotAggregate.Restore(snapshot);
+                        var snapshotRestore = _snapshotSerializer.Deserialize(snapshot);
+
+                        snapshotAggregate.Restore(snapshotRestore);
 
                         _logger.Log(LogLevel.Debug, "Snapshot restored.");
                     }
@@ -268,7 +273,18 @@ namespace EnjoyCQRS.EventSource.Storage
         {
             var snapshot = ((ISnapshotAggregate)aggregate).CreateSnapshot();
 
-            await _eventStore.SaveSnapshotAsync(snapshot).ConfigureAwait(false);
+            var metadatas = new[]
+            {
+                new KeyValuePair<string, string>(MetadataKeys.AggregateId, aggregate.Id.ToString()),
+                new KeyValuePair<string, string>(MetadataKeys.AggregateSequenceNumber, aggregate.Sequence.ToString()),
+                new KeyValuePair<string, string>(MetadataKeys.SnapshotId, Guid.NewGuid().ToString()),
+                new KeyValuePair<string, string>(MetadataKeys.SnapshotClrType, snapshot.GetType().AssemblyQualifiedName),
+                new KeyValuePair<string, string>(MetadataKeys.SnapshotName, snapshot.GetType().Name), 
+            };
+            
+            var serializedSnapshot = _snapshotSerializer.Serialize(aggregate, snapshot, metadatas);
+
+            await _eventStore.SaveSnapshotAsync(serializedSnapshot).ConfigureAwait(false);
         }
 
         /// <summary>

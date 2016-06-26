@@ -10,27 +10,27 @@ namespace EnjoyCQRS.EventSource.Storage
     public class InMemoryEventStore : IEventStore
     {
         public static IReadOnlyList<ICommitedEvent> Events => _events.AsReadOnly();
-        public static IReadOnlyList<ISnapshot> Snapshots => _snapshots.AsReadOnly();
+        public static IReadOnlyList<ICommitedSnapshot> Snapshots => _snapshots.AsReadOnly();
 
         private static readonly List<ICommitedEvent> _events = new List<ICommitedEvent>();
-        private static readonly List<ISnapshot> _snapshots = new List<ISnapshot>();
+        private static readonly List<ICommitedSnapshot> _snapshots = new List<ICommitedSnapshot>();
 
         private readonly List<ISerializedEvent> _uncommitedEvents = new List<ISerializedEvent>();
 
-        private readonly List<ISnapshot> _uncommitedSnapshots = new List<ISnapshot>();
+        private readonly List<ISerializedSnapshot> _uncommitedSnapshots = new List<ISerializedSnapshot>();
 
         public bool InTransaction;
         
-        public virtual Task SaveSnapshotAsync<TSnapshot>(TSnapshot snapshot) where TSnapshot : ISnapshot
+        public virtual Task SaveSnapshotAsync(ISerializedSnapshot snapshot)
         {
             _uncommitedSnapshots.Add(snapshot);
 
             return Task.CompletedTask;
         }
 
-        public virtual Task<ISnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
+        public virtual Task<ICommitedSnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
         {
-            var snapshot = Snapshots.Where(e => e.AggregateId == aggregateId).OrderByDescending(e => e.Version).Take(1).FirstOrDefault();
+            var snapshot = Snapshots.Where(e => e.AggregateId == aggregateId).OrderByDescending(e => e.AggregateVersion).Take(1).FirstOrDefault();
 
             return Task.FromResult(snapshot);
         }
@@ -64,13 +64,10 @@ namespace EnjoyCQRS.EventSource.Storage
 
             _uncommitedEvents.Clear();
 
-            var snapshotGrouped = _uncommitedSnapshots.GroupBy(e => e.AggregateId).Select(e => new { AggregateId = e.Key, Snapshots = e });
-
-            foreach (var snapshot in snapshotGrouped)
-            {
-                _snapshots.AddRange(snapshot.Snapshots);
-            }
-
+            var commitedSnapshots = _uncommitedSnapshots.Select(e => new InMemoryCommitedSnapshot(e.AggregateId, e.AggregateVersion, e.SerializedData, e.SerializedMetadata));
+            
+            _snapshots.AddRange(commitedSnapshots);
+            
             _uncommitedSnapshots.Clear();
 
             return Task.CompletedTask;
@@ -109,6 +106,22 @@ namespace EnjoyCQRS.EventSource.Storage
         internal class InMemoryCommitedEvent : ICommitedEvent
         {
             public InMemoryCommitedEvent(Guid aggregateId, int aggregateVersion, string serializedData, string serializedMetadata)
+            {
+                AggregateId = aggregateId;
+                AggregateVersion = aggregateVersion;
+                SerializedData = serializedData;
+                SerializedMetadata = serializedMetadata;
+            }
+
+            public Guid AggregateId { get; }
+            public int AggregateVersion { get; }
+            public string SerializedData { get; }
+            public string SerializedMetadata { get; }
+        }
+
+        internal class InMemoryCommitedSnapshot : ICommitedSnapshot
+        {
+            public InMemoryCommitedSnapshot(Guid aggregateId, int aggregateVersion, string serializedData, string serializedMetadata)
             {
                 AggregateId = aggregateId;
                 AggregateVersion = aggregateVersion;

@@ -21,14 +21,14 @@ namespace EnjoyCQRS.IntegrationTests.Shared.TestSuit
             CalledMethods &= EventStoreMethods.Ctor;
         }
 
-        public async Task SaveSnapshotAsync<TSnapshot>(TSnapshot snapshot) where TSnapshot : ISnapshot
+        public async Task SaveSnapshotAsync(ISerializedSnapshot snapshot)
         {
             await _eventStore.SaveSnapshotAsync(snapshot);
 
             CalledMethods |= EventStoreMethods.SaveSnapshotAsync;
         }
 
-        public async Task<ISnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
+        public async Task<ICommitedSnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
         {
             var result = await _eventStore.GetLatestSnapshotByIdAsync(aggregateId);
 

@@ -30,17 +30,17 @@ namespace EnjoyCQRS.EventStore.SQLite
                 {
                     @"CREATE TABLE Events (Id [uniqueidentifier] PRIMARY KEY, 
                                                              AggregateId [uniqueidentifier] NOT NULL, 
+                                                             Version [INT],
                                                              Timestamp [CURRENT_TIMESTAMP] NOT NULL, 
-                                                             Metadatas [TEXT] NOT NULL, 
                                                              Body [TEXT] NOT NULL,
-                                                             Version [INT])",
+                                                             Metadatas [TEXT] NOT NULL)",
 
                     @"CREATE TABLE Snapshots (Id [uniqueidentifier] PRIMARY KEY,
                                               AggregateId [uniqueidentifier], 
+                                              Version [INT],
                                               Timestamp [CURRENT_TIMESTAMP] NOT NULL, 
-                                              SnapshotClrType [TEXT] NOT NULL,
-                                              Body [TEXT] NOT NULL, 
-                                              Version [INT])"
+                                              Body [TEXT] NOT NULL,
+                                              Metadatas [TEXT] NOT NULL)"
                 };
 
                 connection.Open();

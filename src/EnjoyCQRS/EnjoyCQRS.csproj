@@ -48,6 +48,12 @@
     <Compile Include="EventSource\Metadata.cs" />
     <Compile Include="EventSource\IMetadataProvider.cs" />
     <Compile Include="EventSource\SerializedEvent.cs" />
+    <Compile Include="EventSource\SnapshotSerializer.cs" />
+    <Compile Include="EventSource\Snapshots\ICommitedSnapshot.cs" />
+    <Compile Include="EventSource\Snapshots\ISerializedSnapshot.cs" />
+    <Compile Include="EventSource\Snapshots\ISnapshotRestore.cs" />
+    <Compile Include="EventSource\Snapshots\SerializedSnapshot.cs" />
+    <Compile Include="EventSource\Snapshots\SnapshotRestore.cs" />
     <Compile Include="EventSource\Storage\InMemoryEventStore.cs" />
     <Compile Include="EventSource\UnitOfWork.cs" />
     <Compile Include="Collections\CommitedDomainEventCollection.cs" />

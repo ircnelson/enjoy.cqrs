@@ -32,7 +32,7 @@ namespace EnjoyCQRS.EventStore.MongoDB
             _client = client;
         }
 
-        public Task SaveSnapshotAsync<TSnapshot>(TSnapshot snapshot) where TSnapshot : ISnapshot
+        public Task SaveSnapshotAsync(ISerializedSnapshot snapshot)
         {
             var snapshotData = Serialize(snapshot);
             _uncommitedSnapshots.Add(snapshotData);
@@ -40,7 +40,7 @@ namespace EnjoyCQRS.EventStore.MongoDB
             return Task.CompletedTask;
         }
 
-        public async Task<ISnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
+        public async Task<ICommitedSnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
         {
             var db = _client.GetDatabase(Database);
             var snapshotCollection = db.GetCollection<SnapshotData>(SnapshotsCollectionName);
@@ -152,33 +152,28 @@ namespace EnjoyCQRS.EventStore.MongoDB
             return MongoCommitedEvent.Create(e);
         }
 
-        private ISnapshot Deserialize(SnapshotData snapshotData)
+        private ICommitedSnapshot Deserialize(SnapshotData snapshotData)
         {
-            var snapshotClrTypeName = snapshotData.Metadata["snapshotClrType"].AsString;
-            var snapshotType = GetOrAddTypeCache(snapshotClrTypeName);
-
-            var snapshot = (ISnapshot)JsonConvert.DeserializeObject(snapshotData.Data.ToJson(), snapshotType, SerializerSettings);
-
-            return snapshot;
+            return MongoCommitedSnapshot.Create(snapshotData);
         }
 
-        private SnapshotData Serialize(ISnapshot snapshot)
+        private SnapshotData Serialize(ISerializedSnapshot serializedSnapshot)
         {
-            var json = Newtonsoft.Json.JsonConvert.SerializeObject(snapshot, SerializerSettings);
-            var data = BsonDocument.Parse(json);
-
-            var metadata = new BsonDocument { { "snapshotClrType", snapshot.GetType().AssemblyQualifiedName } };
-            var @event = new SnapshotData
+            var eventData = BsonDocument.Parse(serializedSnapshot.SerializedData);
+            var metadata = BsonDocument.Parse(serializedSnapshot.SerializedMetadata);
+            var id = serializedSnapshot.Metadata.GetValue(MetadataKeys.SnapshotId, Guid.Parse);
+            
+            var snapshot = new SnapshotData
             {
-                Id = Guid.NewGuid(),
+                Id = id,
                 Timestamp = DateTime.UtcNow,
-                AggregateId = snapshot.AggregateId,
-                Version = snapshot.Version,
-                Data = data,
+                AggregateId = serializedSnapshot.AggregateId,
+                Version = serializedSnapshot.AggregateVersion,
+                Data = eventData,
                 Metadata = metadata,
             };
 
-            return @event;
+            return snapshot;
         }
 
         private Type GetOrAddTypeCache(string typeName)

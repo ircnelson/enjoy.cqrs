@@ -10,7 +10,6 @@ using EnjoyCQRS.EventSource.Storage;
 using EnjoyCQRS.IntegrationTests.Shared;
 using EnjoyCQRS.Logger;
 using EnjoyCQRS.MessageBus;
-using EnjoyCQRS.MetadataProviders;
 using EnjoyCQRS.UnitTests.Domain.Stubs;
 using FluentAssertions;
 using Moq;
@@ -26,17 +25,21 @@ namespace EnjoyCQRS.UnitTests.Storage
         private readonly Func<IEventStore, IEventPublisher, ISnapshotStrategy, Session> _sessionFactory = (eventStore, eventPublisher, snapshotStrategy) =>
         {
             var eventSerializer = CreateEventSerializer();
+            var snapshotSerializer = CreateSnapshotSerializer();
 
-            var session = new Session(CreateLoggerFactory(CreateLoggerMock().Object), eventStore, eventPublisher, eventSerializer, null, snapshotStrategy);
+            var session = new Session(CreateLoggerFactory(CreateLoggerMock().Object), eventStore, eventPublisher, eventSerializer, snapshotSerializer, null, snapshotStrategy);
 
             return session;
         };
         
         private readonly Mock<IEventPublisher> _eventPublisherMock;
+        private JsonTextSerializer _textSerializer;
 
         public SessionTests()
         {
             _eventPublisherMock = new Mock<IEventPublisher>();
+
+            _textSerializer = new JsonTextSerializer();
         }
 
         [Trait(CategoryName, CategoryValue)]
@@ -46,9 +49,10 @@ namespace EnjoyCQRS.UnitTests.Storage
             var eventPublisher = Mock.Of<IEventPublisher>();
             var eventStore = Mock.Of<IEventStore>();
             var eventSerializer = Mock.Of<IEventSerializer>();
+            var snapshotSerializer = Mock.Of<ISnapshotSerializer>();
             var metadataProviders = Mock.Of<IEnumerable<IMetadataProvider>>();
 
-            Action act = () => new Session(null, eventStore, eventPublisher, eventSerializer, metadataProviders);
+            Action act = () => new Session(null, eventStore, eventPublisher, eventSerializer, snapshotSerializer, metadataProviders);
 
             act.ShouldThrowExactly<ArgumentNullException>();
         }
@@ -57,11 +61,12 @@ namespace EnjoyCQRS.UnitTests.Storage
         [Fact]
         public void Cannot_pass_null_instance_of_EventStore()
         {
+            var snapshotSerializer = Mock.Of<ISnapshotSerializer>();
             var eventSerializer = Mock.Of<IEventSerializer>();
             var eventPublisher = Mock.Of<IEventPublisher>();
             var metadataProviders = Mock.Of<IEnumerable<IMetadataProvider>>();
 
-            Action act = () => new Session(CreateLoggerFactory(CreateLoggerMock().Object), null, eventPublisher, eventSerializer, metadataProviders);
+            Action act = () => new Session(CreateLoggerFactory(CreateLoggerMock().Object), null, eventPublisher, eventSerializer, snapshotSerializer, metadataProviders);
 
             act.ShouldThrowExactly<ArgumentNullException>();
         }
@@ -72,9 +77,10 @@ namespace EnjoyCQRS.UnitTests.Storage
         {
             var eventStore = Mock.Of<IEventStore>();
             var eventSerializer = Mock.Of<IEventSerializer>();
+            var snapshotSerializer = Mock.Of<ISnapshotSerializer>();
             var metadataProviders = Mock.Of<IEnumerable<IMetadataProvider>>();
 
-            Action act = () => new Session(CreateLoggerFactory(CreateLoggerMock().Object), eventStore, null, eventSerializer, metadataProviders);
+            Action act = () => new Session(CreateLoggerFactory(CreateLoggerMock().Object), eventStore, null, eventSerializer, snapshotSerializer, metadataProviders);
 
             act.ShouldThrowExactly<ArgumentNullException>();
         }
@@ -160,12 +166,19 @@ namespace EnjoyCQRS.UnitTests.Storage
             // Assert
 
             eventStore.SaveSnapshotMethodCalled.Should().BeTrue();
+            
+            var commitedSnapshot = StubEventStore.Snapshots.First(e => e.AggregateId == stubAggregate.Id);
+            
+            commitedSnapshot.Should().NotBeNull();
 
-            StubEventStore.Snapshots.First(e => e.AggregateId == stubAggregate.Id).Should().BeOfType<StubSnapshotAggregateSnapshot>();
+            var metadata = (IMetadata) _textSerializer.Deserialize<EventSource.Metadata>(commitedSnapshot.SerializedMetadata);
+            
+            var snapshotClrType = metadata.GetValue(MetadataKeys.SnapshotClrType);
 
-            var snapshot = StubEventStore.Snapshots.First(e => e.AggregateId == stubAggregate.Id).As<StubSnapshotAggregateSnapshot>();
+            Type.GetType(snapshotClrType).Name.Should().Be(typeof(StubSnapshotAggregateSnapshot).Name);
 
-            snapshot.AggregateId.Should().Be(stubAggregate.Id);
+            var snapshot = _textSerializer.Deserialize<StubSnapshotAggregateSnapshot>(commitedSnapshot.SerializedData);
+
             snapshot.Name.Should().Be(stubAggregate.Name);
             snapshot.SimpleEntities.Count.Should().Be(stubAggregate.Entities.Count);
         }
@@ -341,7 +354,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             {
                 session.Rollback();
             }
-
+            
             eventStoreMock.Verify(e => e.Rollback(), Times.Once);
             _eventPublisherMock.Verify(e => e.Rollback(), Times.Once);
         }
@@ -453,7 +466,12 @@ namespace EnjoyCQRS.UnitTests.Storage
         {
             return new EventSerializer(new JsonTextSerializer());
         }
-        
+
+        private static ISnapshotSerializer CreateSnapshotSerializer()
+        {
+            return new SnapshotSerializer(new JsonTextSerializer());
+        }
+
         private static void DoThrowExcetion()
         {
             throw new Exception("Sorry, this is my fault.");

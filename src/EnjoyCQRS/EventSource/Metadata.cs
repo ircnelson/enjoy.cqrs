@@ -59,5 +59,9 @@ namespace EnjoyCQRS.EventSource
         public const string EventVersion = "eventVersion";
 
         public const string CorrelationId = "correlationId";
+
+        public const string SnapshotClrType = "snapshotClrType";
+        public const string SnapshotId = "snapshotId";
+        public const string SnapshotName = "snapshotName";
     }
 }

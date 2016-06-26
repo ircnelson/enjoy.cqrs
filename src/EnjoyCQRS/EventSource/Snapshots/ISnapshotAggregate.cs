@@ -25,6 +25,6 @@ namespace EnjoyCQRS.EventSource.Snapshots
     public interface ISnapshotAggregate : IAggregate
     {
         ISnapshot CreateSnapshot();
-        void Restore(ISnapshot snapshot);
+        void Restore(ISnapshotRestore snapshotRestore);
     }
 }

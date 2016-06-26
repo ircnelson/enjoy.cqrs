@@ -7,7 +7,6 @@ using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;
-using Newtonsoft.Json;
 
 namespace EnjoyCQRS.EventStore.SQLite
 {
@@ -59,13 +58,13 @@ namespace EnjoyCQRS.EventStore.SQLite
         public async Task SaveAsync(IEnumerable<ISerializedEvent> collection)
         {
             var command = Connection.CreateCommand();
-            command.CommandText = "INSERT INTO Events (Id, AggregateId, Timestamp, Metadatas, Body, Version) VALUES (@Id, @AggregateId, @Timestamp, @Metadatas, @Body, @Version)";
+            command.CommandText = "INSERT INTO Events (Id, AggregateId, Version, Timestamp, Body, Metadatas) VALUES (@Id, @AggregateId, @Version, @Timestamp, @Body, @Metadatas)";
             command.Parameters.Add("@Id", DbType.Guid);
             command.Parameters.Add("@AggregateId", DbType.Guid);
-            command.Parameters.Add("@Timestamp", DbType.DateTime);
-            command.Parameters.Add("@Metadatas", DbType.String);
-            command.Parameters.Add("@Body", DbType.String);
             command.Parameters.Add("@Version", DbType.Int32);
+            command.Parameters.Add("@Timestamp", DbType.DateTime);
+            command.Parameters.Add("@Body", DbType.String);
+            command.Parameters.Add("@Metadatas", DbType.String);
 
             EnsureOpenedConnection();
 
@@ -75,53 +74,53 @@ namespace EnjoyCQRS.EventStore.SQLite
                 {
                     command.Parameters[0].Value = @event.Metadata.GetValue(MetadataKeys.EventId, Guid.Parse);
                     command.Parameters[1].Value = @event.Metadata.GetValue(MetadataKeys.AggregateId, Guid.Parse);
-                    command.Parameters[2].Value = DateTime.UtcNow;
-                    command.Parameters[3].Value = @event.SerializedMetadata;
+                    command.Parameters[2].Value = @event.Metadata.GetValue(MetadataKeys.EventVersion, int.Parse);
+                    command.Parameters[3].Value = DateTime.UtcNow;
                     command.Parameters[4].Value = @event.SerializedData;
-                    command.Parameters[5].Value = @event.Metadata.GetValue(MetadataKeys.EventVersion, int.Parse);
+                    command.Parameters[5].Value = @event.SerializedMetadata;
 
                     await command.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
             }
         }
 
-        public async Task SaveSnapshotAsync<TSnapshot>(TSnapshot snapshot) where TSnapshot : ISnapshot
+        public async Task SaveSnapshotAsync(ISerializedSnapshot snapshot)
         {
             var command = Connection.CreateCommand();
-            command.CommandText = "INSERT INTO Snapshots (AggregateId, Timestamp, SnapshotClrType, Body, Version) VALUES (@AggregateId, @Timestamp, @SnapshotClrType, @Body, @Version)";
+            command.CommandText = "INSERT INTO Snapshots (AggregateId, Version, Timestamp, Body, Metadatas) VALUES (@AggregateId, @Version, @Timestamp, @Body, @Metadatas)";
             command.Parameters.Add("@AggregateId", DbType.Guid);
-            command.Parameters.Add("@Timestamp", DbType.DateTime);
-            command.Parameters.Add("@SnapshotClrType", DbType.String);
-            command.Parameters.Add("@Body", DbType.String);
             command.Parameters.Add("@Version", DbType.Int32);
+            command.Parameters.Add("@Timestamp", DbType.DateTime);
+            command.Parameters.Add("@Body", DbType.String);
+            command.Parameters.Add("@Metadatas", DbType.String);
 
             EnsureOpenedConnection();
 
             command.Parameters[0].Value = snapshot.AggregateId;
-            command.Parameters[1].Value = DateTime.UtcNow;
-            command.Parameters[2].Value = snapshot.GetType().AssemblyQualifiedName;
-            command.Parameters[3].Value = Serialize(snapshot);
-            command.Parameters[4].Value = snapshot.Version;
+            command.Parameters[1].Value = snapshot.AggregateVersion;
+            command.Parameters[2].Value = DateTime.UtcNow;
+            command.Parameters[3].Value = snapshot.SerializedData; 
+            command.Parameters[4].Value = snapshot.SerializedMetadata;
 
             await command.ExecuteNonQueryAsync().ConfigureAwait(false);
         }
         
-        public async Task<ISnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
+        public async Task<ICommitedSnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
         {
             var command = Connection.CreateCommand();
-            command.CommandText = "SELECT Body, SnapshotClrType FROM Snapshots WHERE AggregateId = @AggregateId ORDER BY Version DESC LIMIT 1";
+            command.CommandText = "SELECT AggregateId, Version, Body, Metadatas FROM Snapshots WHERE AggregateId = @AggregateId ORDER BY Version DESC LIMIT 1";
             command.Parameters.AddWithValue("@AggregateId", aggregateId);
             
             EnsureOpenedConnection();
 
-            ISnapshot snapshot = null;
+            ICommitedSnapshot snapshot = null;
 
             using (command)
             using (var sqlReader = await command.ExecuteReaderAsync().ConfigureAwait(false))
             {
                 while (await sqlReader.ReadAsync())
                 {
-                    snapshot = Deserialize(sqlReader.GetString(0), sqlReader.GetString(1));
+                    snapshot = new SqliteCommitedSnapshot(sqlReader.GetGuid(0), sqlReader.GetInt32(1), sqlReader.GetString(2), sqlReader.GetString(3));
                     break;
                 }
             }
@@ -148,18 +147,6 @@ namespace EnjoyCQRS.EventStore.SQLite
 
             Connection = null;
             Transaction = null;
-        }
-
-        private string Serialize<TObject>(TObject @event)
-        {
-            return JsonConvert.SerializeObject(@event);
-        }
-
-        private ISnapshot Deserialize(string snapshotSerialized, string type)
-        {
-            var snapshot = (ISnapshot) JsonConvert.DeserializeObject(snapshotSerialized, Type.GetType(type));
-
-            return snapshot;
         }
         
         private void EnsureOpenedConnection()
@@ -191,6 +178,22 @@ namespace EnjoyCQRS.EventStore.SQLite
         public class SqliteCommitedEvent : ICommitedEvent
         {
             public SqliteCommitedEvent(Guid aggregateId, int aggregateVersion, string serializedData, string serializedMetadata)
+            {
+                AggregateId = aggregateId;
+                AggregateVersion = aggregateVersion;
+                SerializedData = serializedData;
+                SerializedMetadata = serializedMetadata;
+            }
+
+            public Guid AggregateId { get; }
+            public int AggregateVersion { get; }
+            public string SerializedMetadata { get; }
+            public string SerializedData { get; }
+        }
+
+        public class SqliteCommitedSnapshot : ICommitedSnapshot
+        {
+            public SqliteCommitedSnapshot(Guid aggregateId, int aggregateVersion, string serializedData, string serializedMetadata)
             {
                 AggregateId = aggregateId;
                 AggregateVersion = aggregateVersion;

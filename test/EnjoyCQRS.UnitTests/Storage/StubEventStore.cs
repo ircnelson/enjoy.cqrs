@@ -11,7 +11,6 @@ namespace EnjoyCQRS.UnitTests.Storage
     {
         public bool SaveSnapshotMethodCalled { get; private set; }
         public bool GetSnapshotMethodCalled { get; private set; }
-        public bool RollbackMethodCalled { get; private set; }
         
         public override Task SaveAsync(IEnumerable<ISerializedEvent> collection)
         {
@@ -20,7 +19,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             return base.SaveAsync(collection);
         }
 
-        public override Task<ISnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
+        public override Task<ICommitedSnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
         {
             GetSnapshotMethodCalled = true;
 
