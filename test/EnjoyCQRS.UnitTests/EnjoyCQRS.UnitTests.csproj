@@ -96,6 +96,7 @@
     <Compile Include="Domain\When_aggregate_modify_an_entity.cs" />
     <Compile Include="Domain\When_aggregate_have_entities.cs" />
     <Compile Include="Handlers\CommandHandlerTests.cs" />
+    <Compile Include="Handlers\CommandHandlerWithManyDependenciesTests.cs" />
     <Compile Include="Handlers\EventHandlerTests.cs" />
     <Compile Include="MessageBus\EventPublisherTests.cs" />
     <Compile Include="MessageBus\CommandDispatcherTests.cs" />

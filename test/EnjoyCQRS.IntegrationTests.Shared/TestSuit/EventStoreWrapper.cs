@@ -8,7 +8,7 @@ using EnjoyCQRS.EventSource.Storage;
 
 namespace EnjoyCQRS.IntegrationTests.Shared.TestSuit
 {
-    internal class EventStoreWrapper : IEventStore
+    public class EventStoreWrapper : IEventStore
     {
         public EventStoreMethods CalledMethods;
 

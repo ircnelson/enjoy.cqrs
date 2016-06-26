@@ -10,6 +10,7 @@ using EnjoyCQRS.IntegrationTests.Shared.StubApplication.Commands.BarAggregate;
 using EnjoyCQRS.IntegrationTests.Shared.StubApplication.Commands.FooAggregate;
 using EnjoyCQRS.IntegrationTests.Shared.StubApplication.Domain.BarAggregate;
 using EnjoyCQRS.IntegrationTests.Shared.StubApplication.Domain.FooAggregate;
+using EnjoyCQRS.IntegrationTests.Shared.TestSuit;
 using EnjoyCQRS.MessageBus;
 using FluentAssertions;
 using Xunit;
@@ -63,15 +64,16 @@ namespace EnjoyCQRS.IntegrationTests
             using (var scope = _fixture.Container.BeginLifetimeScope())
             {
                 DoDispatch(scope, command);
-                
-                _fixture.EventStore.SaveSnapshotCalled.Should().BeFalse();
+
+                _fixture.EventStore.CalledMethods.HasFlag(EventStoreMethods.SaveSnapshotAsync).Should().BeFalse();
             }
 
             using (var scope = _fixture.Container.BeginLifetimeScope())
             {
                 DoDispatch(scope, new DoFloodSomethingCommand(aggregateId, times));
+
+                _fixture.EventStore.CalledMethods.HasFlag(EventStoreMethods.SaveSnapshotAsync).Should().BeTrue();
                 
-                _fixture.EventStore.SaveSnapshotCalled.Should().BeTrue();
             }
 
             using (var scope = _fixture.Container.BeginLifetimeScope())
@@ -87,7 +89,7 @@ namespace EnjoyCQRS.IntegrationTests
                 // (times - 1) because already emitted create event...
                 aggregateFromRepository.DidSomethingCounter.Should().Be(times);
 
-                _fixture.EventStore.GetSnapshotCalled.Should().BeTrue();
+                _fixture.EventStore.CalledMethods.HasFlag(EventStoreMethods.GetLatestSnapshotByIdAsync).Should().BeTrue();
             }
         }
 

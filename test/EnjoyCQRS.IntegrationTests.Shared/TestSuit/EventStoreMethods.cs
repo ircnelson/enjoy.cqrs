@@ -3,7 +3,7 @@ using System;
 namespace EnjoyCQRS.IntegrationTests.Shared.TestSuit
 {
     [Flags]
-    internal enum EventStoreMethods
+    public enum EventStoreMethods
     {
         Ctor = 0,
         Dispose = 1,

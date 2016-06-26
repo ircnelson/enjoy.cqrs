@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="FooAssembler.cs" />
     <Compile Include="StubApplication\Commands\BarAggregate\CreateBarCommand.cs" />
+    <Compile Include="StubApplication\Commands\BarAggregate\ManyDependenciesCommandHandler.cs" />
     <Compile Include="StubApplication\Commands\BarAggregate\SpeakCommand.cs" />
     <Compile Include="StubApplication\Commands\BarAggregate\BarCommandHandlers.cs" />
     <Compile Include="StubApplication\Commands\FooAggregate\CreateFooCommand.cs" />
@@ -68,6 +69,8 @@
     <Compile Include="StubApplication\Domain\FooAggregate\Foo.cs" />
     <Compile Include="StubApplication\Domain\FooAggregate\FooCreated.cs" />
     <Compile Include="StubApplication\Domain\FooAggregate\FooSnapshot.cs" />
+    <Compile Include="StubApplication\Domain\IBooleanService.cs" />
+    <Compile Include="StubApplication\Domain\IStringService.cs" />
     <Compile Include="StubApplication\EventHandlers\FooCreatedHandler.cs" />
     <Compile Include="JsonTextSerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -9,6 +9,7 @@ using EnjoyCQRS.EventSource.Storage;
 using EnjoyCQRS.IntegrationTests.Extensions;
 using EnjoyCQRS.IntegrationTests.Infrastructure;
 using EnjoyCQRS.IntegrationTests.Shared;
+using EnjoyCQRS.IntegrationTests.Shared.TestSuit;
 using EnjoyCQRS.Logger;
 using EnjoyCQRS.MessageBus;
 using EnjoyCQRS.MessageBus.InProcess;
@@ -18,7 +19,7 @@ namespace EnjoyCQRS.IntegrationTests.Fixtures
     public class MiniApplicationFixture : IDisposable
     {
         public IContainer Container { get; private set; }
-        public InMemoryEventStoreWrapper EventStore { get; set; }
+        public EventStoreWrapper EventStore { get; set; }
 
         public IntervalSnapshotStrategy SnapshotStrategy { get; set; } = new IntervalSnapshotStrategy();
 
@@ -38,7 +39,7 @@ namespace EnjoyCQRS.IntegrationTests.Fixtures
             builder.RegisterType<JsonTextSerializer>().As<ITextSerializer>();
             builder.RegisterType<NoopLoggerFactory>().As<ILoggerFactory>().InstancePerLifetimeScope();
 
-            builder.RegisterType<InMemoryEventStoreWrapper>()
+            builder.Register(c => new EventStoreWrapper(new InMemoryEventStore()))
                 .As<IEventStore>()
                 .OnActivated(args =>
                 {
