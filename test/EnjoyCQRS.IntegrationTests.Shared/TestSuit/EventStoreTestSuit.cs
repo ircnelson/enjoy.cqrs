@@ -26,12 +26,12 @@ namespace EnjoyCQRS.IntegrationTests.Shared.TestSuit
 
             var session = CreateSession();
             
-            await session.AddAsync(bar);
-            await session.SaveChangesAsync();
+            await session.AddAsync(bar).ConfigureAwait(false);
+            await session.SaveChangesAsync().ConfigureAwait(false);
 
             session = CreateSession();
 
-            var bar2 = await session.GetByIdAsync<Bar>(bar.Id);
+            var bar2 = await session.GetByIdAsync<Bar>(bar.Id).ConfigureAwait(false);
 
             var result = _eventStore.CalledMethods.HasFlag(EventStoreMethods.Ctor 
                 | EventStoreMethods.BeginTransaction
@@ -50,12 +50,12 @@ namespace EnjoyCQRS.IntegrationTests.Shared.TestSuit
 
             var session = CreateSession();
 
-            await session.AddAsync(foo);
-            await session.SaveChangesAsync();
+            await session.AddAsync(foo).ConfigureAwait(false);
+            await session.SaveChangesAsync().ConfigureAwait(false);
 
             session = CreateSession();
 
-            var foo2 = await session.GetByIdAsync<Foo>(foo.Id);
+            var foo2 = await session.GetByIdAsync<Foo>(foo.Id).ConfigureAwait(false);
             
             var result = _eventStore.CalledMethods.HasFlag(
                 EventStoreMethods.Ctor 
@@ -76,10 +76,10 @@ namespace EnjoyCQRS.IntegrationTests.Shared.TestSuit
 
             var session = CreateFaultSession();
 
-            await session.AddAsync(foo);
+            await session.AddAsync(foo).ConfigureAwait(false);
             try
             {
-                await session.SaveChangesAsync();
+                await session.SaveChangesAsync().ConfigureAwait(false);
             }
             catch (Exception)
             {

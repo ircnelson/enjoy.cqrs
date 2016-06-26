@@ -42,7 +42,7 @@ namespace EnjoyCQRS.IntegrationTests.Shared.StubApplication.Commands.BarAggregat
                 Output = _stringService.PrintWithFormat(command.Text);
             }
 
-            await _repository.AddAsync(Bar.Create(Guid.NewGuid()));
+            await _repository.AddAsync(Bar.Create(Guid.NewGuid())).ConfigureAwait(false);
         }
     }
 }

@@ -18,12 +18,12 @@ namespace EnjoyCQRS.IntegrationTests.Shared.StubApplication.Commands.BarAggregat
         {
             var bar = Bar.Create(command.AggregateId);
 
-            await _repository.AddAsync(bar);
+            await _repository.AddAsync(bar).ConfigureAwait(false);
         }
 
         public async Task ExecuteAsync(SpeakCommand command)
         {
-            var bar = await _repository.GetByIdAsync<Bar>(command.AggregateId);
+            var bar = await _repository.GetByIdAsync<Bar>(command.AggregateId).ConfigureAwait(false);
 
             bar.Speak(command.Text);
         }
