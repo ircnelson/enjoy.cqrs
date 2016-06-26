@@ -21,28 +21,23 @@
 // SOFTWARE.
 
 using System;
-using EnjoyCQRS.EventSource.Snapshots;
-using MongoDB.Bson;
+using EnjoyCQRS.Events;
 
-namespace EnjoyCQRS.EventStore.MongoDB
+namespace EnjoyCQRS.EventStore.SQLite
 {
-    internal class MongoCommitedSnapshot : ICommitedSnapshot
+    internal class SqliteCommitedEvent : ICommitedEvent
     {
-        public Guid AggregateId { get; private set; }
-        public int AggregateVersion { get; private set; }
-        public string SerializedData { get; private set; }
-        public string SerializedMetadata { get; private set; }
-
-        public static MongoCommitedSnapshot Create(SnapshotData e)
+        public SqliteCommitedEvent(Guid aggregateId, int aggregateVersion, string serializedData, string serializedMetadata)
         {
-            return new MongoCommitedSnapshot
-            {
-
-                AggregateId = e.AggregateId,
-                AggregateVersion = e.Version,
-                SerializedData = e.Data.ToJson(),
-                SerializedMetadata = e.Metadata.ToJson(),
-            };
+            AggregateId = aggregateId;
+            AggregateVersion = aggregateVersion;
+            SerializedData = serializedData;
+            SerializedMetadata = serializedMetadata;
         }
+
+        public Guid AggregateId { get; }
+        public int AggregateVersion { get; }
+        public string SerializedMetadata { get; }
+        public string SerializedData { get; }
     }
 }

@@ -52,6 +52,8 @@
     <Compile Include="EventStoreSqlite.cs" />
     <Compile Include="EventStoreSqliteInitializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SqliteCommitedEvent.cs" />
+    <Compile Include="SqliteCommitedSnapshot.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

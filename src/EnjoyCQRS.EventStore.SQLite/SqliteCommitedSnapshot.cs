@@ -1,6 +1,6 @@
-// The MIT License (MIT)
+ï»¿// The MIT License (MIT)
 // 
-// Copyright (c) 2016 Nelson Corrêa V. Júnior
+// Copyright (c) 2016 Nelson CorrÃªa V. JÃºnior
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,27 +22,22 @@
 
 using System;
 using EnjoyCQRS.EventSource.Snapshots;
-using MongoDB.Bson;
 
-namespace EnjoyCQRS.EventStore.MongoDB
+namespace EnjoyCQRS.EventStore.SQLite
 {
-    internal class MongoCommitedSnapshot : ICommitedSnapshot
+    internal class SqliteCommitedSnapshot : ICommitedSnapshot
     {
-        public Guid AggregateId { get; private set; }
-        public int AggregateVersion { get; private set; }
-        public string SerializedData { get; private set; }
-        public string SerializedMetadata { get; private set; }
-
-        public static MongoCommitedSnapshot Create(SnapshotData e)
+        public SqliteCommitedSnapshot(Guid aggregateId, int aggregateVersion, string serializedData, string serializedMetadata)
         {
-            return new MongoCommitedSnapshot
-            {
-
-                AggregateId = e.AggregateId,
-                AggregateVersion = e.Version,
-                SerializedData = e.Data.ToJson(),
-                SerializedMetadata = e.Metadata.ToJson(),
-            };
+            AggregateId = aggregateId;
+            AggregateVersion = aggregateVersion;
+            SerializedData = serializedData;
+            SerializedMetadata = serializedMetadata;
         }
+
+        public Guid AggregateId { get; }
+        public int AggregateVersion { get; }
+        public string SerializedMetadata { get; }
+        public string SerializedData { get; }
     }
 }
