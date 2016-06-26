@@ -16,6 +16,10 @@ namespace EnjoyCQRS.UnitTests.Snapshoting
         {
             var stubSnapshotAggregate = StubSnapshotAggregate.Create("Superman");
             stubSnapshotAggregate.ChangeName("Batman");
+            stubSnapshotAggregate.AddEntity("entity 1");
+            var entityId = stubSnapshotAggregate.AddEntity("entity 2");
+
+            stubSnapshotAggregate.DisableEntity(entityId);
 
             _snapshot = ((ISnapshotAggregate) stubSnapshotAggregate).CreateSnapshot();
         }
@@ -34,6 +38,8 @@ namespace EnjoyCQRS.UnitTests.Snapshoting
             var snapshot = (StubSnapshotAggregateSnapshot) _snapshot;
 
             snapshot.Name.Should().Be("Batman");
+            snapshot.SimpleEntities.Count.Should().Be(2);
+            snapshot.SimpleEntities[1].Enabled.Should().BeFalse();
         }
     }
 }

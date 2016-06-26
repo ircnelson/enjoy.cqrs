@@ -33,9 +33,13 @@ namespace EnjoyCQRS.UnitTests.Domain.Stubs
             Emit(new NameChangedEvent(Id, name));
         }
 
-        public void AddEntity(string entityName)
+        public Guid AddEntity(string entityName)
         {
-            Emit(new ChildCreatedEvent(Id, Guid.NewGuid(), entityName));
+            var entityId = Guid.NewGuid();
+
+            Emit(new ChildCreatedEvent(Id, entityId, entityName));
+
+            return entityId;
         }
 
         public void DisableEntity(Guid entityId)
