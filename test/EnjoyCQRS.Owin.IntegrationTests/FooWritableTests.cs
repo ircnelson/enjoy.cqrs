@@ -13,6 +13,10 @@ namespace EnjoyCQRS.Owin.IntegrationTests
 {
     public class FooWritableTests
     {
+        public const string CategoryName = "Integration";
+        public const string CategoryValue = "Owin";
+
+        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public async Task Should_create_foo()
         {
@@ -29,6 +33,7 @@ namespace EnjoyCQRS.Owin.IntegrationTests
             InMemoryEventStore.Events.Count(e => e.AggregateId == aggregateId).Should().Be(1);
         }
 
+        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public async Task Should_do_something()
         {
@@ -49,6 +54,7 @@ namespace EnjoyCQRS.Owin.IntegrationTests
             aggregateId.Should().NotBeEmpty();
         }
 
+        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public async Task Should_emit_many_events()
         {

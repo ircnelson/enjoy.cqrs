@@ -9,8 +9,12 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
 {
     public class MongoEventStoreTests
     {
+        public const string CategoryName = "Integration";
+        public const string CategoryValue = "MongoDB";
+
         public const string DatabaseName = "test";
-        
+
+        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public void Should_create_database()
         {
@@ -25,7 +29,8 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
                 eventStore.Database.Should().Be(DatabaseName);
             }
         }
-        
+
+        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public async Task Test_events()
         {
@@ -39,6 +44,7 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
             }
         }
 
+        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public async Task Test_snapshot()
         {
@@ -52,6 +58,7 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
             }
         }
 
+        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public async Task When_any_exception_be_thrown()
         {

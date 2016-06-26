@@ -9,6 +9,9 @@ namespace EnjoyCQRS.SQLite.IntegrationTests.EventStore
 {
     public class EventStoreSQLiteTests : IClassFixture<DatabaseFixtures>
     {
+        public const string CategoryName = "Integration";
+        public const string CategoryValue = "SQLite";
+
         private readonly DatabaseFixtures _fixtures;
         private readonly string _fileName;
 
@@ -19,12 +22,14 @@ namespace EnjoyCQRS.SQLite.IntegrationTests.EventStore
             _fileName = _fixtures.EventStoreInitializer.FileName;
         }
 
+        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public void Should_create_database()
         {
             File.Exists(_fixtures.EventStoreInitializer.FileName).Should().BeTrue();
         }
 
+        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public async Task Test_events()
         {
@@ -35,6 +40,7 @@ namespace EnjoyCQRS.SQLite.IntegrationTests.EventStore
             await eventStoreTestSuit.EventTestsAsync();
         }
 
+        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public async Task Test_snapshot()
         {
@@ -44,6 +50,7 @@ namespace EnjoyCQRS.SQLite.IntegrationTests.EventStore
             await eventStoreTestSuit.SnapshotTestsAsync();
         }
 
+        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public async Task When_any_exception_be_thrown()
         {
