@@ -53,12 +53,12 @@ namespace EnjoyCQRS.EventSource.Storage
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<IEnumerable<IDomainEvent>> GetAllEventsAsync(Guid id);
+        Task<IEnumerable<ICommitedEvent>> GetAllEventsAsync(Guid id);
 
         /// <summary>
         /// Save the events in Event Store.
         /// </summary>
         /// <param name="collection"></param>
-        Task SaveAsync(UncommitedDomainEventCollection collection);
+        Task SaveAsync(IEnumerable<ISerializedEvent> collection);
     }
 }

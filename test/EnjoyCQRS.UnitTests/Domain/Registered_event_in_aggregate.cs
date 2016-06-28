@@ -24,5 +24,12 @@ namespace EnjoyCQRS.UnitTests.Domain
         {
             PublishedEvents.Last().Should().BeAssignableTo<NameChangedEvent>();
         }
+
+        [Trait(CategoryName, CategoryValue)]
+        [Then]
+        public void Then_verify_name_property()
+        {
+            PublishedEvents.Last().As<NameChangedEvent>().Name.Should().Be(AggregateRoot.Name);
+        }
     }
 }

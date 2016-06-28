@@ -49,7 +49,7 @@ namespace EnjoyCQRS.UnitTests.Snapshoting
             var itervalSnapshotStrategy = new IntervalSnapshotStrategy(snapshotInterval);
 
             var snapshotAggregateMock = new Mock<ISnapshotAggregate>();
-            snapshotAggregateMock.Setup(e => e.EventVersion).Returns(aggregateEventVersion);
+            snapshotAggregateMock.Setup(e => e.Sequence).Returns(aggregateEventVersion);
 
             var snapshotAggregate = snapshotAggregateMock.Object;
             

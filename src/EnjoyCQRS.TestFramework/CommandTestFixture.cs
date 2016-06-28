@@ -112,32 +112,4 @@ namespace EnjoyCQRS.TestFramework
     }
 
     public class ThereWasNoExceptionButOneWasExpectedException : Exception { }
-
-    public class PrepareDomainEvent
-    {
-        public static EventVersionSetter Set(IDomainEvent domainEvent)
-        {
-            return new EventVersionSetter(domainEvent);
-        }
-    }
-
-    public class EventVersionSetter
-    {
-        private readonly IDomainEvent _domainEvent;
-
-        public EventVersionSetter(IDomainEvent domainEvent)
-        {
-            _domainEvent = domainEvent;
-        }
-
-        public IDomainEvent ToVersion(int version)
-        {
-            if (_domainEvent is DomainEvent)
-            {
-                ((DomainEvent) _domainEvent).Version = version;
-            }
-
-            return _domainEvent;
-        }
-    }
 }

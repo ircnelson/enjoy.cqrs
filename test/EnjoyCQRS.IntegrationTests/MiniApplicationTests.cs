@@ -2,10 +2,15 @@
 using System.Threading.Tasks;
 using Autofac;
 using EnjoyCQRS.Commands;
+using EnjoyCQRS.EventSource;
+using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;
 using EnjoyCQRS.IntegrationTests.Fixtures;
-using EnjoyCQRS.IntegrationTests.Stubs.ApplicationLayer;
-using EnjoyCQRS.IntegrationTests.Stubs.DomainLayer;
+using EnjoyCQRS.IntegrationTests.Shared.StubApplication.Commands.BarAggregate;
+using EnjoyCQRS.IntegrationTests.Shared.StubApplication.Commands.FooAggregate;
+using EnjoyCQRS.IntegrationTests.Shared.StubApplication.Domain.BarAggregate;
+using EnjoyCQRS.IntegrationTests.Shared.StubApplication.Domain.FooAggregate;
+using EnjoyCQRS.IntegrationTests.Shared.TestSuit;
 using EnjoyCQRS.MessageBus;
 using FluentAssertions;
 using Xunit;
@@ -24,61 +29,100 @@ namespace EnjoyCQRS.IntegrationTests
             _fixture = fixture;
         }
         
-        [Fact]
         [Trait(CategoryName, CategoryValue)]
+        [Fact]
         public async Task Should_dispatch_command_and_retrieve_aggregate_from_repository()
         {
             using (var scope = _fixture.Container.BeginLifetimeScope())
             {
-                var command = new CreateFakePersonCommand(Guid.NewGuid(), "Fake");
+                var command = new CreateFooCommand(Guid.NewGuid());
 
                 DoDispatch(scope, command);
                 
                 var repository = scope.Resolve<IRepository>();
                 
-                var aggregateFromRepository = await repository.GetByIdAsync<FakePerson>(command.AggregateId).ConfigureAwait(false);
+                var aggregateFromRepository = await repository.GetByIdAsync<Foo>(command.AggregateId).ConfigureAwait(false);
 
                 aggregateFromRepository.Should().NotBeNull();
-
-                aggregateFromRepository.Name.Should().Be(command.Name);
+                
                 aggregateFromRepository.Id.Should().Be(command.AggregateId);
             }
         }
 
-        [Fact]
         [Trait(CategoryName, CategoryValue)]
-        public async Task Should_take_and_restore_snapshot()
+        [Fact]
+        public async Task Should_take_and_restore_snapshot_based_on_interval_strategy_configured()
         {
-            var command = new CreateFakeGameCommand(Guid.NewGuid(), "Player 1", "Player 2");
+            const int times = 5;
+
+            _fixture.SnapshotStrategy = new IntervalSnapshotStrategy(times + 1);
+
+            var aggregateId = Guid.NewGuid();
+
+            var command = new CreateFooCommand(aggregateId);
 
             using (var scope = _fixture.Container.BeginLifetimeScope())
             {
                 DoDispatch(scope, command);
 
-                _fixture.EventStore.SaveSnapshotCalled.Should().BeTrue();
+                _fixture.EventStore.CalledMethods.HasFlag(EventStoreMethods.SaveSnapshotAsync).Should().BeFalse();
+            }
+
+            using (var scope = _fixture.Container.BeginLifetimeScope())
+            {
+                DoDispatch(scope, new DoFloodSomethingCommand(aggregateId, times));
+
+                _fixture.EventStore.CalledMethods.HasFlag(EventStoreMethods.SaveSnapshotAsync).Should().BeTrue();
+                
             }
 
             using (var scope = _fixture.Container.BeginLifetimeScope())
             {
                 var repository = scope.Resolve<IRepository>();
 
-                var aggregateFromRepository = await repository.GetByIdAsync<FakeGame>(command.AggregateId).ConfigureAwait(false);
+                var aggregateFromRepository = await repository.GetByIdAsync<Foo>(aggregateId).ConfigureAwait(false);
 
                 aggregateFromRepository.Should().NotBeNull();
 
-                aggregateFromRepository.Id.Should().Be(command.AggregateId);
-                aggregateFromRepository.NamePlayerOne.Should().Be(command.PlayerOneName);
-                aggregateFromRepository.NamePlayerTwo.Should().Be(command.PlayerTwoName);
+                aggregateFromRepository.Id.Should().Be(aggregateId);
 
-                _fixture.EventStore.GetSnapshotCalled.Should().BeTrue();
+                // (times - 1) because already emitted create event...
+                aggregateFromRepository.DidSomethingCounter.Should().Be(times);
+
+                _fixture.EventStore.CalledMethods.HasFlag(EventStoreMethods.GetLatestSnapshotByIdAsync).Should().BeTrue();
+            }
+        }
+
+        [Trait(CategoryName, CategoryValue)]
+        [Fact]
+        public async Task Should_get_all_events()
+        {
+            _fixture.SnapshotStrategy = new IntervalSnapshotStrategy(200);
+
+            var aggregateId = Guid.NewGuid();
+            
+            using (var scope = _fixture.Container.BeginLifetimeScope())
+            {
+                DoDispatch(scope, new CreateBarCommand(aggregateId));
+            }
+
+            using (var scope = _fixture.Container.BeginLifetimeScope())
+            {
+                DoDispatch(scope, new SpeakCommand(aggregateId, "e N J o y"));
+            }
+
+            using (var scope = _fixture.Container.BeginLifetimeScope())
+            {
+                var repository = scope.Resolve<IRepository>();
+
+                var aggregateFromRepository = await repository.GetByIdAsync<Bar>(aggregateId).ConfigureAwait(false);
+
+                aggregateFromRepository.LastText.Should().Be("e N J o y");
             }
         }
 
         private async void DoDispatch(ILifetimeScope scope, ICommand command)
         {
-            if (scope == null) throw new ArgumentNullException(nameof(scope));
-            if (command == null) throw new ArgumentNullException(nameof(command));
-
             var commandDispatcher = scope.Resolve<ICommandDispatcher>();
 
             await commandDispatcher.DispatchAsync(command).ConfigureAwait(false);

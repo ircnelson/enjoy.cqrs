@@ -36,3 +36,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
 [assembly: InternalsVisibleTo("EnjoyCQRS.TestFramework", AllInternalsVisible = true)]
+[assembly: InternalsVisibleTo("EnjoyCQRS.UnitTests", AllInternalsVisible = true)]
+[assembly: InternalsVisibleTo("EnjoyCQRS.IntegrationTests", AllInternalsVisible = true)]
+[assembly: InternalsVisibleTo("EnjoyCQRS.Owin.IntegrationTests", AllInternalsVisible = true)]
+[assembly: InternalsVisibleTo("EnjoyCQRS.MongoDB.IntegrationTests", AllInternalsVisible = true)]

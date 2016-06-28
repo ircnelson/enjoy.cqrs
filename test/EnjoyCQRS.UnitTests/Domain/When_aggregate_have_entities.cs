@@ -19,9 +19,11 @@ namespace EnjoyCQRS.UnitTests.Domain
 
         protected override IEnumerable<IDomainEvent> Given()
         {
-            yield return PrepareDomainEvent.Set(new StubAggregateCreatedEvent(Guid.NewGuid(), "Mother")).ToVersion(1);
-            yield return PrepareDomainEvent.Set(new ChildCreatedEvent(Guid.NewGuid(), "Child 1")).ToVersion(1);
-            yield return PrepareDomainEvent.Set(new ChildCreatedEvent(Guid.NewGuid(), "Child 2")).ToVersion(1);
+            var aggregateId = Guid.NewGuid();
+            
+            yield return new StubAggregateCreatedEvent(aggregateId, "Mother");
+            yield return new ChildCreatedEvent(aggregateId, Guid.NewGuid(), "Child 1");
+            yield return new ChildCreatedEvent(aggregateId, Guid.NewGuid(), "Child 2");
         }
 
         protected override void When()

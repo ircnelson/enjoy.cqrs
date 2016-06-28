@@ -39,13 +39,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\EventNameAttribute.cs" />
+    <Compile Include="Core\ITextSerializer.cs" />
+    <Compile Include="EventSource\EventSerializer.cs" />
+    <Compile Include="EventSource\IEventSerializer.cs" />
+    <Compile Include="EventSource\IMetadata.cs" />
+    <Compile Include="EventSource\ISerializedEvent.cs" />
+    <Compile Include="EventSource\Metadata.cs" />
+    <Compile Include="EventSource\IMetadataProvider.cs" />
+    <Compile Include="EventSource\SerializedEvent.cs" />
+    <Compile Include="EventSource\SnapshotSerializer.cs" />
+    <Compile Include="EventSource\Snapshots\ICommitedSnapshot.cs" />
+    <Compile Include="EventSource\Snapshots\ISerializedSnapshot.cs" />
+    <Compile Include="EventSource\Snapshots\ISnapshotRestore.cs" />
+    <Compile Include="EventSource\Snapshots\SerializedSnapshot.cs" />
+    <Compile Include="EventSource\Snapshots\SnapshotRestore.cs" />
+    <Compile Include="EventSource\Storage\InMemoryEventStore.cs" />
     <Compile Include="EventSource\UnitOfWork.cs" />
-    <Compile Include="Events\UncommitedDomainEvent.cs" />
-    <Compile Include="EventSource\AggregateMetadata.cs" />
     <Compile Include="Collections\CommitedDomainEventCollection.cs" />
-    <Compile Include="Collections\DomainEventCollection.cs" />
-    <Compile Include="Collections\IDomainEventCollection.cs" />
-    <Compile Include="Collections\UncommitedDomainEventCollection.cs" />
+    <Compile Include="Events\ICommitedEvent.cs" />
+    <Compile Include="Extensions\DomainEventExtensions.cs" />
     <Compile Include="Logger\ILogger.cs" />
     <Compile Include="Logger\ILoggerFactory.cs" />
     <Compile Include="Logger\LogLevel.cs" />
@@ -83,6 +96,9 @@
     <Compile Include="Events\DomainEvent.cs" />
     <Compile Include="Events\IDomainEvent.cs" />
     <Compile Include="Events\IEventHandler.cs" />
+    <Compile Include="MetadataProviders\AggregateTypeMetadataProvider.cs" />
+    <Compile Include="MetadataProviders\CorrelationIdMetadataProvider.cs" />
+    <Compile Include="MetadataProviders\EventTypeMetadataProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ValueObjects\ValueObject.cs" />
   </ItemGroup>

@@ -20,20 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-
 namespace EnjoyCQRS.EventSource.Snapshots
 {
     public abstract class Snapshot : ISnapshot
     {
-        /// <summary>
-        /// Unique identifier of <see cref="Aggregate"/>
-        /// </summary>
-        public Guid AggregateId { get; set; }
-
-        /// <summary>
-        /// <see cref="Aggregate.EventVersion"/>
-        /// </summary>
-        public int Version { get; set; }
     }
 }

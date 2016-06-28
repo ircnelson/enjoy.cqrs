@@ -10,13 +10,24 @@
     $nuspecEnjoy = "$enjoyPath\EnjoyCQRS.nuspec"
     $nupkgPathEnjoy = "$rootDir\src\EnjoyCQRS.{0}.nupkg"
 
-    $testFrameworkPath = "$rootDir\src\EnjoyCQRS.TestFramework"
-    $nuspecTestFramework = "$testFrameworkPath\EnjoyCQRS.TestFramework.nuspec"
+    $enjoyTestFrameworkPath = "$rootDir\src\EnjoyCQRS.TestFramework"
+    $nuspecTestFramework = "$enjoyTestFrameworkPath\EnjoyCQRS.TestFramework.nuspec"
     $nupkgPathTestFramework = "$rootDir\src\EnjoyCQRS.TestFramework.{0}.nupkg"
+
+    $enjoyMongoDBPath = "$rootDir\src\EnjoyCQRS.EventStore.MongoDB"
+    $nuspecMongoDB = "$enjoyMongoDBPath\EnjoyCQRS.EventStore.MongoDB.nuspec"
+    $nupkgPathMongoDB = "$rootDir\src\EnjoyCQRS.EventStore.MongoDB.{0}.nupkg"
+
+    $enjoySQLitePath = "$rootDir\src\EnjoyCQRS.EventStore.SQLite"
+    $nuspecSQLite = "$enjoySQLitePath\EnjoyCQRS.EventStore.SQLite.nuspec"
+    $nupkgPathSQLite = "$rootDir\src\EnjoyCQRS.EventStore.SQLite.{0}.nupkg"
 
     $target_unit_dll = "$rootDir\test\EnjoyCQRS.UnitTests\bin\$configuration\EnjoyCQRS.UnitTests.dll"
     $target_integration_dll = "$rootDir\test\EnjoyCQRS.IntegrationTests\bin\$configuration\EnjoyCQRS.IntegrationTests.dll"
-
+    $target_owin_integration_dll = "$rootDir\test\EnjoyCQRS.Owin.IntegrationTests\bin\$configuration\EnjoyCQRS.Owin.IntegrationTests.dll"
+    $target_sqlite_integration_dll = "$rootDir\test\EnjoyCQRS.SQLite.IntegrationTests\bin\$configuration\EnjoyCQRS.SQLite.IntegrationTests.dll"
+    $target_mongodb_integration_dll = "$rootDir\test\EnjoyCQRS.MongoDB.IntegrationTests\bin\$configuration\EnjoyCQRS.MongoDB.IntegrationTests.dll"
+    
     $logDir = ".\log"
     $outputXml = "$logDir\CodeCoverageResults.xml"
     $coverageReportDir = "$logDir\codecoverage\"
@@ -50,7 +61,7 @@ Task Restore {
     RestorePkgs $solutionFile
 }
 
-Task Update-Nuspec -precondition { $isAppVeyor -and ($isRelease -ne $true) } -depends Update-Enjoy-Nuspec, Update-TestFramework-Nuspec
+Task Update-Nuspec -precondition { $isAppVeyor -and ($isRelease -ne $true) } -depends Update-Enjoy-Nuspec, Update-TestFramework-Nuspec, Update-MongoDB-Nuspec, Update-SQLite-Nuspec
 
 Task Update-Enjoy-Nuspec -precondition { $isAppVeyor -and ($isRelease -ne $true) } {
     UpdateNuspec $nuspecEnjoy
@@ -60,7 +71,15 @@ Task Update-TestFramework-Nuspec -precondition { $isAppVeyor -and ($isRelease -n
     UpdateNuspec $nuspecTestFramework
 }
 
-Task Pack-Nuget -precondition { return $isAppVeyor } -depends Pack-Enjoy-Nuget, Pack-TestFramework-Nuget
+Task Update-MongoDB-Nuspec -precondition { $isAppVeyor -and ($isRelease -ne $true) } {
+    UpdateNuspec $nuspecMongoDB
+}
+
+Task Update-SQLite-Nuspec -precondition { $isAppVeyor -and ($isRelease -ne $true) } {
+    UpdateNuspec $nuspecSQLite
+}
+
+Task Pack-Nuget -precondition { return $isAppVeyor } -depends Pack-Enjoy-Nuget, Pack-TestFramework-Nuget, Pack-MongoDB-Nuget, Pack-SQLite-Nuget
 
 Task Pack-Enjoy-Nuget {
     PackNuget "$rootDir\src" $nuspecEnjoy $nupkgPathEnjoy
@@ -70,8 +89,16 @@ Task Pack-TestFramework-Nuget {
     PackNuget "$rootDir\src" $nuspecTestFramework $nupkgPathTestFramework
 }
 
+Task Pack-MongoDB-Nuget {
+    PackNuget "$rootDir\src" $nuspecMongoDB $nupkgPathMongoDB
+}
+
+Task Pack-SQLite-Nuget {
+    PackNuget "$rootDir\src" $nuspecSQLite $nupkgPathSQLite
+}
+
 Task Test-Coverage -depends Set-Log {
-    RunTestWithCoverage $target_unit_dll $target_integration_dll
+    RunTestWithCoverage $target_unit_dll, $target_integration_dll, $target_owin_integration_dll, $target_sqlite_integration_dll, $target_mongodb_integration_dll
 }
 
 Task Set-Log {
@@ -158,10 +185,16 @@ function RunTestWithCoverage($fullTestDllPaths) {
 
     $targetArgs = ""
     Foreach($fullTestDllPath in $fullTestDllPaths) {
+
+        Write-Host -ForegroundColor Green "Adding to OpenCover target arguments: " $fullTestDllPath
+
         $targetArgs += $fullTestDllPath + " "
     }
 
     $targetArgs = $targetArgs.Substring(0, $targetArgs.Length - 1)
+
+    Write-Host -ForegroundColor Green "OpenCover target arguments: " $targetArgs
+
     $appVeyor = ""
     
     if ($isAppVeyor) {

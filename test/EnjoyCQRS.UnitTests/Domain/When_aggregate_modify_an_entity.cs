@@ -14,19 +14,19 @@ namespace EnjoyCQRS.UnitTests.Domain
     {
         private const string CategoryName = "Unit";
         private const string CategoryValue = "Snapshot";
-
-        private ChildCreatedEvent Entity2 = new ChildCreatedEvent(Guid.NewGuid(), "Child 2");
+        
+        private readonly ChildCreatedEvent _entity2 = new ChildCreatedEvent(Guid.NewGuid(), Guid.NewGuid(), "Child 2");
 
         protected override IEnumerable<IDomainEvent> Given()
         {
-            yield return PrepareDomainEvent.Set(new StubAggregateCreatedEvent(Guid.NewGuid(), "Mother")).ToVersion(1);
-            yield return PrepareDomainEvent.Set(new ChildCreatedEvent(Guid.NewGuid(), "Child 1")).ToVersion(1);
-            yield return PrepareDomainEvent.Set(Entity2).ToVersion(1);
+            yield return new StubAggregateCreatedEvent(Guid.NewGuid(), "Mother");
+            yield return new ChildCreatedEvent(Guid.NewGuid(), Guid.NewGuid(), "Child 1");
+            yield return _entity2;
         }
 
         protected override void When()
         {
-            AggregateRoot.DisableEntity(Entity2.Id);
+            AggregateRoot.DisableEntity(_entity2.EntityId);
         }
 
         [Trait(CategoryName, CategoryValue)]
@@ -49,7 +49,7 @@ namespace EnjoyCQRS.UnitTests.Domain
         {
             var childDisabledEvent = PublishedEvents.Last().As<ChildDisabledEvent>();
 
-            childDisabledEvent.EntityId.Should().Be(Entity2.Id);
+            childDisabledEvent.EntityId.Should().Be(_entity2.EntityId);
         }
 
         [Trait(CategoryName, CategoryValue)]
