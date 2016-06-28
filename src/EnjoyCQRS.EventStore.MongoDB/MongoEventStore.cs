@@ -30,18 +30,14 @@ using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using Newtonsoft.Json;
 
 namespace EnjoyCQRS.EventStore.MongoDB
 {
     public class MongoEventStore : IEventStore
     {
-        private static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.None };
-
         private readonly MongoClient _client;
         private readonly List<Event> _uncommitedEvents = new List<Event>();
         private readonly List<SnapshotData> _uncommitedSnapshots = new List<SnapshotData>();
-        private readonly Dictionary<string, Type> _typeCache = new Dictionary<string, Type>();
 
         private const string EventsCollectionName = "Events";
         private const string SnapshotsCollectionName = "Snapshots";
@@ -196,18 +192,6 @@ namespace EnjoyCQRS.EventStore.MongoDB
             };
 
             return snapshot;
-        }
-
-        private Type GetOrAddTypeCache(string typeName)
-        {
-            Type type;
-            if (!_typeCache.TryGetValue(typeName, out type))
-            {
-                type = Type.GetType(typeName);
-                _typeCache.Add(typeName, type);
-            }
-
-            return type;
         }
     }
 }
