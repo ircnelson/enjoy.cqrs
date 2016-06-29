@@ -15,7 +15,7 @@
     <tags>.NET CQRS EventSource EventSourcing</tags>
     <dependencies>
       <group targetFramework="net461">
-        <dependency id="Moq" version="4.5.8" />
+        <dependency id="Moq" version="4.5.10" />
       </group>
     </dependencies>
   </metadata>
