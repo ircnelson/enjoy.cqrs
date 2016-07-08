@@ -74,6 +74,7 @@
     <Compile Include="StubApplication\EventHandlers\FooCreatedHandler.cs" />
     <Compile Include="JsonTextSerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StubApplication\EventHandlers\ManyDependenciesEventHandler.cs" />
     <Compile Include="StubEventRouter.cs" />
     <Compile Include="TestSuit\EventStoreMethods.cs" />
     <Compile Include="TestSuit\EventStoreTestSuit.cs" />

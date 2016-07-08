@@ -98,6 +98,7 @@
     <Compile Include="Handlers\CommandHandlerTests.cs" />
     <Compile Include="Handlers\CommandHandlerWithManyDependenciesTests.cs" />
     <Compile Include="Handlers\EventHandlerTests.cs" />
+    <Compile Include="Handlers\EventHandlerWithDependenciesTests.cs" />
     <Compile Include="MessageBus\EventPublisherTests.cs" />
     <Compile Include="MessageBus\CommandDispatcherTests.cs" />
     <Compile Include="MessageBus\Stubs\FirstTestEventHandler.cs" />
