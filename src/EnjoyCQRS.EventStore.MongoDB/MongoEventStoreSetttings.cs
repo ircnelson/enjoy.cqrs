@@ -20,11 +20,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
+
 namespace EnjoyCQRS.EventStore.MongoDB
 {
     public class MongoEventStoreSetttings
     {
         public string EventsCollectionName { get; set; } = "Events";
         public string SnapshotsCollectionName { get; set; } = "Snapshots";
+
+        internal void Validate()
+        {
+            if (string.IsNullOrWhiteSpace(EventsCollectionName))
+                throw new ArgumentNullException(nameof(EventsCollectionName));
+
+            if (string.IsNullOrWhiteSpace(SnapshotsCollectionName))
+                throw new ArgumentNullException(nameof(SnapshotsCollectionName));
+        }
     }
 }

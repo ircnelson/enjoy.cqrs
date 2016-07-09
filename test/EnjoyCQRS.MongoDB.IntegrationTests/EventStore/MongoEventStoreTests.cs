@@ -1,7 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using EnjoyCQRS.EventStore.MongoDB;
 using EnjoyCQRS.IntegrationTests.Shared.TestSuit;
 using FluentAssertions;
+using MongoDB.Driver;
 using MongoDB.Embedded;
 using Xunit;
 
@@ -13,6 +16,15 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
         public const string CategoryValue = "MongoDB";
 
         public const string DatabaseName = "test";
+
+        [Trait(CategoryName, CategoryValue)]
+        [Theory, MemberData(nameof(InvalidStates))]
+        public void Should_validate_constructor_parameters(MongoClient mongoClient, string database, MongoEventStoreSetttings setttings)
+        {
+            Action action = () => new MongoEventStore(mongoClient, database, setttings);
+
+            action.ShouldThrowExactly<ArgumentNullException>();
+        }
 
         [Trait(CategoryName, CategoryValue)]
         [Fact]
@@ -27,6 +39,23 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
                 eventStore.Setttings.EventsCollectionName.Should().Be(defaultSettings.EventsCollectionName);
                 eventStore.Setttings.SnapshotsCollectionName.Should().Be(defaultSettings.SnapshotsCollectionName);
             }
+        }
+
+        [Trait(CategoryName, CategoryValue)]
+        [Theory]
+        [InlineData("events", null)]
+        [InlineData(null, "snapshots")]
+        public void Should_validate_settings(string eventCollectionName, string snapshotCollectionName)
+        {
+            var defaultSettings = new MongoEventStoreSetttings
+            {
+                EventsCollectionName = eventCollectionName,
+                SnapshotsCollectionName = snapshotCollectionName
+            };
+            
+            Action action = () => new MongoEventStore(new MongoClient(), DatabaseName, defaultSettings);
+
+            action.ShouldThrowExactly<ArgumentNullException>();
         }
 
         [Trait(CategoryName, CategoryValue)]
@@ -104,5 +133,12 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
                 await eventStoreTestSuit.DoSomeProblemAsync();
             }
         }
+
+        public static IEnumerable<object[]> InvalidStates => new[]
+        {
+            new object[] { null, "dbname", new MongoEventStoreSetttings() },
+            new object[] { new MongoClient(), null, new MongoEventStoreSetttings() },
+            new object[] { new MongoClient(), "dbname", null }
+        };
     }
 }
