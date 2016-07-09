@@ -55,6 +55,7 @@
     <Compile Include="MongoCommitedEvent.cs" />
     <Compile Include="MongoCommitedSnapshot.cs" />
     <Compile Include="MongoEventStore.cs" />
+    <Compile Include="MongoEventStoreSetttings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SnapshotData.cs" />
   </ItemGroup>

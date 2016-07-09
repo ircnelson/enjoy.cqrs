@@ -38,15 +38,18 @@ namespace EnjoyCQRS.EventStore.MongoDB
         private readonly MongoClient _client;
         private readonly List<Event> _uncommitedEvents = new List<Event>();
         private readonly List<SnapshotData> _uncommitedSnapshots = new List<SnapshotData>();
-
-        private const string EventsCollectionName = "Events";
-        private const string SnapshotsCollectionName = "Snapshots";
-
+        
         public string Database { get; }
+        public MongoEventStoreSetttings Setttings { get; }
 
-        public MongoEventStore(MongoClient client, string database)
+        public MongoEventStore(MongoClient client, string database) : this(client, database, new MongoEventStoreSetttings())
+        {
+        }
+
+        public MongoEventStore(MongoClient client, string database, MongoEventStoreSetttings setttings)
         {
             Database = database;
+            Setttings = setttings;
             _client = client;
         }
 
@@ -61,7 +64,7 @@ namespace EnjoyCQRS.EventStore.MongoDB
         public async Task<ICommitedSnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
         {
             var db = _client.GetDatabase(Database);
-            var snapshotCollection = db.GetCollection<SnapshotData>(SnapshotsCollectionName);
+            var snapshotCollection = db.GetCollection<SnapshotData>(Setttings.SnapshotsCollectionName);
 
             var filter = Builders<SnapshotData>.Filter;
             var sort = Builders<SnapshotData>.Sort;
@@ -78,7 +81,7 @@ namespace EnjoyCQRS.EventStore.MongoDB
         public async Task<IEnumerable<ICommitedEvent>> GetEventsForwardAsync(Guid aggregateId, int version)
         {
             var db = _client.GetDatabase(Database);
-            var collection = db.GetCollection<Event>(EventsCollectionName);
+            var collection = db.GetCollection<Event>(Setttings.EventsCollectionName);
 
             var filter = Builders<Event>.Filter;
             var sort = Builders<Event>.Sort;
@@ -104,8 +107,8 @@ namespace EnjoyCQRS.EventStore.MongoDB
             if (_uncommitedEvents.Count == 0) return;
 
             var db = _client.GetDatabase(Database);
-            var eventCollection = db.GetCollection<Event>(EventsCollectionName);
-            var snapshotCollection = db.GetCollection<SnapshotData>(SnapshotsCollectionName);
+            var eventCollection = db.GetCollection<Event>(Setttings.EventsCollectionName);
+            var snapshotCollection = db.GetCollection<SnapshotData>(Setttings.SnapshotsCollectionName);
 
             if (_uncommitedSnapshots.Count > 0)
                 await snapshotCollection.InsertManyAsync(_uncommitedSnapshots);
@@ -126,7 +129,7 @@ namespace EnjoyCQRS.EventStore.MongoDB
         public async Task<IEnumerable<ICommitedEvent>> GetAllEventsAsync(Guid id)
         {
             var db = _client.GetDatabase(Database);
-            var collection = db.GetCollection<Event>(EventsCollectionName);
+            var collection = db.GetCollection<Event>(Setttings.EventsCollectionName);
 
             var events = await collection
                 .Find(Builders<Event>.Filter.Eq(x => x.AggregateId, id))

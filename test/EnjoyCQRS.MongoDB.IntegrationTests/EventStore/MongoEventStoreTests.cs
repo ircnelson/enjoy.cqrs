@@ -16,6 +16,40 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
 
         [Trait(CategoryName, CategoryValue)]
         [Fact]
+        public void Should_use_default_settings()
+        {
+            var defaultSettings = new MongoEventStoreSetttings();
+
+            using (EmbeddedMongoDbServer embeddedMongoDbServer = new EmbeddedMongoDbServer())
+            {
+                var eventStore = new MongoEventStore(embeddedMongoDbServer.Client, DatabaseName);
+
+                eventStore.Setttings.EventsCollectionName.Should().Be(defaultSettings.EventsCollectionName);
+                eventStore.Setttings.SnapshotsCollectionName.Should().Be(defaultSettings.SnapshotsCollectionName);
+            }
+        }
+
+        [Trait(CategoryName, CategoryValue)]
+        [Fact]
+        public void Should_use_custom_settings()
+        {
+            var customSettings = new MongoEventStoreSetttings
+            {
+                EventsCollectionName = "MyEvents",
+                SnapshotsCollectionName = "MySnapshots"
+            };
+
+            using (EmbeddedMongoDbServer embeddedMongoDbServer = new EmbeddedMongoDbServer())
+            {
+                var eventStore = new MongoEventStore(embeddedMongoDbServer.Client, DatabaseName, customSettings);
+
+                eventStore.Setttings.EventsCollectionName.Should().Be(customSettings.EventsCollectionName);
+                eventStore.Setttings.SnapshotsCollectionName.Should().Be(customSettings.SnapshotsCollectionName);
+            }
+        }
+
+        [Trait(CategoryName, CategoryValue)]
+        [Fact]
         public void Should_create_database()
         {
             using (EmbeddedMongoDbServer embeddedMongoDbServer = new EmbeddedMongoDbServer())
