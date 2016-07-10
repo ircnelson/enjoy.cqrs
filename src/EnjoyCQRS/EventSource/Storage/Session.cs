@@ -28,6 +28,7 @@ using EnjoyCQRS.Collections;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource.Exceptions;
 using EnjoyCQRS.EventSource.Snapshots;
+using EnjoyCQRS.Extensions;
 using EnjoyCQRS.Logger;
 using EnjoyCQRS.MessageBus;
 using EnjoyCQRS.MetadataProviders;
@@ -37,11 +38,11 @@ namespace EnjoyCQRS.EventSource.Storage
     public class Session : ISession
     {
         private readonly AggregateTracker _aggregateTracker = new AggregateTracker();
+        private readonly List<Aggregate> _aggregates = new List<Aggregate>();
         private readonly IEventStore _eventStore;
         private readonly IEventPublisher _eventPublisher;
         private readonly IEventSerializer _eventSerializer;
         private readonly ISnapshotSerializer _snapshotSerializer;
-        private readonly List<Aggregate> _aggregates = new List<Aggregate>();
         private readonly ISnapshotStrategy _snapshotStrategy;
         private readonly IEnumerable<IMetadataProvider> _metadataProviders;
         private readonly ILogger _logger;
@@ -218,22 +219,11 @@ namespace EnjoyCQRS.EventSource.Storage
 
                 foreach (var aggregate in _aggregates)
                 {
-                    var serializedEvents = aggregate.UncommitedEvents.Select((e, index) =>
-                    {
-                        index++;
-
-                        var metadatas = _metadataProviders.SelectMany(md => md.Provide(aggregate, e, Metadata.Empty)).Concat(new[]
-                            {
-                                new KeyValuePair<string, string>(MetadataKeys.EventId, Guid.NewGuid().ToString()),
-                                new KeyValuePair<string, string>(MetadataKeys.EventVersion, (aggregate.Version + index).ToString())
-                            });
-
-                        return _eventSerializer.Serialize(aggregate, e, new Metadata(metadatas));
-                    });
+                    var serializedEvents = aggregate.ToSerialized(_metadataProviders, _eventSerializer);
                     
                     if (_snapshotStrategy.ShouldMakeSnapshot(aggregate))
                     {
-                        await TakeSnapshot(aggregate).ConfigureAwait(false);
+                        await aggregate.TakeSnapshot(_eventStore, _snapshotSerializer).ConfigureAwait(false);
                     }
                     
                     await _eventStore.SaveAsync(serializedEvents).ConfigureAwait(false);
@@ -268,25 +258,7 @@ namespace EnjoyCQRS.EventSource.Storage
                 await _eventStore.CommitAsync().ConfigureAwait(false);
             }
         }
-
-        private async Task TakeSnapshot(Aggregate aggregate)
-        {
-            var snapshot = ((ISnapshotAggregate)aggregate).CreateSnapshot();
-
-            var metadatas = new[]
-            {
-                new KeyValuePair<string, string>(MetadataKeys.AggregateId, aggregate.Id.ToString()),
-                new KeyValuePair<string, string>(MetadataKeys.AggregateSequenceNumber, aggregate.Sequence.ToString()),
-                new KeyValuePair<string, string>(MetadataKeys.SnapshotId, Guid.NewGuid().ToString()),
-                new KeyValuePair<string, string>(MetadataKeys.SnapshotClrType, snapshot.GetType().AssemblyQualifiedName),
-                new KeyValuePair<string, string>(MetadataKeys.SnapshotName, snapshot.GetType().Name), 
-            };
-            
-            var serializedSnapshot = _snapshotSerializer.Serialize(aggregate, snapshot, metadatas);
-
-            await _eventStore.SaveSnapshotAsync(serializedSnapshot).ConfigureAwait(false);
-        }
-
+        
         /// <summary>
         /// Rollback <see cref="IEventPublisher"/>, <see cref="IEventStore"/> and remove aggregate tracking.
         /// </summary>

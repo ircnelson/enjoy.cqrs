@@ -58,6 +58,7 @@
     <Compile Include="EventSource\UnitOfWork.cs" />
     <Compile Include="Collections\CommitedDomainEventCollection.cs" />
     <Compile Include="Events\ICommitedEvent.cs" />
+    <Compile Include="Extensions\AggregateExtensions.cs" />
     <Compile Include="Extensions\DomainEventExtensions.cs" />
     <Compile Include="Logger\ILogger.cs" />
     <Compile Include="Logger\ILoggerFactory.cs" />
@@ -76,7 +77,6 @@
     <Compile Include="EventSource\SnapshotAggregate.cs" />
     <Compile Include="EventSource\Snapshots\ISnapshotAggregate.cs" />
     <Compile Include="MessageBus\ICommandDispatcher.cs" />
-    <Compile Include="Commands\TransactionalCommandHandler.cs" />
     <Compile Include="EventSource\Exceptions\AggregateNotFoundException.cs" />
     <Compile Include="MessageBus\IEventPublisher.cs" />
     <Compile Include="Commands\Command.cs" />
