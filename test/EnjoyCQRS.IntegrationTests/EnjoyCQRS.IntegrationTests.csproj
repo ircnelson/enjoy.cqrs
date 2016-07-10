@@ -79,7 +79,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Fixtures\MiniApplicationFixture.cs" />
-    <Compile Include="Extensions\CustomRegistrationExtensions.cs" />
     <Compile Include="Infrastructure\EventRouter.cs" />
     <Compile Include="MiniApplicationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

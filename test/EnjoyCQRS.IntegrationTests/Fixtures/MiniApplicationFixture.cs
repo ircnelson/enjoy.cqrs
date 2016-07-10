@@ -6,7 +6,6 @@ using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;
-using EnjoyCQRS.IntegrationTests.Extensions;
 using EnjoyCQRS.IntegrationTests.Infrastructure;
 using EnjoyCQRS.IntegrationTests.Shared;
 using EnjoyCQRS.IntegrationTests.Shared.TestSuit;
@@ -46,24 +45,19 @@ namespace EnjoyCQRS.IntegrationTests.Fixtures
                     EventStore = args.Instance;
                 });
 
-            var assemblyCommandHandlers = typeof (FooAssembler).Assembly;
+            var assemblySharedHandlers = typeof (FooAssembler).Assembly;
 
             // Command handlers
             var genericCommandHandler = typeof (ICommandHandler<>);
 
-
-            builder.RegisterAssemblyTypes(assemblyCommandHandlers)
-                .AsNamedClosedTypesOf(genericCommandHandler, t => "uowCmdHandler");
-
-            builder.RegisterGenericDecorator(
-                typeof(TransactionalCommandHandler<>),
-                genericCommandHandler,
-                fromKey: "uowCmdHandler");
+            builder.RegisterAssemblyTypes(assemblySharedHandlers)
+                   .AsClosedTypesOf(genericCommandHandler)
+                   .AsImplementedInterfaces();
 
             // Event handlers
             var genericEventHandler = typeof(IEventHandler<>);
 
-            builder.RegisterAssemblyTypes(assemblyCommandHandlers)
+            builder.RegisterAssemblyTypes(assemblySharedHandlers)
                    .AsClosedTypesOf(genericEventHandler)
                    .AsImplementedInterfaces();
             

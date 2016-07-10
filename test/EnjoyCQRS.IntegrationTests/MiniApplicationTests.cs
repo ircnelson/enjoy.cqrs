@@ -124,8 +124,11 @@ namespace EnjoyCQRS.IntegrationTests
         private async void DoDispatch(ILifetimeScope scope, ICommand command)
         {
             var commandDispatcher = scope.Resolve<ICommandDispatcher>();
+            var unitOfWork = scope.Resolve<IUnitOfWork>();
 
             await commandDispatcher.DispatchAsync(command).ConfigureAwait(false);
+            
+            await unitOfWork.CommitAsync();
         }
     }
 }
