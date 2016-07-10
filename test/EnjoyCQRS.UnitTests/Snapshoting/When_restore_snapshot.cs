@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.UnitTests.Domain.Stubs;
 using FluentAssertions;
@@ -16,15 +18,16 @@ namespace EnjoyCQRS.UnitTests.Snapshoting
 
         public When_restore_snapshot()
         {
+            var aggregateId = Guid.NewGuid();
+            var version = 1;
+
             _snapshot = new StubSnapshotAggregateSnapshot
             {
-                AggregateId = Guid.NewGuid(),
                 Name = "Coringa",
-                Version = 1
             };
-
+            
             _stubAggregate = new StubSnapshotAggregate();
-            ((ISnapshotAggregate)_stubAggregate).Restore(_snapshot);
+            ((ISnapshotAggregate)_stubAggregate).Restore(new SnapshotRestore(aggregateId, version, _snapshot, EventSource.Metadata.Empty));
         }
 
         [Trait(CategoryName, CategoryValue)]
@@ -33,7 +36,7 @@ namespace EnjoyCQRS.UnitTests.Snapshoting
         {
             _stubAggregate.Name.Should().Be(_snapshot.Name);
 
-            _stubAggregate.Version.Should().Be(_snapshot.Version);
+            _stubAggregate.Version.Should().Be(1);
         }
     }
 }

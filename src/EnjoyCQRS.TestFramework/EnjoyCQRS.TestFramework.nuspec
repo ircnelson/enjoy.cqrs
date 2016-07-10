@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>EnjoyCQRS.TestFramework</id>
-    <version>1.1.0</version>
+    <version>2.0.0</version>
     <title>EnjoyCQRS.TestFramework</title>
     <authors>ircnelson</authors>
     <owners>ircnelson</owners>
@@ -15,7 +15,7 @@
     <tags>.NET CQRS EventSource EventSourcing</tags>
     <dependencies>
       <group targetFramework="net461">
-        <dependency id="Moq" version="4.5.8" />
+        <dependency id="Moq" version="4.5.10" />
       </group>
     </dependencies>
   </metadata>

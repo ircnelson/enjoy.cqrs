@@ -10,6 +10,10 @@ namespace EnjoyCQRS.UnitTests.Storage
 {
     public class UnitOfWorkTests
     {
+        public const string CategoryName = "Unit";
+        public const string CategoryValue = "Unit of work";
+
+        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public void Should_call_Rollback()
         {

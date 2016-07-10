@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using System;
+using System.Linq;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using EnjoyCQRS.EventSource.Storage;
@@ -11,36 +13,60 @@ namespace EnjoyCQRS.Owin.IntegrationTests
 {
     public class FooWritableTests
     {
+        public const string CategoryName = "Integration";
+        public const string CategoryValue = "Owin";
+
+        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public async Task Should_create_foo()
         {
-            var eventStore = new StubEventStore();
-            var server = TestServerFactory(eventStore);
+            var eventStore = new InMemoryEventStore();
 
-            await server.CreateRequest("/command/foo").PostAsync();
-
-            eventStore.Events.Keys.Count.Should().Be(1);
-        }
-
-        [Fact]
-        public async Task Should_do_something()
-        {
-            var eventStore = new StubEventStore();
             var server = TestServerFactory(eventStore);
 
             var response = await server.CreateRequest("/command/foo").PostAsync();
 
             var result = await response.Content.ReadAsStringAsync();
+            
+            var aggregateId = ExtractAggregateIdFromResponseContent(result);
 
-            var match = Regex.Match(result, "{\"AggregateId\":\"(.*)\"}", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+            InMemoryEventStore.Events.Count(e => e.AggregateId == aggregateId).Should().Be(1);
+        }
 
-            var aggregateId = match.Groups[1].Value;
+        [Trait(CategoryName, CategoryValue)]
+        [Fact]
+        public async Task Should_do_something()
+        {
+            var eventStore = new InMemoryEventStore();
+
+            var server = TestServerFactory(eventStore);
+
+            var response = await server.CreateRequest("/command/foo").PostAsync();
+
+            var result = await response.Content.ReadAsStringAsync();
+            
+            var aggregateId = ExtractAggregateIdFromResponseContent(result);
 
             response = await server.CreateRequest($"/command/foo/{aggregateId}/doSomething").PostAsync();
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            
-            aggregateId.Should().NotBeNullOrWhiteSpace();
+
+            aggregateId.Should().NotBeEmpty();
+        }
+
+        [Trait(CategoryName, CategoryValue)]
+        [Fact]
+        public async Task Should_emit_many_events()
+        {
+            var eventStore = new InMemoryEventStore();
+
+            var server = TestServerFactory(eventStore);
+
+            var response = await server.CreateRequest("/command/foo/flood/4").PostAsync();
+
+            InMemoryEventStore.Events.Count.Should().Be(4);
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
         private TestServer TestServerFactory(IEventStore eventStore)
@@ -53,6 +79,15 @@ namespace EnjoyCQRS.Owin.IntegrationTests
             var testServer = TestServer.Create(startup.Configuration);
 
             return testServer;
+        }
+
+        private Guid ExtractAggregateIdFromResponseContent(string content)
+        {
+            var match = Regex.Match(content, "{\"AggregateId\":\"(.*)\"}", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+            var aggregateId = match.Groups[1].Value;
+
+            return Guid.Parse(aggregateId);
         }
     }
 }

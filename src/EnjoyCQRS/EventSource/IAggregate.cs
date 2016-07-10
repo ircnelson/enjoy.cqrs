@@ -30,7 +30,7 @@ namespace EnjoyCQRS.EventSource
     public interface IAggregate
     {
         Guid Id { get; }
-        int EventVersion { get; }
+        int Sequence { get; }
         IReadOnlyCollection<IDomainEvent> UncommitedEvents { get; }
         int Version { get; }
         void ClearUncommitedEvents();

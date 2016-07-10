@@ -22,7 +22,6 @@
 
 using System;
 using System.Threading.Tasks;
-using EnjoyCQRS.EventSource.Snapshots;
 
 namespace EnjoyCQRS.EventSource.Storage
 {

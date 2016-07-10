@@ -30,19 +30,16 @@ namespace EnjoyCQRS.EventSource
         ISnapshot ISnapshotAggregate.CreateSnapshot()
         {
             var snapshot = CreateSnapshot();
-
-            snapshot.AggregateId = Id;
-            snapshot.Version = EventVersion;
-
+            
             return snapshot;
         }
 
-        void ISnapshotAggregate.Restore(ISnapshot snapshot)
+        void ISnapshotAggregate.Restore(ISnapshotRestore snapshotRestore)
         {
-            Id = snapshot.AggregateId;
-            Version = snapshot.Version;
+            Id = snapshotRestore.AggregateId;
+            Version = snapshotRestore.AggregateVersion;
 
-            RestoreFromSnapshot((TSnapshot)snapshot);
+            RestoreFromSnapshot((TSnapshot)snapshotRestore.Snapshot);
         }
         
         protected abstract TSnapshot CreateSnapshot();
