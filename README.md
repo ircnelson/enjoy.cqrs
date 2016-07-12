@@ -7,12 +7,8 @@
 | dev           | [![CoverageStatus](https://coveralls.io/repos/github/ircnelson/enjoy.cqrs/badge.svg?branch=dev)](https://coveralls.io/github/ircnelson/enjoy.cqrs?branch=dev)       |
 
 # eNJoy CQRS + Event Sourcing
-The motivation to create this project was born through the curiosity about CQRS (Command Query Responsibility Separation) & Event Sourcing architecture.
-
-I'm tired to build software using classical architecture, then I decided to start adventure in this world.
-The new way of thinking about the area where everything occurs are events, like a timeline in real life is very cool and different!
-
-Obviously, have much paradigms and fears that should be left over the long of the time, but never is too late.
+This framework can help you with two things together and easy. 
+First, your entities could use event sourcing technique. The second one you could use Command Query Segregation Responsability (CQRS) pattern. 
 
 Any suggestion is welcome.
 
@@ -24,6 +20,12 @@ Any suggestion is welcome.
 * Event publisher
 * Event Store abstraction
 * Snapshot (custom strategy implementation)
+* Custom events metadata
+
+## Event store implementations
+
+* MongoDB: Install-Package EnjoyCQRS.EventStore.MongoDB
+* SQLite: Install-Package EnjoyCQRS.EventStore.SQLite
 
 ## Architecture
 
