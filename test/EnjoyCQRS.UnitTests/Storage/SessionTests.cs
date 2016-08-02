@@ -212,7 +212,7 @@ namespace EnjoyCQRS.UnitTests.Storage
         }
 
         [Trait(CategoryName, CategoryValue)]
-        [Then]
+        [Fact]
         public async Task When_not_exists_snapshot_yet_Then_aggregate_should_be_constructed_using_your_events()
         {
             var snapshotStrategy = CreateSnapshotStrategy(false);
