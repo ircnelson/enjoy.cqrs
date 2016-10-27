@@ -49,7 +49,7 @@ namespace EnjoyCQRS.EventSource.Storage
 
         private bool _externalTransaction;
 
-        protected IReadOnlyList<Aggregate> Aggregates => _aggregates.AsReadOnly();
+        public IReadOnlyList<Aggregate> Aggregates => _aggregates.AsReadOnly();
 
         public Session(
             ILoggerFactory loggerFactory, 
@@ -221,16 +221,22 @@ namespace EnjoyCQRS.EventSource.Storage
 
                 foreach (var aggregate in _aggregates)
                 {
+                    _logger.Log(LogLevel.Information, "Serializing events.");
+
                     var serializedEvents = aggregate.ToSerialized(_metadataProviders, _eventSerializer);
                     
                     if (_snapshotStrategy.ShouldMakeSnapshot(aggregate))
                     {
+                        _logger.Log(LogLevel.Information, "Taking aggregate's snapshot.");
+
                         await aggregate.TakeSnapshot(_eventStore, _snapshotSerializer).ConfigureAwait(false);
                     }
                     
                     await _eventStore.SaveAsync(serializedEvents).ConfigureAwait(false);
-
+                    
                     await _eventPublisher.PublishAsync<IDomainEvent>(aggregate.UncommitedEvents).ConfigureAwait(false);
+
+                    _logger.Log(LogLevel.Information, $"Update aggregate's version from {aggregate.Version} to {aggregate.Sequence}.");
 
                     aggregate.UpdateVersion(aggregate.Sequence);
 
