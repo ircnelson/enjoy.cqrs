@@ -140,9 +140,9 @@
       <Project>{7CEDD8F7-210D-44FC-B690-9079AF5A12DF}</Project>
       <Name>EnjoyCQRS</Name>
     </ProjectReference>
-    <ProjectReference Include="..\EnjoyCQRS.IntegrationTests.Shared\EnjoyCQRS.IntegrationTests.Shared.csproj">
-      <Project>{A7982FC7-1BAB-4ED6-99AE-FACE5E10F5C7}</Project>
-      <Name>EnjoyCQRS.IntegrationTests.Shared</Name>
+    <ProjectReference Include="..\EnjoyCQRS.UnitTests.Shared\EnjoyCQRS.UnitTests.Shared.csproj">
+      <Project>{a7982fc7-1bab-4ed6-99ae-face5e10f5c7}</Project>
+      <Name>EnjoyCQRS.UnitTests.Shared</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

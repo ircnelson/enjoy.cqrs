@@ -6,12 +6,12 @@ using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;
 using EnjoyCQRS.IntegrationTests.Fixtures;
-using EnjoyCQRS.IntegrationTests.Shared.StubApplication.Commands.BarAggregate;
-using EnjoyCQRS.IntegrationTests.Shared.StubApplication.Commands.FooAggregate;
-using EnjoyCQRS.IntegrationTests.Shared.StubApplication.Domain.BarAggregate;
-using EnjoyCQRS.IntegrationTests.Shared.StubApplication.Domain.FooAggregate;
-using EnjoyCQRS.IntegrationTests.Shared.TestSuit;
 using EnjoyCQRS.MessageBus;
+using EnjoyCQRS.UnitTests.Shared.StubApplication.Commands.BarAggregate;
+using EnjoyCQRS.UnitTests.Shared.StubApplication.Commands.FooAggregate;
+using EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.BarAggregate;
+using EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.FooAggregate;
+using EnjoyCQRS.UnitTests.Shared.TestSuit;
 using FluentAssertions;
 using Xunit;
 

@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using EnjoyCQRS.EventStore.SQLite;
-using EnjoyCQRS.IntegrationTests.Shared.TestSuit;
+using EnjoyCQRS.UnitTests.Shared.TestSuit;
 using FluentAssertions;
 using Xunit;
 

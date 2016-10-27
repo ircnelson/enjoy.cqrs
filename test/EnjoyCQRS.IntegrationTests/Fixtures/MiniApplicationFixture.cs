@@ -7,11 +7,11 @@ using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;
 using EnjoyCQRS.IntegrationTests.Infrastructure;
-using EnjoyCQRS.IntegrationTests.Shared;
-using EnjoyCQRS.IntegrationTests.Shared.TestSuit;
 using EnjoyCQRS.Logger;
 using EnjoyCQRS.MessageBus;
 using EnjoyCQRS.MessageBus.InProcess;
+using EnjoyCQRS.UnitTests.Shared;
+using EnjoyCQRS.UnitTests.Shared.TestSuit;
 
 namespace EnjoyCQRS.IntegrationTests.Fixtures
 {

@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource;
-using EnjoyCQRS.IntegrationTests.Shared;
-using EnjoyCQRS.IntegrationTests.Shared.StubApplication.Domain.BarAggregate;
+using EnjoyCQRS.UnitTests.Shared;
+using EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.BarAggregate;
 using FluentAssertions;
 using Moq;
 using Xunit;

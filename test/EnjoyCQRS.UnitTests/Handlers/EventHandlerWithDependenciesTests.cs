@@ -1,6 +1,6 @@
 ﻿using System;
-using EnjoyCQRS.IntegrationTests.Shared.StubApplication.Domain;
-using EnjoyCQRS.IntegrationTests.Shared.StubApplication.EventHandlers;
+using EnjoyCQRS.UnitTests.Shared.StubApplication.Domain;
+using EnjoyCQRS.UnitTests.Shared.StubApplication.EventHandlers;
 using EnjoyCQRS.TestFramework;
 using FluentAssertions;
 using Moq;

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using EnjoyCQRS.EventStore.MongoDB;
-using EnjoyCQRS.IntegrationTests.Shared.TestSuit;
+using EnjoyCQRS.UnitTests.Shared.TestSuit;
 using FluentAssertions;
 using MongoDB.Driver;
 using MongoDB.Embedded;

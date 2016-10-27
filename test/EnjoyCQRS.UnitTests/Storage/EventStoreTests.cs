@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Storage;
-using EnjoyCQRS.IntegrationTests.Shared;
+using EnjoyCQRS.UnitTests.Shared;
 using EnjoyCQRS.Logger;
 using EnjoyCQRS.MessageBus;
 using EnjoyCQRS.UnitTests.Domain.Stubs;

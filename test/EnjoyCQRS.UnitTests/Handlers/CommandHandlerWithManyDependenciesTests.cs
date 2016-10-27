@@ -1,7 +1,7 @@
 ﻿using System;
-using EnjoyCQRS.IntegrationTests.Shared.StubApplication.Commands.BarAggregate;
-using EnjoyCQRS.IntegrationTests.Shared.StubApplication.Domain;
-using EnjoyCQRS.IntegrationTests.Shared.StubApplication.Domain.BarAggregate;
+using EnjoyCQRS.UnitTests.Shared.StubApplication.Commands.BarAggregate;
+using EnjoyCQRS.UnitTests.Shared.StubApplication.Domain;
+using EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.BarAggregate;
 using EnjoyCQRS.TestFramework;
 using FluentAssertions;
 using Moq;

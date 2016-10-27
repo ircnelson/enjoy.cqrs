@@ -7,7 +7,7 @@ using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Exceptions;
 using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;
-using EnjoyCQRS.IntegrationTests.Shared;
+using EnjoyCQRS.UnitTests.Shared;
 using EnjoyCQRS.Logger;
 using EnjoyCQRS.MessageBus;
 using EnjoyCQRS.UnitTests.Domain.Stubs;
