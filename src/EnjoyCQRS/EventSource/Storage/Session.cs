@@ -49,6 +49,8 @@ namespace EnjoyCQRS.EventSource.Storage
 
         private bool _externalTransaction;
 
+        protected IReadOnlyList<Aggregate> Aggregates => _aggregates.AsReadOnly();
+
         public Session(
             ILoggerFactory loggerFactory, 
             IEventStore eventStore, 
