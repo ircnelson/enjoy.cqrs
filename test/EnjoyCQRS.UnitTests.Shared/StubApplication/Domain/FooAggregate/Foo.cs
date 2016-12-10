@@ -5,8 +5,6 @@ namespace EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.FooAggregate
 {
     public class Foo : SnapshotAggregate<FooSnapshot>
     {
-        public string FullName => $"{FirstName} {LastName}";
-
         public string FirstName { get; private set; }
         public string LastName { get; private set; }
         public int DidSomethingCounter { get; private set; }
