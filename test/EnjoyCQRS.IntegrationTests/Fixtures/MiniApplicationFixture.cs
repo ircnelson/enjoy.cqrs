@@ -37,6 +37,7 @@ namespace EnjoyCQRS.IntegrationTests.Fixtures
             builder.RegisterType<SnapshotSerializer>().As<ISnapshotSerializer>();
             builder.RegisterType<JsonTextSerializer>().As<ITextSerializer>();
             builder.RegisterType<NoopLoggerFactory>().As<ILoggerFactory>().InstancePerLifetimeScope();
+            builder.RegisterType<EventUpdateManager>().As<IEventUpdateManager>().SingleInstance();
 
             builder.Register(c => new EventStoreWrapper(new InMemoryEventStore()))
                 .As<IEventStore>()

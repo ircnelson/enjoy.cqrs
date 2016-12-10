@@ -36,6 +36,7 @@ namespace EnjoyCQRS.Owin.IntegrationTests.Infrastructure
             builder.RegisterType<EventSerializer>().As<IEventSerializer>();
             builder.RegisterType<SnapshotSerializer>().As<ISnapshotSerializer>();
             builder.RegisterType<JsonTextSerializer>().As<ITextSerializer>();
+            builder.RegisterType<EventUpdateManager>().As<IEventUpdateManager>().SingleInstance();
 
             builder.Register(c => EventStore).As<IEventStore>();
             

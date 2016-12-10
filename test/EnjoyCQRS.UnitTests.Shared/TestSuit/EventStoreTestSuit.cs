@@ -94,14 +94,14 @@ namespace EnjoyCQRS.UnitTests.Shared.TestSuit
 
         private ISession CreateSession()
         {
-            var session = new Session(new NoopLoggerFactory(), _eventStore, new EventPublisher(StubEventRouter.Ok()), new EventSerializer(new JsonTextSerializer()), new SnapshotSerializer(new JsonTextSerializer()), null, new IntervalSnapshotStrategy(10));
+            var session = new Session(new NoopLoggerFactory(), _eventStore, new EventPublisher(StubEventRouter.Ok()), new EventSerializer(new JsonTextSerializer()), new SnapshotSerializer(new JsonTextSerializer()), null, null, new IntervalSnapshotStrategy(10));
 
             return session;
         }
 
         private ISession CreateFaultSession()
         {
-            var faultSession = new Session(new NoopLoggerFactory(), _eventStore, new EventPublisher(StubEventRouter.Fault()), new EventSerializer(new JsonTextSerializer()), new SnapshotSerializer(new JsonTextSerializer()), null, new IntervalSnapshotStrategy(10));
+            var faultSession = new Session(new NoopLoggerFactory(), _eventStore, new EventPublisher(StubEventRouter.Fault()), new EventSerializer(new JsonTextSerializer()), new SnapshotSerializer(new JsonTextSerializer()), null, null, new IntervalSnapshotStrategy(10));
 
             return faultSession;
         }

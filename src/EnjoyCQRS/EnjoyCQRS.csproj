@@ -40,6 +40,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\EventNameAttribute.cs" />
+    <Compile Include="Core\IEventUpdate.cs" />
+    <Compile Include="Core\IEventUpdateManager.cs" />
     <Compile Include="Core\ITextSerializer.cs" />
     <Compile Include="EventSource\EventSerializer.cs" />
     <Compile Include="EventSource\IEventSerializer.cs" />

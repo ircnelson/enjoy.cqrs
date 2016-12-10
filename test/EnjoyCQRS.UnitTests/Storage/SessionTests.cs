@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EnjoyCQRS.Core;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Exceptions;
@@ -27,7 +28,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             var eventSerializer = CreateEventSerializer();
             var snapshotSerializer = CreateSnapshotSerializer();
 
-            var session = new Session(CreateLoggerFactory(CreateLoggerMock().Object), eventStore, eventPublisher, eventSerializer, snapshotSerializer, null, snapshotStrategy);
+            var session = new Session(CreateLoggerFactory(CreateLoggerMock().Object), eventStore, eventPublisher, eventSerializer, snapshotSerializer, null, null, snapshotStrategy);
 
             return session;
         };
@@ -50,9 +51,10 @@ namespace EnjoyCQRS.UnitTests.Storage
             var eventStore = Mock.Of<IEventStore>();
             var eventSerializer = Mock.Of<IEventSerializer>();
             var snapshotSerializer = Mock.Of<ISnapshotSerializer>();
+            var eventUpdateManager = Mock.Of<IEventUpdateManager>();
             var metadataProviders = Mock.Of<IEnumerable<IMetadataProvider>>();
 
-            Action act = () => new Session(null, eventStore, eventPublisher, eventSerializer, snapshotSerializer, metadataProviders);
+            Action act = () => new Session(null, eventStore, eventPublisher, eventSerializer, snapshotSerializer, eventUpdateManager, metadataProviders);
 
             act.ShouldThrowExactly<ArgumentNullException>();
         }
@@ -64,9 +66,10 @@ namespace EnjoyCQRS.UnitTests.Storage
             var snapshotSerializer = Mock.Of<ISnapshotSerializer>();
             var eventSerializer = Mock.Of<IEventSerializer>();
             var eventPublisher = Mock.Of<IEventPublisher>();
+            var eventUpdateManager = Mock.Of<IEventUpdateManager>();
             var metadataProviders = Mock.Of<IEnumerable<IMetadataProvider>>();
 
-            Action act = () => new Session(CreateLoggerFactory(CreateLoggerMock().Object), null, eventPublisher, eventSerializer, snapshotSerializer, metadataProviders);
+            Action act = () => new Session(CreateLoggerFactory(CreateLoggerMock().Object), null, eventPublisher, eventSerializer, snapshotSerializer, eventUpdateManager, metadataProviders);
 
             act.ShouldThrowExactly<ArgumentNullException>();
         }
@@ -78,9 +81,10 @@ namespace EnjoyCQRS.UnitTests.Storage
             var eventStore = Mock.Of<IEventStore>();
             var eventSerializer = Mock.Of<IEventSerializer>();
             var snapshotSerializer = Mock.Of<ISnapshotSerializer>();
+            var eventUpdateManager = Mock.Of<IEventUpdateManager>();
             var metadataProviders = Mock.Of<IEnumerable<IMetadataProvider>>();
 
-            Action act = () => new Session(CreateLoggerFactory(CreateLoggerMock().Object), eventStore, null, eventSerializer, snapshotSerializer, metadataProviders);
+            Action act = () => new Session(CreateLoggerFactory(CreateLoggerMock().Object), eventStore, null, eventSerializer, snapshotSerializer, eventUpdateManager, metadataProviders);
 
             act.ShouldThrowExactly<ArgumentNullException>();
         }

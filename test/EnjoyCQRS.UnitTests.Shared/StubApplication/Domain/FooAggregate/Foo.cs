@@ -5,6 +5,10 @@ namespace EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.FooAggregate
 {
     public class Foo : SnapshotAggregate<FooSnapshot>
     {
+        public string FullName => $"{FirstName} {LastName}";
+
+        public string FirstName { get; private set; }
+        public string LastName { get; private set; }
         public int DidSomethingCounter { get; private set; }
 
         public Foo()
@@ -14,6 +18,11 @@ namespace EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.FooAggregate
         public Foo(Guid id)
         {
             Emit(new FooCreated(id));
+        }
+
+        public void ChangeName(string firstname, string lastname)
+        {
+            Emit(new FullNameChanged(Id, firstname, lastname));
         }
 
         public void DoSomething()
@@ -31,6 +40,12 @@ namespace EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.FooAggregate
             SubscribeTo<DidSomething>(e =>
             {
                 DidSomethingCounter += 1;
+            });
+
+            SubscribeTo<FullNameChanged>(e =>
+            {
+                FirstName = e.FirstName;
+                LastName = e.LastName;
             });
         }
 

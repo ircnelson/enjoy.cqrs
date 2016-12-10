@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EnjoyCQRS.Collections;
+using EnjoyCQRS.Core;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource.Exceptions;
 using EnjoyCQRS.EventSource.Snapshots;
@@ -43,6 +44,7 @@ namespace EnjoyCQRS.EventSource.Storage
         private readonly IEventPublisher _eventPublisher;
         private readonly IEventSerializer _eventSerializer;
         private readonly ISnapshotSerializer _snapshotSerializer;
+        private readonly IEventUpdateManager _eventUpdateManager;
         private readonly ISnapshotStrategy _snapshotStrategy;
         private readonly IEnumerable<IMetadataProvider> _metadataProviders;
         private readonly ILogger _logger;
@@ -57,13 +59,14 @@ namespace EnjoyCQRS.EventSource.Storage
             IEventPublisher eventPublisher, 
             IEventSerializer eventSerializer,
             ISnapshotSerializer snapshotSerializer,
+            IEventUpdateManager eventUpdateManager = null,
             IEnumerable<IMetadataProvider> metadataProviders = null,
             ISnapshotStrategy snapshotStrategy = null)
         {
             if (loggerFactory == null) throw new ArgumentNullException(nameof(loggerFactory));
             if (eventStore == null) throw new ArgumentNullException(nameof(eventStore));
             if (eventPublisher == null) throw new ArgumentNullException(nameof(eventPublisher));
-            
+
             if (metadataProviders == null) metadataProviders = Enumerable.Empty<IMetadataProvider>();
 
             metadataProviders = metadataProviders.Concat(new IMetadataProvider[]
@@ -84,6 +87,7 @@ namespace EnjoyCQRS.EventSource.Storage
             _eventStore = eventStore;
             _eventSerializer = eventSerializer;
             _snapshotSerializer = snapshotSerializer;
+            _eventUpdateManager = eventUpdateManager;
             _metadataProviders = metadataProviders;
             _eventPublisher = eventPublisher;
         }
@@ -322,6 +326,13 @@ namespace EnjoyCQRS.EventSource.Storage
             if (flatten.Any())
             {
                 var events = flatten.Select(_eventSerializer.Deserialize);
+
+                if (_eventUpdateManager != null)
+                {
+                    _logger.Log(LogLevel.Debug, "Calling Update Manager");
+
+                    events = _eventUpdateManager.Update(events);
+                }
 
                 aggregate.LoadFromHistory(new CommitedDomainEventCollection(events));
 

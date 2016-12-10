@@ -69,6 +69,7 @@
     <Compile Include="StubApplication\Domain\FooAggregate\Foo.cs" />
     <Compile Include="StubApplication\Domain\FooAggregate\FooCreated.cs" />
     <Compile Include="StubApplication\Domain\FooAggregate\FooSnapshot.cs" />
+    <Compile Include="StubApplication\Domain\FooAggregate\FullNameChanged.cs" />
     <Compile Include="StubApplication\Domain\IBooleanService.cs" />
     <Compile Include="StubApplication\Domain\IStringService.cs" />
     <Compile Include="StubApplication\EventHandlers\FooCreatedHandler.cs" />
