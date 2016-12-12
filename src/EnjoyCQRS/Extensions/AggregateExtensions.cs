@@ -39,13 +39,13 @@ namespace EnjoyCQRS.Extensions
                 index++;
 
                 var metadatas =
-                    metadataProviders.SelectMany(md => md.Provide(aggregate, e, Metadata.Empty)).Concat(new[]
+                    metadataProviders.SelectMany(md => md.Provide(aggregate, e.OriginalEvent, Metadata.Empty)).Concat(new[]
                     {
                         new KeyValuePair<string, string>(MetadataKeys.EventId, Guid.NewGuid().ToString()),
                         new KeyValuePair<string, string>(MetadataKeys.EventVersion, (aggregate.Version + index).ToString())
                     });
 
-                return eventSerializer.Serialize(aggregate, e, new Metadata(metadatas));
+                return eventSerializer.Serialize(aggregate, e.OriginalEvent, new Metadata(metadatas));
             });
 
             return serializedEvents;

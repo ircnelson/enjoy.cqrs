@@ -12,6 +12,7 @@ using EnjoyCQRS.UnitTests.Shared;
 using EnjoyCQRS.Logger;
 using EnjoyCQRS.MessageBus;
 using EnjoyCQRS.UnitTests.Domain.Stubs;
+using EnjoyCQRS.UnitTests.Domain.Stubs.Events;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -142,6 +143,50 @@ namespace EnjoyCQRS.UnitTests.Storage
             stubAggregate2.ChangeName("More changes");
 
             stubAggregate1.Should().BeSameAs(stubAggregate2);
+        }
+
+        [Trait(CategoryName, CategoryValue)]
+        [Fact]
+        public async Task Should_publish_in_correct_order()
+        {
+            var events = new List<IDomainEvent>();
+
+            var eventStore = new InMemoryEventStore();
+
+            _eventPublisherMock.Setup(e => e.PublishAsync(It.IsAny<IEnumerable<IDomainEvent>>())).Callback<IEnumerable<IDomainEvent>>(evts => events.AddRange(evts)).Returns(Task.CompletedTask);
+
+            _eventPublisherMock.Setup(e => e.CommitAsync()).Returns(Task.CompletedTask);
+
+            var session = _sessionFactory(eventStore, _eventPublisherMock.Object, null);
+
+            var stubAggregate1 = StubAggregate.Create("Walter White");
+            var stubAggregate2 = AnotherStubAggregate.Create("Heinsenberg");
+
+            stubAggregate1.ChangeName("Saul Goodman");
+
+            stubAggregate2.Relationship(stubAggregate1.Id);
+
+            stubAggregate1.ChangeName("Jesse Pinkman");
+
+            await session.AddAsync(stubAggregate1).ConfigureAwait(false);
+            await session.AddAsync(stubAggregate2).ConfigureAwait(false);
+
+            await session.SaveChangesAsync().ConfigureAwait(false);
+
+            events[0].Should().BeOfType<StubAggregateCreatedEvent>().Which.AggregateId.Should().Be(stubAggregate1.Id);
+            events[0].Should().BeOfType<StubAggregateCreatedEvent>().Which.Name.Should().Be("Walter White");
+
+            events[1].Should().BeOfType<StubAggregateCreatedEvent>().Which.AggregateId.Should().Be(stubAggregate2.Id);
+            events[1].Should().BeOfType<StubAggregateCreatedEvent>().Which.Name.Should().Be("Heinsenberg");
+
+            events[2].Should().BeOfType<NameChangedEvent>().Which.AggregateId.Should().Be(stubAggregate1.Id);
+            events[2].Should().BeOfType<NameChangedEvent>().Which.Name.Should().Be("Saul Goodman");
+
+            events[3].Should().BeOfType<StubAggregateRelatedEvent>().Which.AggregateId.Should().Be(stubAggregate2.Id);
+            events[3].Should().BeOfType<StubAggregateRelatedEvent>().Which.StubAggregateId.Should().Be(stubAggregate1.Id);
+
+            events[4].Should().BeOfType<NameChangedEvent>().Which.AggregateId.Should().Be(stubAggregate1.Id);
+            events[4].Should().BeOfType<NameChangedEvent>().Which.Name.Should().Be("Jesse Pinkman");
         }
 
         [Trait(CategoryName, CategoryValue)]

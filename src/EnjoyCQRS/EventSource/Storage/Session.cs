@@ -207,7 +207,7 @@ namespace EnjoyCQRS.EventSource.Storage
         }
 
         /// <summary>
-        /// Call <see cref="IEventStore.SaveAsync"/> in <see cref="IEventStore"/> passing aggregates.
+        /// Call <see cref="IEventStore.SaveAsync"/> in <see cref="IEventStore"/> passing serialized events.
         /// </summary>
         public virtual async Task SaveChangesAsync()
         {
@@ -223,6 +223,8 @@ namespace EnjoyCQRS.EventSource.Storage
             {
                 _logger.Log(LogLevel.Information, "Begin iterate in collection of aggregate.");
 
+                var orderedEvents = _aggregates.SelectMany(e => e.UncommitedEvents).OrderBy(o => o.CreatedAt).Select(e => e.OriginalEvent).ToList();
+                
                 foreach (var aggregate in _aggregates)
                 {
                     _logger.Log(LogLevel.Information, "Serializing events.");
@@ -238,8 +240,6 @@ namespace EnjoyCQRS.EventSource.Storage
                     
                     await _eventStore.SaveAsync(serializedEvents).ConfigureAwait(false);
                     
-                    await _eventPublisher.PublishAsync<IDomainEvent>(aggregate.UncommitedEvents).ConfigureAwait(false);
-
                     _logger.Log(LogLevel.Information, $"Update aggregate's version from {aggregate.Version} to {aggregate.Sequence}.");
 
                     aggregate.UpdateVersion(aggregate.Sequence);
@@ -249,8 +249,14 @@ namespace EnjoyCQRS.EventSource.Storage
 
                 _logger.Log(LogLevel.Information, "End iterate.");
 
-                _aggregates.Clear();
+                _logger.Log(LogLevel.Information, $"Publishing events. [Qty: {orderedEvents.Count()}]");
 
+                await _eventPublisher.PublishAsync(orderedEvents.AsEnumerable()).ConfigureAwait(false);
+
+                _logger.Log(LogLevel.Information, "Published events.");
+
+                _aggregates.Clear();
+                
                 await _eventPublisher.CommitAsync().ConfigureAwait(false);
             }
             catch (Exception e)
@@ -293,7 +299,7 @@ namespace EnjoyCQRS.EventSource.Storage
 
             _aggregates.Clear();
         }
-
+        
         private void RegisterForTracking<TAggregate>(TAggregate aggregateRoot) where TAggregate : Aggregate
         {
             _logger.Log(LogLevel.Debug, $"Adding to track: {aggregateRoot.GetType().FullName}.");

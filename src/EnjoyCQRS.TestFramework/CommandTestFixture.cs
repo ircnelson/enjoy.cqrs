@@ -66,7 +66,7 @@ namespace EnjoyCQRS.TestFramework
             try
             {
                 CommandHandler.ExecuteAsync(When()).GetAwaiter().GetResult();
-                PublishedEvents = AggregateRoot.UncommitedEvents;
+                PublishedEvents = AggregateRoot.UncommitedEvents.Select(e => e.OriginalEvent);
             }
             catch (Exception exception)
             {

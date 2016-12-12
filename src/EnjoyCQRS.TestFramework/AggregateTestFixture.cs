@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using EnjoyCQRS.Collections;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource;
@@ -49,7 +50,7 @@ namespace EnjoyCQRS.TestFramework
             try
             {
                 When();
-                PublishedEvents = AggregateRoot.UncommitedEvents;
+                PublishedEvents = AggregateRoot.UncommitedEvents.Select(e => e.OriginalEvent);
             }
             catch (Exception exception)
             {

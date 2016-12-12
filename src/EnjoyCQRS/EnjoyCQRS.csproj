@@ -60,6 +60,8 @@
     <Compile Include="EventSource\UnitOfWork.cs" />
     <Compile Include="Collections\CommitedDomainEventCollection.cs" />
     <Compile Include="Events\ICommitedEvent.cs" />
+    <Compile Include="Events\IUncommitedEvent.cs" />
+    <Compile Include="Events\UncommitedEvent.cs" />
     <Compile Include="Extensions\AggregateExtensions.cs" />
     <Compile Include="Extensions\DomainEventExtensions.cs" />
     <Compile Include="Logger\ILogger.cs" />

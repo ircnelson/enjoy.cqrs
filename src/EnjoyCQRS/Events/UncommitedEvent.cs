@@ -21,19 +21,25 @@
 // SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using EnjoyCQRS.Collections;
-using EnjoyCQRS.Events;
+using EnjoyCQRS.EventSource;
 
-namespace EnjoyCQRS.EventSource
+namespace EnjoyCQRS.Events
 {
-    public interface IAggregate
+    internal class UncommitedEvent : IUncommitedEvent
     {
-        Guid Id { get; }
-        int Sequence { get; }
-        IReadOnlyCollection<IUncommitedEvent> UncommitedEvents { get; }
-        int Version { get; }
-        void ClearUncommitedEvents();
-        void LoadFromHistory(CommitedDomainEventCollection domainEvents);
+        private readonly long _ticks;
+
+        public DateTime CreatedAt => new DateTime(_ticks);
+
+        public IDomainEvent OriginalEvent { get; }
+        public Aggregate Aggregate { get; }
+
+        public UncommitedEvent(Aggregate aggregate, IDomainEvent @event)
+        {
+            Aggregate = aggregate;
+            OriginalEvent = @event;
+
+            _ticks = DateTime.Now.Ticks;
+        }
     }
 }

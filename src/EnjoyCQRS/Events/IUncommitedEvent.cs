@@ -21,19 +21,12 @@
 // SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using EnjoyCQRS.Collections;
-using EnjoyCQRS.Events;
 
-namespace EnjoyCQRS.EventSource
+namespace EnjoyCQRS.Events
 {
-    public interface IAggregate
+    public interface IUncommitedEvent
     {
-        Guid Id { get; }
-        int Sequence { get; }
-        IReadOnlyCollection<IUncommitedEvent> UncommitedEvents { get; }
-        int Version { get; }
-        void ClearUncommitedEvents();
-        void LoadFromHistory(CommitedDomainEventCollection domainEvents);
+        DateTime CreatedAt { get; }
+        IDomainEvent OriginalEvent { get; }
     }
 }

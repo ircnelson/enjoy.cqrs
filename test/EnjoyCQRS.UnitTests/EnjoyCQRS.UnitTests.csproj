@@ -82,8 +82,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Domain\Stubs\AnotherStubAggregate.cs" />
     <Compile Include="Domain\Stubs\Events\ChildCreatedEvent.cs" />
     <Compile Include="Domain\Stubs\Events\ChildDisabledEvent.cs" />
+    <Compile Include="Domain\Stubs\Events\StubAggregateRelatedEvent.cs" />
     <Compile Include="Domain\Stubs\StubSnapshotAggregate.cs" />
     <Compile Include="Domain\Stubs\Events\StubAggregateCreatedEvent.cs" />
     <Compile Include="Domain\Stubs\SimpleEntity.cs" />

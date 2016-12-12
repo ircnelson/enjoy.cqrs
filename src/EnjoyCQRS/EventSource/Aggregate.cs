@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using EnjoyCQRS.Collections;
 using EnjoyCQRS.Events;
 
@@ -29,14 +30,14 @@ namespace EnjoyCQRS.EventSource
 {
     public abstract class Aggregate : IAggregate
     {
-        private readonly List<IDomainEvent> _uncommitedEvents = new List<IDomainEvent>();
+        private readonly List<UncommitedEvent> _uncommitedEvents = new List<UncommitedEvent>();
         private readonly Route<IDomainEvent> _routeEvents = new Route<IDomainEvent>();
 
         /// <summary>
         /// Collection of <see cref="IDomainEvent"/> that contains uncommited events.
         /// All events that not persisted yet should be here.
         /// </summary>
-        public IReadOnlyCollection<IDomainEvent> UncommitedEvents => _uncommitedEvents.AsReadOnly();
+        public IReadOnlyCollection<IUncommitedEvent> UncommitedEvents => _uncommitedEvents.AsReadOnly();
         
         /// <summary>
         /// Unique identifier.
@@ -92,7 +93,9 @@ namespace EnjoyCQRS.EventSource
 
             if (isNew)
             {
-                _uncommitedEvents.Add(@event);
+                Thread.Sleep(TimeSpan.FromMilliseconds(1));
+
+                _uncommitedEvents.Add(new UncommitedEvent(this, @event));
             }
         }
 
