@@ -1,0 +1,30 @@
+﻿{
+  "version": "1.0.0-*",
+
+  "dependencies": {
+    "EnjoyCQRS": {
+      "target": "project"
+    },
+    "EnjoyCQRS.UnitTests.Shared": {
+      "target": "project"
+    },
+    "EnjoyCQRS.EventStore.MongoDB": {
+      "target": "project"
+    },
+    "MongoDB.Bson": "2.2.4",
+    "MongoDB.Driver": "2.2.4",
+    "MongoDB.Driver.Core": "2.2.4",
+    "FluentAssertions": "4.9.1",
+    "MongoDB.Lightweight.Embedded": "1.0.1",
+    "Newtonsoft.Json": "9.0.1",
+    "xunit.runner.visualstudio": "2.1.0" ,
+    "dotnet-test-xunit": "2.2.0-*",
+    "xunit": "2.2.0-*"
+  },
+
+  "testRunner": "xunit",
+
+  "frameworks": {
+    "net461": {}
+  }
+}

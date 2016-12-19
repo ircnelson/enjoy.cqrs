@@ -22,7 +22,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
+using System.Threading.Tasks;
 using EnjoyCQRS.Collections;
 using EnjoyCQRS.Events;
 
@@ -38,7 +38,7 @@ namespace EnjoyCQRS.EventSource
         /// All events that not persisted yet should be here.
         /// </summary>
         public IReadOnlyCollection<IUncommitedEvent> UncommitedEvents => _uncommitedEvents.AsReadOnly();
-        
+
         /// <summary>
         /// Unique identifier.
         /// </summary>
@@ -93,7 +93,7 @@ namespace EnjoyCQRS.EventSource
 
             if (isNew)
             {
-                Thread.Sleep(TimeSpan.FromMilliseconds(1));
+                Task.WaitAll(Task.Delay(1));
 
                 _uncommitedEvents.Add(new UncommitedEvent(this, @event));
             }

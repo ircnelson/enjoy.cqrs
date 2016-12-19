@@ -1,0 +1,25 @@
+{
+  "version": "2.1.0-*",
+
+  "dependencies": {
+    "EnjoyCQRS": {
+      "target": "project"
+    },
+    "Moq": "4.6.38-alpha",
+    "Newtonsoft.Json": "9.0.1"
+  },
+
+  "frameworks": {
+    "netstandard1.6": {
+      "imports": [
+        "dotnet5.6",
+        "portable-net45+win8"
+      ],
+      "dependencies": {
+        "System.Reflection.TypeExtensions": "4.1.0"
+      }
+    },
+
+    "net461": { }
+  }
+}

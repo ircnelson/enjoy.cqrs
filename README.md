@@ -1,11 +1,6 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/dhjqe9t4s9vel1uu?svg=true)](https://ci.appveyor.com/project/nelsoncvjr/enjoy-cqrs) 
 [![myget status](https://www.myget.org/BuildSource/Badge/enjoy?identifier=1427e6c3-0c6f-4a1a-b5bf-2d02e2ad908c)](https://www.myget.org/BuildSource/Badge/enjoy?identifier=1427e6c3-0c6f-4a1a-b5bf-2d02e2ad908c)
 
-| Test Coverage |                                                                                                                                                                     |
-|---------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| master        | [![CoverageStatus](https://coveralls.io/repos/github/ircnelson/enjoy.cqrs/badge.svg?branch=master)](https://coveralls.io/github/ircnelson/enjoy.cqrs?branch=master) |
-| dev           | [![CoverageStatus](https://coveralls.io/repos/github/ircnelson/enjoy.cqrs/badge.svg?branch=dev)](https://coveralls.io/github/ircnelson/enjoy.cqrs?branch=dev)       |
-
 # eNJoy CQRS + Event Sourcing
 This framework can help you with two things together and easy. 
 First, your entities could use event sourcing technique. The second one you could use Command Query Segregation Responsability (CQRS) pattern. 
@@ -25,7 +20,6 @@ Any suggestion is welcome.
 ## Event store implementations
 
 * MongoDB: Install-Package EnjoyCQRS.EventStore.MongoDB
-* SQLite: Install-Package EnjoyCQRS.EventStore.SQLite
 
 ## Architecture
 

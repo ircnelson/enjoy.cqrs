@@ -32,21 +32,21 @@ namespace EnjoyCQRS.UnitTests.Domain
         }
 
         [Trait(CategoryName, CategoryValue)]
-        [Fact]
+        [Then]
         public void Aggregate_should_have_3_items()
         {
             AggregateRoot.Entities.Should().HaveCount(3);
         }
 
         [Trait(CategoryName, CategoryValue)]
-        [Fact]
+        [Then]
         public void Should_be_published_an_event_that_entity_was_created()
         {
             PublishedEvents.Last().Should().BeOfType<ChildCreatedEvent>();
         }
 
         [Trait(CategoryName, CategoryValue)]
-        [Fact]
+        [Then]
         public void Should_verify_last_event_properties()
         {
             var childCreatedEvent = PublishedEvents.Last().As<ChildCreatedEvent>();

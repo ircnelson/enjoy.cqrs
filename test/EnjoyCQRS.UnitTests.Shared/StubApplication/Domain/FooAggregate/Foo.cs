@@ -27,7 +27,7 @@ namespace EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.FooAggregate
         {
             Emit(new DidSomething(Id));
         }
-        
+
         protected override void RegisterEvents()
         {
             SubscribeTo<FooCreated>(e =>

@@ -22,7 +22,7 @@ namespace EnjoyCQRS.UnitTests.Handlers
         }
 
         [Trait(CategoryName, CategoryValue)]
-        [Fact]
+        [Then]
         public void Executed_property_should_be_true()
         {
             EventHandler.Executed.Should().Be(true);
@@ -30,7 +30,7 @@ namespace EnjoyCQRS.UnitTests.Handlers
 
 
         [Trait(CategoryName, CategoryValue)]
-        [Fact]
+        [Then]
         public void Should_pass_the_correct_AggregateId()
         {
             EventHandler.AggregateId.Should().Be(_id);

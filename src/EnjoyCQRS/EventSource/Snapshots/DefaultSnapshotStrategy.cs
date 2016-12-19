@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 using System;
+using System.Reflection;
 
 namespace EnjoyCQRS.EventSource.Snapshots
 {
@@ -30,11 +31,19 @@ namespace EnjoyCQRS.EventSource.Snapshots
         
         public bool CheckSnapshotSupport(Type aggregateType)
         {
-            if (aggregateType.BaseType == null) return false;
+            Type baseType;
+
+#if REFLECTIONBRIDGE && (!(NET40 || NET35 || NET20))
+            baseType = aggregateType.BaseType;
+#else
+            baseType = aggregateType.GetTypeInfo().BaseType;
+#endif
+
+            if (baseType == null) return false;
 
             if (SnapshotType.IsAssignableFrom(aggregateType)) return true;
 
-            return CheckSnapshotSupport(aggregateType.BaseType);
+            return CheckSnapshotSupport(baseType);
         }
 
         public virtual bool ShouldMakeSnapshot(IAggregate aggregate)

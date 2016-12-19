@@ -18,14 +18,14 @@ namespace EnjoyCQRS.UnitTests.Domain
         }
 
         [Trait(CategoryName, CategoryValue)]
-        [Fact]
+        [Then]
         public void Then_throws_an_exception()
         {
             CaughtException.Should().BeAssignableTo<HandleNotFound>();
         }
 
         [Trait(CategoryName, CategoryValue)]
-        [Fact]
+        [Then]
         public void Then_the_event_type_should_be_SomeEvent()
         {
             CaughtException.As<HandleNotFound>().EventType.Should().BeAssignableTo<NotRegisteredEvent>();

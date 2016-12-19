@@ -1,0 +1,31 @@
+﻿{
+  "version": "2.1.0-*",
+
+  "dependencies": {
+    "EnjoyCQRS": {
+      "target": "project"
+    }
+  },
+
+  "frameworks": {
+    "netstandard1.6": {
+      "imports": [
+        "dotnet5.6"
+      ],
+      "dependencies": {
+        "System.Reflection.TypeExtensions": "4.1.0",
+        "MongoDB.Bson": "2.4.0",
+        "MongoDB.Driver": "2.4.0",
+        "MongoDB.Driver.Core": "2.4.0"
+      }
+    },
+
+    "net461": {
+      "dependencies": {
+        "MongoDB.Bson": "2.2.4",
+        "MongoDB.Driver": "2.2.4",
+        "MongoDB.Driver.Core": "2.2.4"
+      }
+    }
+  }
+}

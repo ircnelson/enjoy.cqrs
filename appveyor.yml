@@ -1,45 +1,37 @@
-﻿version: 1.0.0.{build}
+version: 2.1.0.{build}
 branches:
   only:
   - master
   - dev
+  - ci
 configuration: Release
-init:
-- git config --global core.autocrlf true
 clone_folder: c:\projects\enjoycqrs
+clone_depth: 1
 environment:
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
   COVERALLS_REPO_TOKEN:
-    secure: k131M9lYqPhmepQEei/Q2U5Pz+PJ+PQ0Suz4s6PYE/E+Ssk+NAjqExcGOGqvtx/B
+    secure: kHP+PNmg4mKBU2zHqiMfKsj/j2tAjx/XF4/GC7c9sQkUnn2K6VisA91ad9jH9qod
 skip_commits:
   message: /updated readme.*/
-platform: Any CPU
-clone_depth: 1
-artifacts:
-- path: src
-  name: src
-- path: test
-  name: test
-- path: log
-  name: log
-before_build:
-  - ps: . .\build.ps1 Prepare-Build
 build_script:
-  - ps: . .\build.ps1 Build-Only
-after_build:
-  - ps: . .\build.ps1 Pack-Nuget
-test_script:
-  - ps: . .\build.ps1 Test-Coverage
+- ps: .\build.ps1 -Target AppVeyor
+test: off
+artifacts:
+  - path: artifacts\test-results\*.*
+    name: test-results
+  - path: artifacts\nugets\*.*
+    name: nugets
 deploy:
 - provider: NuGet
+  skip_symbols: true
   api_key:
     secure: NAbtRfAbJ7QcwtGR75wAcofcV+ipa6tKWGP798krZRjOYParVolf71xX5JBy+rUR
-  skip_symbols: true
   on:
     branch: master
 - provider: NuGet
+  skip_symbols: true
   server: https://www.myget.org/F/enjoy/api/v2/package
   api_key:
     secure: zPU3TMfMcbGiOTRpcKdNjztuCMOtjdBB0ReA9tkMCs9XKejC9NKMVvEGvz7HFmEP
-  skip_symbols: true
   on:
     branch: dev

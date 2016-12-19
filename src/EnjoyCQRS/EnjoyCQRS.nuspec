@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>EnjoyCQRS</id>
-    <version>2.0.0</version>
+    <version>*</version>
     <title>EnjoyCQRS</title>
     <authors>ircnelson</authors>
     <owners>ircnelson</owners>
@@ -15,6 +15,6 @@
     <tags>.NET CQRS EventSource EventSourcing</tags>
   </metadata>
   <files>
-    <file src="bin\release\EnjoyCQRS.dll" target="lib\net461" />
+    <file src="bin\release\**\EnjoyCQRS.dll" />
   </files>
 </package>

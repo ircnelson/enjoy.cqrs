@@ -31,7 +31,7 @@ namespace EnjoyCQRS.UnitTests.Snapshoting
         }
 
         [Trait(CategoryName, CategoryValue)]
-        [Fact]
+        [Then]
         public void Should_set_aggregate_properties()
         {
             _stubAggregate.Name.Should().Be(_snapshot.Name);

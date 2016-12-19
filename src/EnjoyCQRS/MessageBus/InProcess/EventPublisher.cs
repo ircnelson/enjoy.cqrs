@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using EnjoyCQRS.Events;
+using System.Reflection;
 
 namespace EnjoyCQRS.MessageBus.InProcess
 {
@@ -31,14 +32,14 @@ namespace EnjoyCQRS.MessageBus.InProcess
     {
         private readonly IEventRouter _router;
 
-        private readonly Queue<dynamic> _queue = new Queue<dynamic>();
-
         public EventPublisher(IEventRouter router)
         {
             if (router == null) throw new ArgumentNullException(nameof(router));
 
             _router = router;
         }
+
+        private readonly Queue<object> _queue = new Queue<object>();
 
         public async Task PublishAsync<TEvent>(TEvent message) where TEvent : IDomainEvent
         {
@@ -53,20 +54,20 @@ namespace EnjoyCQRS.MessageBus.InProcess
             }
         }
 
-        private Task Enqueue(dynamic message)
+        private Task Enqueue(object message)
         {
             _queue.Enqueue(message);
 
             return Task.CompletedTask;
         }
-        
+
         public async Task CommitAsync()
         {
             while (_queue.Count > 0)
             {
                 var message = _queue.Dequeue();
-
-                await _router.RouteAsync(message);
+                
+                await _router.RouteAsync((dynamic)message);
             }
         }
 

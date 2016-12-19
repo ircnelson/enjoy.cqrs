@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Storage;
-using EnjoyCQRS.UnitTests.Shared;
 using EnjoyCQRS.Logger;
 using EnjoyCQRS.MessageBus;
 using EnjoyCQRS.UnitTests.Domain.Stubs;
+using EnjoyCQRS.UnitTests.Shared;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -57,7 +57,7 @@ namespace EnjoyCQRS.UnitTests.Storage
         }
 
         [Trait(CategoryName, CategoryValue)]
-        [Fact]
+        [Then]
         public async Task When_calling_Save_it_will_add_the_domain_events_to_the_domain_event_storage()
         {
             var testAggregate = StubAggregate.Create("Walter White");
@@ -73,7 +73,7 @@ namespace EnjoyCQRS.UnitTests.Storage
         }
 
         [Trait(CategoryName, CategoryValue)]
-        [Fact]
+        [Then]
         public async Task When_Save_Then_the_uncommited_events_should_be_published()
         {
             var testAggregate = StubAggregate.Create("Walter White");
@@ -86,7 +86,7 @@ namespace EnjoyCQRS.UnitTests.Storage
         }
 
         [Trait(CategoryName, CategoryValue)]
-        [Fact]
+        [Then]
         public async Task When_load_aggregate_should_be_correct_version()
         {
             var testAggregate = StubAggregate.Create("Walter White");

@@ -25,14 +25,14 @@ namespace EnjoyCQRS.UnitTests.Snapshoting
         }
 
         [Trait(CategoryName, CategoryValue)]
-        [Fact]
+        [Then]
         public void Should_create_an_snapshot_object()
         {
             _snapshot.Should().BeOfType<StubSnapshotAggregateSnapshot>();
         }
 
         [Trait(CategoryName, CategoryValue)]
-        [Fact]
+        [Then]
         public void Should_verify_snapshot_properties()
         {
             var snapshot = (StubSnapshotAggregateSnapshot) _snapshot;

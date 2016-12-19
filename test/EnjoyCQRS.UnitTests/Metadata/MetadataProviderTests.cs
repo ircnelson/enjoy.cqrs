@@ -17,11 +17,11 @@ namespace EnjoyCQRS.UnitTests.Metadata
         public void Event_MetadataProvider()
         {
             var stubAggregate = StubAggregate.Create("Test");
-            
+
             var metadataProvider = new EventTypeMetadataProvider();
 
             var metadata = stubAggregate.UncommitedEvents.SelectMany(e => metadataProvider.Provide(stubAggregate, e.OriginalEvent, EventSource.Metadata.Empty));
-            
+
             metadata.Count().Should().Be(2);
         }
 
@@ -49,7 +49,7 @@ namespace EnjoyCQRS.UnitTests.Metadata
             var metadataProvider = new CorrelationIdMetadataProvider();
 
             var metadatas = stubAggregate.UncommitedEvents.SelectMany(e => metadataProvider.Provide(stubAggregate, e.OriginalEvent, EventSource.Metadata.Empty));
-            
+
             metadatas.Select(e => e.Value).Distinct().Count().Should().Be(1);
         }
 

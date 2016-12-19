@@ -19,14 +19,14 @@ namespace EnjoyCQRS.UnitTests.Domain
         }
 
         [Trait(CategoryName, CategoryValue)]
-        [Fact]
+        [Then]
         public void Then_some_event_should_be_published()
         {
             PublishedEvents.Last().Should().BeAssignableTo<NameChangedEvent>();
         }
 
         [Trait(CategoryName, CategoryValue)]
-        [Fact]
+        [Then]
         public void Then_verify_name_property()
         {
             PublishedEvents.Last().As<NameChangedEvent>().Name.Should().Be(AggregateRoot.Name);

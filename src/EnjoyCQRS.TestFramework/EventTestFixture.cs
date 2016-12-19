@@ -25,11 +25,12 @@ using System.Collections.Generic;
 using System.Linq;
 using EnjoyCQRS.Events;
 using Moq;
+using System.Reflection;
 
 namespace EnjoyCQRS.TestFramework
 {
     public abstract class EventTestFixture<TEvent, TEventHandler>
-        where TEvent : class, IDomainEvent 
+        where TEvent : class, IDomainEvent
         where TEventHandler : class, IEventHandler<TEvent>
     {
         private IDictionary<Type, object> mocks;
@@ -64,7 +65,7 @@ namespace EnjoyCQRS.TestFramework
         public Mock<TType> OnDependency<TType>() where TType : class
         {
             if (!mocks.ContainsKey(typeof(TType)))
-                throw new Exception($"The event handler '{typeof (TEventHandler).FullName}' does not have a dependency upon '{typeof (TType).FullName}'");
+                throw new Exception($"The event handler '{typeof(TEventHandler).FullName}' does not have a dependency upon '{typeof(TType).FullName}'");
 
             return (Mock<TType>)mocks[typeof(TType)];
         }
@@ -78,8 +79,8 @@ namespace EnjoyCQRS.TestFramework
                 if (parameter.ParameterType.Name.EndsWith("Repository"))
                 {
                     var mockType = typeof(Mock<>).MakeGenericType(parameter.ParameterType);
-                    
-                    var repositoryMock = (Mock) Activator.CreateInstance(mockType);
+
+                    var repositoryMock = (Mock)Activator.CreateInstance(mockType);
                     mocks.Add(parameter.ParameterType, repositoryMock);
                     continue;
                 }

@@ -33,7 +33,7 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             return session;
         };
-        
+
         private readonly Mock<IEventPublisher> _eventPublisherMock;
         private JsonTextSerializer _textSerializer;
 
@@ -89,7 +89,7 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             act.ShouldThrowExactly<ArgumentNullException>();
         }
-        
+
         [Trait(CategoryName, CategoryValue)]
         [Fact]
         public async Task Should_throws_exception_When_aggregate_version_is_wrong()
@@ -160,7 +160,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             var session = _sessionFactory(eventStore, _eventPublisherMock.Object, null);
 
             var stubAggregate1 = StubAggregate.Create("Walter White");
-            var stubAggregate2 = AnotherStubAggregate.Create("Heinsenberg");
+            var stubAggregate2 = StubAggregate.Create("Heinsenberg");
 
             stubAggregate1.ChangeName("Saul Goodman");
 
@@ -196,7 +196,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             // Arrange
 
             var snapshotStrategy = CreateSnapshotStrategy();
-            
+
             var eventStore = new StubEventStore();
             var session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy);
 
@@ -211,17 +211,17 @@ namespace EnjoyCQRS.UnitTests.Storage
             // Act
 
             await session.SaveChangesAsync().ConfigureAwait(false);
-            
+
             // Assert
 
             eventStore.SaveSnapshotMethodCalled.Should().BeTrue();
-            
+
             var commitedSnapshot = StubEventStore.Snapshots.First(e => e.AggregateId == stubAggregate.Id);
-            
+
             commitedSnapshot.Should().NotBeNull();
 
-            var metadata = (IMetadata) _textSerializer.Deserialize<EventSource.Metadata>(commitedSnapshot.SerializedMetadata);
-            
+            var metadata = (IMetadata)_textSerializer.Deserialize<EventSource.Metadata>(commitedSnapshot.SerializedMetadata);
+
             var snapshotClrType = metadata.GetValue(MetadataKeys.SnapshotClrType);
 
             Type.GetType(snapshotClrType).Name.Should().Be(typeof(StubSnapshotAggregateSnapshot).Name);
@@ -237,7 +237,7 @@ namespace EnjoyCQRS.UnitTests.Storage
         public async Task Should_restore_aggregate_using_snapshot()
         {
             var snapshotStrategy = CreateSnapshotStrategy();
-            
+
             var eventStore = new StubEventStore();
 
             var session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy);
@@ -265,7 +265,7 @@ namespace EnjoyCQRS.UnitTests.Storage
         public async Task When_not_exists_snapshot_yet_Then_aggregate_should_be_constructed_using_your_events()
         {
             var snapshotStrategy = CreateSnapshotStrategy(false);
-            
+
             var eventStore = new StubEventStore();
 
             var session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy);
@@ -291,7 +291,7 @@ namespace EnjoyCQRS.UnitTests.Storage
         public async Task Getting_snapshot_and_forward_events()
         {
             var snapshotStrategy = CreateSnapshotStrategy();
-            
+
             var eventStore = new StubEventStore();
 
             var session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy);
@@ -311,7 +311,7 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             await session.AddAsync(stubAggregate).ConfigureAwait(false);
             await session.SaveChangesAsync().ConfigureAwait(false); // Version 3
-            
+
             var stubAggregateFromSnapshot = await session.GetByIdAsync<StubSnapshotAggregate>(stubAggregate.Id).ConfigureAwait(false);
 
             stubAggregateFromSnapshot.Version.Should().Be(3);
@@ -322,7 +322,7 @@ namespace EnjoyCQRS.UnitTests.Storage
         public Task Should_throws_exception_When_aggregate_was_not_found()
         {
             var snapshotStrategy = CreateSnapshotStrategy();
-            
+
             var eventStore = new StubEventStore();
 
             var session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy);
@@ -403,7 +403,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             {
                 session.Rollback();
             }
-            
+
             eventStoreMock.Verify(e => e.Rollback(), Times.Once);
             _eventPublisherMock.Verify(e => e.Rollback(), Times.Once);
         }
@@ -436,7 +436,7 @@ namespace EnjoyCQRS.UnitTests.Storage
                 .Callback(DoThrowExcetion)
                 .Returns(Task.CompletedTask);
 
-            _eventPublisherMock.Setup(e =>e.PublishAsync(It.IsAny<IEnumerable<IDomainEvent>>()))
+            _eventPublisherMock.Setup(e => e.PublishAsync(It.IsAny<IEnumerable<IDomainEvent>>()))
                 .Callback(DoThrowExcetion)
                 .Returns(Task.CompletedTask);
 
@@ -446,7 +446,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             var session = _sessionFactory(eventStoreMock.Object, _eventPublisherMock.Object, snapshotStrategy);
 
             await session.AddAsync(StubAggregate.Create("Test"));
-            
+
             try
             {
                 await session.SaveChangesAsync();
@@ -463,7 +463,7 @@ namespace EnjoyCQRS.UnitTests.Storage
         public async Task When_occur_error_on_Save_in_EventStore_Then_rollback_should_be_called()
         {
             var snapshotStrategy = CreateSnapshotStrategy(false);
-            
+
             var eventStoreMock = new Mock<IEventStore>();
             eventStoreMock.SetupAllProperties();
             eventStoreMock.Setup(e => e.SaveAsync(It.IsAny<IEnumerable<ISerializedEvent>>()))

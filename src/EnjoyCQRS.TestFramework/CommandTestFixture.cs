@@ -30,6 +30,7 @@ using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Storage;
 using Moq;
+using System.Reflection;
 
 namespace EnjoyCQRS.TestFramework
 {

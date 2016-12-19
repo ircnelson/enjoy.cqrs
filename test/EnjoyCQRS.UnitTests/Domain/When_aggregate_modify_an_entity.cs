@@ -30,21 +30,21 @@ namespace EnjoyCQRS.UnitTests.Domain
         }
 
         [Trait(CategoryName, CategoryValue)]
-        [Fact]
+        [Then]
         public void Aggregate_should_have_2_items()
         {
             AggregateRoot.Entities.Should().HaveCount(2);
         }
 
         [Trait(CategoryName, CategoryValue)]
-        [Fact]
+        [Then]
         public void Should_be_published_an_event_that_entity_was_disabled()
         {
             PublishedEvents.Last().Should().BeOfType<ChildDisabledEvent>();
         }
 
         [Trait(CategoryName, CategoryValue)]
-        [Fact]
+        [Then]
         public void Should_verify_last_event_properties()
         {
             var childDisabledEvent = PublishedEvents.Last().As<ChildDisabledEvent>();
@@ -53,7 +53,7 @@ namespace EnjoyCQRS.UnitTests.Domain
         }
 
         [Trait(CategoryName, CategoryValue)]
-        [Fact]
+        [Then]
         public void Entity2_should_be_disabled()
         {
             AggregateRoot.Entities[1].Enabled.Should().BeFalse();

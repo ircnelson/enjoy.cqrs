@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>EnjoyCQRS.EventStore.MongoDB</id>
-    <version>2.0.0</version>
+    <version>*</version>
     <title>EnjoyCQRS.EventStore.MongoDB</title>
     <authors>ircnelson</authors>
     <owners>ircnelson</owners>
@@ -14,12 +14,11 @@
     <copyright>Copyright 2016</copyright>
     <tags>.NET CQRS MongoDB EventSource EventSourcing</tags>
     <dependencies>
-      <group targetFramework="net461">
-        <dependency id="MongoDB.Driver" version="2.2.4" />
-      </group>
+		<dependency id="EnjoyCQRS" />
+		<dependency id="MongoDB.Driver" />
     </dependencies>
   </metadata>
   <files>
-    <file src="bin\release\EnjoyCQRS.EventStore.MongoDB.dll" target="lib\net461" />
+    <file src="bin\release\**\EnjoyCQRS.EventStore.MongoDB.dll" />
   </files>
 </package>

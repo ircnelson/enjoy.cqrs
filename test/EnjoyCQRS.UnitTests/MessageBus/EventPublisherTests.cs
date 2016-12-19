@@ -18,7 +18,7 @@ namespace EnjoyCQRS.UnitTests.MessageBus
         private const string CategoryValue = "Event publisher";
 
         [Trait(CategoryName, CategoryValue)]
-        [Fact]
+        [Then]
         public void Instance_of_EventRouter_cannot_be_null()
         {
             Action act = () => new EventPublisher(null);
@@ -27,7 +27,7 @@ namespace EnjoyCQRS.UnitTests.MessageBus
         }
 
         [Trait(CategoryName, CategoryValue)]
-        [Fact]
+        [Then]
         public async Task When_a_single_event_is_published_to_the_bus_containing_a_single_EventHandler()
         {
             var testEvent = new TestEvent(Guid.NewGuid());
@@ -50,7 +50,7 @@ namespace EnjoyCQRS.UnitTests.MessageBus
         }
 
         [Trait(CategoryName, CategoryValue)]
-        [Fact]
+        [Then]
         public async Task When_a_single_event_is_published_to_the_bus_containing_multiple_EventHandlers()
         {
             var handler1 = new FirstTestEventHandler();
@@ -76,7 +76,7 @@ namespace EnjoyCQRS.UnitTests.MessageBus
         }
 
         [Trait(CategoryName, CategoryValue)]
-        [Fact]
+        [Then]
         public async Task Events_should_be_published_on_correct_order()
         {
             var ids = new List<Tuple<Guid, int>>();

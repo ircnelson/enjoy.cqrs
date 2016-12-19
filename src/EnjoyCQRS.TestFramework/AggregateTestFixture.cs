@@ -40,9 +40,9 @@ namespace EnjoyCQRS.TestFramework
         }
         protected virtual void Finally() { }
         protected abstract void When();
-        
+
         protected AggregateTestFixture()
-        {   
+        {
             CaughtException = new ThereWasNoExceptionButOneWasExpectedException();
             AggregateRoot = new TAggregateRoot();
             AggregateRoot.LoadFromHistory(new CommitedDomainEventCollection(Given()));

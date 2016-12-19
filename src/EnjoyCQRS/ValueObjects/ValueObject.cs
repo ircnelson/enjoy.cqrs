@@ -96,9 +96,13 @@ namespace EnjoyCQRS.ValueObjects
             while (t != typeof(object))
             {
                 fields.AddRange(t.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public));
+#if REFLECTIONBRIDGE && (!(NET40 || NET35 || NET20))
                 t = t.BaseType;
+#else
+                t = t.GetTypeInfo().BaseType;
+#endif
             }
-            
+
             return fields;
         }
 

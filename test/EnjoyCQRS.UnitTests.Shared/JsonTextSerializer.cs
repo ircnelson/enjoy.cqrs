@@ -1,20 +1,14 @@
 ﻿using System;
 using EnjoyCQRS.Core;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace EnjoyCQRS.UnitTests.Shared
 {
     public class JsonTextSerializer : ITextSerializer
     {
-        private readonly JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver()
-        };
-
         public string Serialize(object @object)
         {
-            return JsonConvert.SerializeObject(@object, _jsonSerializerSettings);
+            return JsonConvert.SerializeObject(@object);
         }
 
         public object Deserialize(string textSerialized, string type)
@@ -24,7 +18,7 @@ namespace EnjoyCQRS.UnitTests.Shared
 
         public T Deserialize<T>(string textSerialized)
         {
-            return JsonConvert.DeserializeObject<T>(textSerialized, _jsonSerializerSettings);
+            return JsonConvert.DeserializeObject<T>(textSerialized);
         }
     }
 }

@@ -29,7 +29,7 @@ namespace EnjoyCQRS.MessageBus
     {
         public Task DispatchAsync<TCommand>(TCommand command) where TCommand : ICommand
         {
-            return RouteAsync((dynamic) command);
+            return RouteAsync(command);
         }
 
         protected abstract Task RouteAsync<TCommand>(TCommand command) where TCommand : ICommand;
