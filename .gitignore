@@ -213,3 +213,6 @@ ModelManifest.xml
 
 # Logs & code coverage report
 log/
+
+.DS_Store
+.idea
