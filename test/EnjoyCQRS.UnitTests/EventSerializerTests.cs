@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource;
+using EnjoyCQRS.EventSource.Exceptions;
 using EnjoyCQRS.UnitTests.Shared;
 using EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.BarAggregate;
 using FluentAssertions;
@@ -35,7 +36,7 @@ namespace EnjoyCQRS.UnitTests
 
             Action act = () => eventSerializer.Deserialize(mockCommitedEvent.Object);
 
-            act.ShouldThrow<Exception>();
+            act.ShouldThrowExactly<EventTypeNotFoundException>();
         }
     }
 
