@@ -216,7 +216,7 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             eventStore.SaveSnapshotMethodCalled.Should().BeTrue();
 
-            var commitedSnapshot = StubEventStore.Snapshots.First(e => e.AggregateId == stubAggregate.Id);
+            var commitedSnapshot = eventStore.Snapshots.First(e => e.AggregateId == stubAggregate.Id);
 
             commitedSnapshot.Should().NotBeNull();
 

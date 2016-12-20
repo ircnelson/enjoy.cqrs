@@ -24,6 +24,8 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "EnjoyCQRS.EventStore.MongoD
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "EnjoyCQRS.MongoDB.IntegrationTests", "test\EnjoyCQRS.MongoDB.IntegrationTests\EnjoyCQRS.MongoDB.IntegrationTests.xproj", "{E9CABC60-5A99-492B-B6DA-4161295C2491}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "EnjoyCQRS.IntegrationTests", "test\EnjoyCQRS.IntegrationTests\EnjoyCQRS.IntegrationTests.xproj", "{975FACD9-62FD-46FF-8525-959B6FEB926A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,6 +56,10 @@ Global
 		{E9CABC60-5A99-492B-B6DA-4161295C2491}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E9CABC60-5A99-492B-B6DA-4161295C2491}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E9CABC60-5A99-492B-B6DA-4161295C2491}.Release|Any CPU.Build.0 = Release|Any CPU
+		{975FACD9-62FD-46FF-8525-959B6FEB926A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{975FACD9-62FD-46FF-8525-959B6FEB926A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{975FACD9-62FD-46FF-8525-959B6FEB926A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{975FACD9-62FD-46FF-8525-959B6FEB926A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -65,5 +71,6 @@ Global
 		{CBAB5ED2-B4F6-40D2-9AB6-7D29AF60C732} = {5433AD41-6D53-41BC-A73B-B9CA977893D3}
 		{1EA03A11-1553-4EC4-8184-5ED97794D5BD} = {F375D78C-9BF2-446A-927A-E6DBBF82C843}
 		{E9CABC60-5A99-492B-B6DA-4161295C2491} = {5433AD41-6D53-41BC-A73B-B9CA977893D3}
+		{975FACD9-62FD-46FF-8525-959B6FEB926A} = {5433AD41-6D53-41BC-A73B-B9CA977893D3}
 	EndGlobalSection
 EndGlobal
