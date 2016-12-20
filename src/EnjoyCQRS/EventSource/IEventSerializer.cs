@@ -28,13 +28,13 @@ namespace EnjoyCQRS.EventSource
 {
     public interface IEventSerializer
     {
-        ISerializedEvent Serialize(IAggregate aggregate, IDomainEvent @event, IEnumerable<KeyValuePair<string, string>> metadatas);
+        ISerializedEvent Serialize(IAggregate aggregate, IDomainEvent @event, IEnumerable<KeyValuePair<string, object>> metadatas);
         IDomainEvent Deserialize(ICommitedEvent commitedEvent);
     }
 
     public interface ISnapshotSerializer
     {
-        ISerializedSnapshot Serialize(IAggregate aggregate, ISnapshot snapshot, IEnumerable<KeyValuePair<string, string>> metadatas);
+        ISerializedSnapshot Serialize(IAggregate aggregate, ISnapshot snapshot, IEnumerable<KeyValuePair<string, object>> metadatas);
         ISnapshotRestore Deserialize(ICommitedSnapshot commitedSnapshot);
     }
 }

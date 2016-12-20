@@ -29,7 +29,7 @@ namespace EnjoyCQRS.MetadataProviders
 {
     public class EventTypeMetadataProvider : IMetadataProvider
     {
-        public IEnumerable<KeyValuePair<string, string>> Provide<TAggregate>(TAggregate aggregate, IDomainEvent @event, IMetadata metadata)
+        public IEnumerable<KeyValuePair<string, object>> Provide<TAggregate>(TAggregate aggregate, IDomainEvent @event, IMetadata metadata)
             where TAggregate : IAggregate
         {
             string eventName;
@@ -39,8 +39,8 @@ namespace EnjoyCQRS.MetadataProviders
                 eventName = @event.GetType().Name;
             }
 
-            yield return new KeyValuePair<string, string>(MetadataKeys.EventClrType, @event.GetType().AssemblyQualifiedName);
-            yield return new KeyValuePair<string, string>(MetadataKeys.EventName, eventName);
+            yield return new KeyValuePair<string, object>(MetadataKeys.EventClrType, @event.GetType().AssemblyQualifiedName);
+            yield return new KeyValuePair<string, object>(MetadataKeys.EventName, eventName);
         }
     }
 }

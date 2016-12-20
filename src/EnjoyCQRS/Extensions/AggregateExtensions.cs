@@ -40,11 +40,11 @@ namespace EnjoyCQRS.Extensions
 
             var metadatas = new[]
             {
-                new KeyValuePair<string, string>(MetadataKeys.AggregateId, aggregate.Id.ToString()),
-                new KeyValuePair<string, string>(MetadataKeys.AggregateSequenceNumber, aggregate.Sequence.ToString()),
-                new KeyValuePair<string, string>(MetadataKeys.SnapshotId, Guid.NewGuid().ToString()),
-                new KeyValuePair<string, string>(MetadataKeys.SnapshotClrType, snapshot.GetType().AssemblyQualifiedName),
-                new KeyValuePair<string, string>(MetadataKeys.SnapshotName, snapshot.GetType().Name),
+                new KeyValuePair<string, object>(MetadataKeys.AggregateId, aggregate.Id),
+                new KeyValuePair<string, object>(MetadataKeys.AggregateSequenceNumber, aggregate.Sequence),
+                new KeyValuePair<string, object>(MetadataKeys.SnapshotId, Guid.NewGuid()),
+                new KeyValuePair<string, object>(MetadataKeys.SnapshotClrType, snapshot.GetType().AssemblyQualifiedName),
+                new KeyValuePair<string, object>(MetadataKeys.SnapshotName, snapshot.GetType().Name),
             };
 
             var serializedSnapshot = snapshotSerializer.Serialize(aggregate, snapshot, metadatas);
@@ -63,8 +63,8 @@ namespace EnjoyCQRS.Extensions
                 var metadatas =
                     metadataProviders.SelectMany(md => md.Provide(aggregate, e.OriginalEvent, Metadata.Empty)).Concat(new[]
                     {
-                        new KeyValuePair<string, string>(MetadataKeys.EventId, Guid.NewGuid().ToString()),
-                        new KeyValuePair<string, string>(MetadataKeys.EventVersion, (aggregate.Version + index).ToString())
+                        new KeyValuePair<string, object>(MetadataKeys.EventId, Guid.NewGuid().ToString()),
+                        new KeyValuePair<string, object>(MetadataKeys.EventVersion, (aggregate.Version + index).ToString())
                     });
 
                 return eventSerializer.Serialize(aggregate, e.OriginalEvent, new Metadata(metadatas));

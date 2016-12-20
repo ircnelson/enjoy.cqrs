@@ -222,7 +222,7 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             var metadata = (IMetadata)_textSerializer.Deserialize<EventSource.Metadata>(commitedSnapshot.SerializedMetadata);
 
-            var snapshotClrType = metadata.GetValue(MetadataKeys.SnapshotClrType);
+            var snapshotClrType = metadata.GetValue(MetadataKeys.SnapshotClrType, value => value.ToString());
 
             Type.GetType(snapshotClrType).Name.Should().Be(typeof(StubSnapshotAggregateSnapshot).Name);
 

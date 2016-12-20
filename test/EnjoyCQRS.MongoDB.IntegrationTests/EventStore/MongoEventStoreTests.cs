@@ -106,7 +106,7 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
                 await eventStoreTestSuit.EventTestsAsync();
             }
         }
-
+        
         [Trait(CategoryName, CategoryValue)]
         [Fact]
         public async Task Test_snapshot()

@@ -196,8 +196,8 @@ namespace EnjoyCQRS.UnitTests.EventUpgrader
                 var metadatas =
                     metadataProviders.SelectMany(md => md.Provide(aggregate, e, EventSource.Metadata.Empty)).Concat(new[]
                     {
-                        new KeyValuePair<string, string>(MetadataKeys.EventId, Guid.NewGuid().ToString()),
-                        new KeyValuePair<string, string>(MetadataKeys.EventVersion, (aggregate.Version + index).ToString())
+                        new KeyValuePair<string, object>(MetadataKeys.EventId, Guid.NewGuid()),
+                        new KeyValuePair<string, object>(MetadataKeys.EventVersion, (aggregate.Version + index))
                     });
                 return eventSerializer.Serialize(aggregate, e, new EventSource.Metadata(metadatas));
             });

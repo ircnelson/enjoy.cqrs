@@ -28,11 +28,11 @@ namespace EnjoyCQRS.MetadataProviders
 {
     public class AggregateTypeMetadataProvider : IMetadataProvider
     {
-        public IEnumerable<KeyValuePair<string, string>> Provide<TAggregate>(TAggregate aggregate, IDomainEvent @event, IMetadata metadata) where TAggregate : IAggregate
+        public IEnumerable<KeyValuePair<string, object>> Provide<TAggregate>(TAggregate aggregate, IDomainEvent @event, IMetadata metadata) where TAggregate : IAggregate
         {
-            yield return new KeyValuePair<string, string>(MetadataKeys.AggregateId, aggregate.Id.ToString());
-            yield return new KeyValuePair<string, string>(MetadataKeys.AggregateSequenceNumber, aggregate.Sequence.ToString());
-            yield return new KeyValuePair<string, string>(MetadataKeys.AggregateTypeFullname, aggregate.GetType().FullName);
+            yield return new KeyValuePair<string, object>(MetadataKeys.AggregateId, aggregate.Id);
+            yield return new KeyValuePair<string, object>(MetadataKeys.AggregateSequenceNumber, aggregate.Sequence);
+            yield return new KeyValuePair<string, object>(MetadataKeys.AggregateTypeFullname, aggregate.GetType().FullName);
         }
     }
 }

@@ -37,12 +37,13 @@ namespace EnjoyCQRS.EventSource
             _textSerializer = textSerializer;
         }
 
-        public ISerializedEvent Serialize(IAggregate aggregate, IDomainEvent @event, IEnumerable<KeyValuePair<string, string>> metadatas)
+        public ISerializedEvent Serialize(IAggregate aggregate, IDomainEvent @event, IEnumerable<KeyValuePair<string, object>> metadatas)
         {
             var metadata = new Metadata(metadatas);
             
-            var aggregateId = metadata.GetValue(MetadataKeys.AggregateId, Guid.Parse);
-            var aggregateVersion = metadata.GetValue(MetadataKeys.AggregateSequenceNumber, int.Parse);
+            var aggregateId = metadata.GetValue(MetadataKeys.AggregateId, (value) => Guid.Parse(value.ToString()));
+            var aggregateVersion = metadata.GetValue(MetadataKeys.AggregateSequenceNumber, (value) => int.Parse(value.ToString()));
+
             var serializedData = _textSerializer.Serialize(@event);
             var serializedMetadata = _textSerializer.Serialize(metadata);
 
@@ -53,7 +54,7 @@ namespace EnjoyCQRS.EventSource
         {
             var metadata = _textSerializer.Deserialize<Metadata>(commitedEvent.SerializedMetadata);
 
-            var eventClrType = metadata.GetValue(MetadataKeys.EventClrType);
+            var eventClrType = metadata.GetValue(MetadataKeys.EventClrType, (value) => value.ToString());
             
             return (IDomainEvent) _textSerializer.Deserialize(commitedEvent.SerializedData, eventClrType);
         }

@@ -157,8 +157,8 @@ namespace EnjoyCQRS.EventStore.MongoDB
         {
             var eventData = BsonDocument.Parse(serializedEvent.SerializedData);
             var metadata = BsonDocument.Parse(serializedEvent.SerializedMetadata);
-            var id = serializedEvent.Metadata.GetValue(MetadataKeys.EventId, Guid.Parse);
-            var eventType = serializedEvent.Metadata.GetValue(MetadataKeys.EventName);
+            var id = serializedEvent.Metadata.GetValue(MetadataKeys.EventId, value => Guid.Parse(value.ToString()));
+            var eventType = serializedEvent.Metadata.GetValue(MetadataKeys.EventName, value => value.ToString());
             
             var @event = new Event
             {
@@ -188,7 +188,7 @@ namespace EnjoyCQRS.EventStore.MongoDB
         {
             var eventData = BsonDocument.Parse(serializedSnapshot.SerializedData);
             var metadata = BsonDocument.Parse(serializedSnapshot.SerializedMetadata);
-            var id = serializedSnapshot.Metadata.GetValue(MetadataKeys.SnapshotId, Guid.Parse);
+            var id = serializedSnapshot.Metadata.GetValue(MetadataKeys.SnapshotId, value => Guid.Parse(value.ToString()));
             
             var snapshot = new SnapshotData
             {

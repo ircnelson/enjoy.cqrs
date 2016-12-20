@@ -14,10 +14,10 @@ namespace EnjoyCQRS.UnitTests.Metadata
         [Fact]
         public void Should_instantiate_a_dictionary_given_a_keyPairValue()
         {
-            List<KeyValuePair<string, string>> metadatas = new List<KeyValuePair<string, string>>
+            List<KeyValuePair<string, object>> metadatas = new List<KeyValuePair<string, object>>
             {
-                new KeyValuePair<string, string>("key1", "value1"),
-                new KeyValuePair<string, string>("key2", "value2")
+                new KeyValuePair<string, object>("key1", "value1"),
+                new KeyValuePair<string, object>("key2", "value2")
             };
 
             var metadataCollection = new EventSource.Metadata(metadatas);

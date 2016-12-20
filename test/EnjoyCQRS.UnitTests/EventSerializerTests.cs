@@ -23,9 +23,9 @@ namespace EnjoyCQRS.UnitTests
 
             var metadata = new EventSource.Metadata(new[]
             {
-                new KeyValuePair<string, string>(MetadataKeys.AggregateId, Guid.NewGuid().ToString()),
-                new KeyValuePair<string, string>(MetadataKeys.AggregateSequenceNumber, 1.ToString()),
-                new KeyValuePair<string, string>(MetadataKeys.EventClrType, "EnjoyCQRS.UnitTests.EventSerializerTests+NotFoundClrType, EnjoyCQRS.UnitTests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null")
+                new KeyValuePair<string, object>(MetadataKeys.AggregateId, Guid.NewGuid().ToString()),
+                new KeyValuePair<string, object>(MetadataKeys.AggregateSequenceNumber, 1.ToString()),
+                new KeyValuePair<string, object>(MetadataKeys.EventClrType, "EnjoyCQRS.UnitTests.EventSerializerTests+NotFoundClrType, EnjoyCQRS.UnitTests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null")
             });
             
             var mockCommitedEvent = new Mock<ICommitedEvent>();

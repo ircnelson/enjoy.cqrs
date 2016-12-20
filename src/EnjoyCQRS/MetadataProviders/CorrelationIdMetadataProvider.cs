@@ -14,9 +14,9 @@ namespace EnjoyCQRS.MetadataProviders
             _correlationId = Guid.NewGuid();
         }
 
-        public IEnumerable<KeyValuePair<string, string>> Provide<TAggregate>(TAggregate aggregate, IDomainEvent @event, IMetadata metadata) where TAggregate : IAggregate
+        public IEnumerable<KeyValuePair<string, object>> Provide<TAggregate>(TAggregate aggregate, IDomainEvent @event, IMetadata metadata) where TAggregate : IAggregate
         {
-            yield return new KeyValuePair<string, string>(MetadataKeys.CorrelationId, _correlationId.ToString());
+            yield return new KeyValuePair<string, object>(MetadataKeys.CorrelationId, _correlationId.ToString());
         }
     }
 }

@@ -35,7 +35,7 @@ namespace EnjoyCQRS.EventSource
         /// <param name="event"></param>
         /// <param name="metadata"></param>
         /// <returns></returns>
-        IEnumerable<KeyValuePair<string, string>> Provide<TAggregate>(TAggregate aggregate, IDomainEvent @event, IMetadata metadata)
+        IEnumerable<KeyValuePair<string, object>> Provide<TAggregate>(TAggregate aggregate, IDomainEvent @event, IMetadata metadata)
             where TAggregate : IAggregate;
     }
 }
