@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
   "version": "2.1.0-*",
+=======
+  "version": "2.1.2-*",
+>>>>>>> 7a5b100... fix nuget dependency
 
   "dependencies": {
     "EnjoyCQRS": {
