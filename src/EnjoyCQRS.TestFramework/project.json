@@ -1,13 +1,5 @@
 {
-<<<<<<< HEAD
-<<<<<<< HEAD
-  "version": "2.1.0-*",
-=======
-  "version": "2.1.2-*",
->>>>>>> 7a5b100... fix nuget dependency
-=======
   "version": "2.1.3-*",
->>>>>>> 65d7f79... fix Moq nuget version
 
   "dependencies": {
     "EnjoyCQRS": {

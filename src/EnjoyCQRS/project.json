@@ -1,12 +1,10 @@
 ﻿{
-<<<<<<< HEAD
-  "version": "2.1.0-*",
-=======
   "version": "2.1.2-*",
->>>>>>> 7a5b100... fix nuget dependency
+
   "buildOptions": {
     "preserveCompilationContext": true
   },
+
   "frameworks": {
     "netstandard1.6": {
       "imports": [
