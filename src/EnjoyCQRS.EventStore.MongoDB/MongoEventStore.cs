@@ -94,7 +94,7 @@ namespace EnjoyCQRS.EventStore.MongoDB
 
             var events = await collection
                 .Find(filter.Eq(x => x.AggregateId, aggregateId) & filter.Gt(x => x.Version, version))
-                .Sort(sort.Ascending(x => x.Version))
+                .Sort(sort.Ascending(x => x.Metadata[MetadataKeys.EventVersion]))
                 .ToListAsync();
 
             return events.Select(Deserialize).ToList();
@@ -137,9 +137,12 @@ namespace EnjoyCQRS.EventStore.MongoDB
             var db = Client.GetDatabase(Database);
             var collection = db.GetCollection<Event>(Setttings.EventsCollectionName);
 
+            var filter = Builders<Event>.Filter;
+            var sort = Builders<Event>.Sort;
+
             var events = await collection
-                .Find(Builders<Event>.Filter.Eq(x => x.AggregateId, id))
-                .Sort(Builders<Event>.Sort.Ascending(x => x.Version))
+                .Find(filter.Eq(x => x.AggregateId, id))
+                .Sort(sort.Ascending(x => x.Metadata[MetadataKeys.EventVersion]))
                 .ToListAsync();
 
             return events.Select(Deserialize).ToList();
