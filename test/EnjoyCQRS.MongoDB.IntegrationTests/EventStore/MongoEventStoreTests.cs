@@ -5,7 +5,6 @@ using EnjoyCQRS.EventStore.MongoDB;
 using EnjoyCQRS.UnitTests.Shared.TestSuit;
 using FluentAssertions;
 using MongoDB.Driver;
-using MongoDB.Embedded;
 using Xunit;
 
 namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
@@ -14,8 +13,17 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
     {
         public const string CategoryName = "Integration";
         public const string CategoryValue = "MongoDB";
-
         public const string DatabaseName = "test";
+
+        private readonly MongoClient _mongoClient;
+
+        public MongoEventStoreTests()
+        {
+            var mongoHost = "192.168.0.4";
+            _mongoClient = new MongoClient($"mongodb://{mongoHost}");
+
+            _mongoClient.DropDatabase(DatabaseName);
+        }
 
         [Trait(CategoryName, CategoryValue)]
         [Theory, MemberData(nameof(InvalidStates))]
@@ -25,6 +33,7 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
 
             action.ShouldThrowExactly<ArgumentNullException>();
         }
+        
 
         [Trait(CategoryName, CategoryValue)]
         [Fact]
@@ -32,10 +41,8 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
         {
             var defaultSettings = new MongoEventStoreSetttings();
 
-            using (EmbeddedMongoDbServer embeddedMongoDbServer = new EmbeddedMongoDbServer())
+            using (var eventStore = new MongoEventStore(_mongoClient, DatabaseName))
             {
-                var eventStore = new MongoEventStore(embeddedMongoDbServer.Client, DatabaseName);
-
                 eventStore.Setttings.EventsCollectionName.Should().Be(defaultSettings.EventsCollectionName);
                 eventStore.Setttings.SnapshotsCollectionName.Should().Be(defaultSettings.SnapshotsCollectionName);
             }
@@ -68,10 +75,8 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
                 SnapshotsCollectionName = "MySnapshots"
             };
 
-            using (EmbeddedMongoDbServer embeddedMongoDbServer = new EmbeddedMongoDbServer())
+            using (var eventStore = new MongoEventStore(_mongoClient, DatabaseName, customSettings))
             {
-                var eventStore = new MongoEventStore(embeddedMongoDbServer.Client, DatabaseName, customSettings);
-
                 eventStore.Setttings.EventsCollectionName.Should().Be(customSettings.EventsCollectionName);
                 eventStore.Setttings.SnapshotsCollectionName.Should().Be(customSettings.SnapshotsCollectionName);
             }
@@ -81,11 +86,9 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
         [Fact]
         public void Should_create_database()
         {
-            using (EmbeddedMongoDbServer embeddedMongoDbServer = new EmbeddedMongoDbServer())
+            using (var eventStore = new MongoEventStore(_mongoClient, DatabaseName))
             {
-                var eventStore = new MongoEventStore(embeddedMongoDbServer.Client, DatabaseName);
-
-                var database = embeddedMongoDbServer.Client.GetDatabase(DatabaseName);
+                var database = eventStore.Client.GetDatabase(DatabaseName);
 
                 database.Should().NotBeNull();
 
@@ -97,12 +100,9 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
         [Fact]
         public async Task Test_events()
         {
-            using (var embeddedMongoDbServer = new EmbeddedMongoDbServer())
+            using (var eventStore = new MongoEventStore(_mongoClient, DatabaseName))
             {
-                var eventStore = new MongoEventStore(embeddedMongoDbServer.Client, DatabaseName);
-
                 var eventStoreTestSuit = new EventStoreTestSuit(eventStore);
-
                 await eventStoreTestSuit.EventTestsAsync();
             }
         }
@@ -111,10 +111,8 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
         [Fact]
         public async Task Test_snapshot()
         {
-            using (var embeddedMongoDbServer = new EmbeddedMongoDbServer())
+            using (var eventStore = new MongoEventStore(_mongoClient, DatabaseName))
             {
-                var eventStore = new MongoEventStore(embeddedMongoDbServer.Client, DatabaseName);
-
                 var eventStoreTestSuit = new EventStoreTestSuit(eventStore);
 
                 await eventStoreTestSuit.SnapshotTestsAsync();
@@ -125,9 +123,8 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
         [Fact]
         public async Task When_any_exception_be_thrown()
         {
-            using (var embeddedMongoDbServer = new EmbeddedMongoDbServer())
+            using (var eventStore = new MongoEventStore(_mongoClient, DatabaseName))
             {
-                var eventStore = new MongoEventStore(embeddedMongoDbServer.Client, DatabaseName);
                 var eventStoreTestSuit = new EventStoreTestSuit(eventStore);
 
                 await eventStoreTestSuit.DoSomeProblemAsync();
@@ -140,5 +137,6 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
             new object[] { new MongoClient(), null, new MongoEventStoreSetttings() },
             new object[] { new MongoClient(), "dbname", null }
         };
+    
     }
 }

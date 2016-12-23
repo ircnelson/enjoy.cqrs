@@ -1,6 +1,5 @@
 {
   "version": "1.0.0-*",
-
   "dependencies": {
     "EnjoyCQRS": {
       "target": "project"
@@ -15,12 +14,10 @@
     "Moq": "4.6.38-alpha",
     "Newtonsoft.Json": "9.0.2-beta1",
     "xunit.runner.visualstudio": "2.2.0-beta3-build1187",
-    "dotnet-test-xunit": "2.2.0-preview2-build1029",
-    "xunit": "2.2.0-beta4-build3444"
+    "dotnet-test-xunit": "2.2.0-*",
+    "xunit": "2.2.0-*"
   },
-
   "testRunner": "xunit",
-
   "frameworks": {
     "netcoreapp1.1": {
       "dependencies": {
@@ -29,12 +26,10 @@
           "version": "1.1.*"
         }
       },
-
       "imports": [
         "dnxcore50"
       ]
     },
-
-    "net461": { }
+    "net461": {}
   }
 }

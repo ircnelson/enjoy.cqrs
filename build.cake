@@ -202,13 +202,13 @@ Task("Code-Coverage")
 //////////////////////////////////////////////////////////////////////
 
 Task("Default")
-    .IsDependentOn("Create-NuGet-Packages")
-    .IsDependentOn("Run-Unit-Tests");
+    .IsDependentOn("Build");
 
 Task("AppVeyor")
     .IsDependentOn("Code-Coverage")
     .IsDependentOn("Create-NuGet-Packages")
     .IsDependentOn("Run-Unit-Tests");
+
 //////////////////////////////////////////////////////////////////////
 // EXECUTION
 //////////////////////////////////////////////////////////////////////

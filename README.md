@@ -17,6 +17,17 @@ Any suggestion is welcome.
 * Snapshot (custom strategy implementation)
 * Custom events metadata
 
+## Configure development enviroment
+
+1. Install Docker
+2. Pull mongo image. (See https://hub.docker.com/_/mongo/)
+	e.g.: docker run --name srv-mongo -p 27017:27017 -d mongo
+
+
+* Discovering docker ip:
+	unix: $(ifconfig en0 | awk '/ *inet /{print $2}')
+
+
 ## Event store implementations
 
 * MongoDB: Install-Package EnjoyCQRS.EventStore.MongoDB
