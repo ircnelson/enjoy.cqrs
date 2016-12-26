@@ -9,7 +9,7 @@ using Xunit;
 
 namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
 {
-    public class MongoEventStoreTests
+    public class MongoEventStoreTests : IDisposable
     {
         public const string CategoryName = "Integration";
         public const string CategoryValue = "MongoDB";
@@ -19,7 +19,7 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
 
         public MongoEventStoreTests()
         {
-            var mongoHost = "192.168.0.4";
+            var mongoHost = Environment.GetEnvironmentVariable("DOCKER_HOST");
             _mongoClient = new MongoClient($"mongodb://{mongoHost}");
 
             _mongoClient.DropDatabase(DatabaseName);
@@ -137,6 +137,10 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
             new object[] { new MongoClient(), null, new MongoEventStoreSetttings() },
             new object[] { new MongoClient(), "dbname", null }
         };
-    
+
+        public void Dispose()
+        {
+            _mongoClient.DropDatabase(DatabaseName);
+        }
     }
 }
