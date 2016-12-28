@@ -32,13 +32,13 @@ namespace EnjoyCQRS.EventSource
     {
         private readonly List<UncommitedEvent> _uncommitedEvents = new List<UncommitedEvent>();
         private readonly Route<IDomainEvent> _routeEvents = new Route<IDomainEvent>();
-
+        
         /// <summary>
         /// Collection of <see cref="IDomainEvent"/> that contains uncommited events.
         /// All events that not persisted yet should be here.
         /// </summary>
         public IReadOnlyCollection<IUncommitedEvent> UncommitedEvents => _uncommitedEvents.AsReadOnly();
-
+        
         /// <summary>
         /// Unique identifier.
         /// </summary>
@@ -95,7 +95,7 @@ namespace EnjoyCQRS.EventSource
             {
                 Task.WaitAll(Task.Delay(1));
 
-                _uncommitedEvents.Add(new UncommitedEvent(this, @event));
+                _uncommitedEvents.Add(new UncommitedEvent(this, @event, Sequence + 1));
             }
         }
 

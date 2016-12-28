@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -101,11 +102,11 @@ namespace EnjoyCQRS.EventSource.Storage
         /// <exception cref="AggregateNotFoundException"></exception>
         public async Task<TAggregate> GetByIdAsync<TAggregate>(Guid id) where TAggregate : Aggregate, new()
         {
-            _logger.Log(LogLevel.Debug, $"Getting aggregate '{typeof(TAggregate).FullName}' with identifier: '{id}'.");
+            _logger.LogDebug($"Getting aggregate '{typeof(TAggregate).FullName}' with identifier: '{id}'.");
 
             var aggregate = _aggregateTracker.GetById<TAggregate>(id);
 
-            _logger.Log(LogLevel.Debug, "Returning an aggregate tracked.");
+            _logger.LogDebug("Returning an aggregate tracked.");
 
             if (aggregate != null) return aggregate;
 
@@ -113,7 +114,7 @@ namespace EnjoyCQRS.EventSource.Storage
 
             IEnumerable<ICommitedEvent> events;
 
-            _logger.Log(LogLevel.Debug, "Checking if aggregate has snapshot support.");
+            _logger.LogDebug("Checking if aggregate has snapshot support.");
 
             if (_snapshotStrategy.CheckSnapshotSupport(aggregate.GetType()))
             {
@@ -127,13 +128,13 @@ namespace EnjoyCQRS.EventSource.Storage
                     {
                         version = snapshot.AggregateVersion;
 
-                        _logger.Log(LogLevel.Debug, "Restoring snapshot.");
+                        _logger.LogDebug("Restoring snapshot.");
 
                         var snapshotRestore = _snapshotSerializer.Deserialize(snapshot);
 
                         snapshotAggregate.Restore(snapshotRestore);
 
-                        _logger.Log(LogLevel.Debug, "Snapshot restored.");
+                        _logger.LogDebug("Snapshot restored.");
                     }
 
                     events = await _eventStore.GetEventsForwardAsync(id, version).ConfigureAwait(false);
@@ -150,7 +151,7 @@ namespace EnjoyCQRS.EventSource.Storage
 
             if (aggregate.Id.Equals(Guid.Empty))
             {
-                _logger.Log(LogLevel.Error, $"The aggregate ({typeof(TAggregate).FullName} {id}) was not found.");
+                _logger.LogError($"The aggregate ({typeof(TAggregate).FullName} {id}) was not found.");
 
                 throw new AggregateNotFoundException(typeof(TAggregate).Name, id);
             }
@@ -170,20 +171,20 @@ namespace EnjoyCQRS.EventSource.Storage
             CheckConcurrency(aggregate);
 
             RegisterForTracking(aggregate);
-
+            
             return Task.CompletedTask;
         }
-
+        
         /// <summary>
         /// Start transaction.
         /// </summary>
         public void BeginTransaction()
         {
-            _logger.Log(LogLevel.Information, $"Called method: {nameof(Session)}.{nameof(BeginTransaction)}.");
+            _logger.LogInformation($"Called method: {nameof(Session)}.{nameof(BeginTransaction)}.");
 
             if (_externalTransaction)
             {
-                _logger.Log(LogLevel.Error, "Transaction already was open.");
+                _logger.LogError("Transaction already was open.");
 
                 throw new InvalidOperationException("The transaction already was open.");
             }
@@ -198,9 +199,9 @@ namespace EnjoyCQRS.EventSource.Storage
         /// <returns></returns>
         public async Task CommitAsync()
         {
-            _logger.Log(LogLevel.Information, $"Called method: {nameof(Session)}.{nameof(CommitAsync)}.");
+            _logger.LogInformation($"Called method: {nameof(Session)}.{nameof(CommitAsync)}.");
 
-            _logger.Log(LogLevel.Information, $"Calling method: {_eventStore.GetType().Name}.{nameof(CommitAsync)}.");
+            _logger.LogInformation($"Calling method: {_eventStore.GetType().Name}.{nameof(CommitAsync)}.");
 
             await _eventStore.CommitAsync().ConfigureAwait(false);
             _externalTransaction = false;
@@ -211,7 +212,7 @@ namespace EnjoyCQRS.EventSource.Storage
         /// </summary>
         public virtual async Task SaveChangesAsync()
         {
-            _logger.Log(LogLevel.Information, $"Called method: {nameof(Session)}.{nameof(SaveChangesAsync)}.");
+            _logger.LogInformation($"Called method: {nameof(Session)}.{nameof(SaveChangesAsync)}.");
 
             if (!_externalTransaction)
             {
@@ -219,28 +220,52 @@ namespace EnjoyCQRS.EventSource.Storage
             }
 
             // If transaction called externally, the client should care with transaction.
+
             try
             {
-                _logger.Log(LogLevel.Information, "Begin iterate in collection of aggregate.");
+                _logger.LogInformation("Serializing events.");
 
-                var orderedEvents = _aggregates.SelectMany(e => e.UncommitedEvents).OrderBy(o => o.CreatedAt).Select(e => e.OriginalEvent).ToList();
+                var uncommitedEvents =
+                    _aggregates.SelectMany(e => e.UncommitedEvents)
+                    .OrderBy(o => o.CreatedAt)
+                    .Cast<UncommitedEvent>()
+                    .ToList();
+                
+                var serializedEvents = uncommitedEvents.Select(uncommitedEvent =>
+                {
+                    var metadatas = _metadataProviders.SelectMany(md => md.Provide(uncommitedEvent.Aggregate,
+                        uncommitedEvent.OriginalEvent,
+                        Metadata.Empty)).Concat(new[]
+                    {
+                        new KeyValuePair<string, object>(MetadataKeys.EventId, Guid.NewGuid()),
+                        new KeyValuePair<string, object>(MetadataKeys.EventVersion, uncommitedEvent.Version)
+                    });
+
+                    var serializeEvent = _eventSerializer.Serialize(uncommitedEvent.Aggregate,
+                        uncommitedEvent.OriginalEvent,
+                        metadatas);
+
+                    return serializeEvent;
+                });
+
+                _logger.LogInformation("Saving events on Event Store.");
+
+                await _eventStore.SaveAsync(serializedEvents).ConfigureAwait(false);
+
+                _logger.LogInformation("Begin iterate in collection of aggregate.");
 
                 foreach (var aggregate in _aggregates)
                 {
-                    _logger.Log(LogLevel.Information, "Serializing events.");
-
-                    var serializedEvents = aggregate.ToSerialized(_metadataProviders, _eventSerializer);
+                    _logger.LogInformation($"Checking if should take snapshot for aggregate: '{aggregate.Id}'.");
 
                     if (_snapshotStrategy.ShouldMakeSnapshot(aggregate))
                     {
-                        _logger.Log(LogLevel.Information, "Taking aggregate's snapshot.");
+                        _logger.LogInformation("Taking aggregate's snapshot.");
 
                         await aggregate.TakeSnapshot(_eventStore, _snapshotSerializer).ConfigureAwait(false);
                     }
 
-                    await _eventStore.SaveAsync(serializedEvents).ConfigureAwait(false);
-
-                    _logger.Log(LogLevel.Information, $"Update aggregate's version from {aggregate.Version} to {aggregate.Sequence}.");
+                    _logger.LogInformation($"Update aggregate's version from {aggregate.Version} to {aggregate.Sequence}.");
 
                     aggregate.UpdateVersion(aggregate.Sequence);
 
@@ -249,12 +274,12 @@ namespace EnjoyCQRS.EventSource.Storage
 
                 _logger.Log(LogLevel.Information, "End iterate.");
 
-                _logger.Log(LogLevel.Information, $"Publishing events. [Qty: {orderedEvents.Count}]");
+                _logger.LogInformation($"Publishing events. [Qty: {uncommitedEvents.Count}]");
 
-                await _eventPublisher.PublishAsync(orderedEvents.AsEnumerable()).ConfigureAwait(false);
+                await _eventPublisher.PublishAsync(uncommitedEvents.Select(e => e.OriginalEvent)).ConfigureAwait(false);
 
-                _logger.Log(LogLevel.Information, "Published events.");
-
+                _logger.LogInformation("Published events.");
+                
                 _aggregates.Clear();
 
                 await _eventPublisher.CommitAsync().ConfigureAwait(false);
@@ -282,15 +307,15 @@ namespace EnjoyCQRS.EventSource.Storage
         /// </summary>
         public void Rollback()
         {
-            _logger.Log(LogLevel.Information, "Calling Event Publisher Rollback.");
+            _logger.LogInformation("Calling Event Publisher Rollback.");
 
             _eventPublisher.Rollback();
 
-            _logger.Log(LogLevel.Information, "Calling Event Store Rollback.");
+            _logger.LogInformation("Calling Event Store Rollback.");
 
             _eventStore.Rollback();
 
-            _logger.Log(LogLevel.Information, "Cleaning tracker.");
+            _logger.LogInformation("Cleaning tracker.");
 
             foreach (var aggregate in _aggregates)
             {
@@ -302,7 +327,7 @@ namespace EnjoyCQRS.EventSource.Storage
 
         private void RegisterForTracking<TAggregate>(TAggregate aggregateRoot) where TAggregate : Aggregate
         {
-            _logger.Log(LogLevel.Debug, $"Adding to track: {aggregateRoot.GetType().FullName}.");
+            _logger.LogDebug($"Adding to track: {aggregateRoot.GetType().FullName}.");
 
             _aggregates.Add(aggregateRoot);
             _aggregateTracker.Add(aggregateRoot);
@@ -310,7 +335,7 @@ namespace EnjoyCQRS.EventSource.Storage
 
         private void CheckConcurrency<TAggregate>(TAggregate aggregateRoot) where TAggregate : Aggregate
         {
-            _logger.Log(LogLevel.Debug, "Checking concurrency.");
+            _logger.LogDebug("Checking concurrency.");
 
             var trackedAggregate = _aggregateTracker.GetById<TAggregate>(aggregateRoot.Id);
 
@@ -318,7 +343,7 @@ namespace EnjoyCQRS.EventSource.Storage
 
             if (trackedAggregate.Version != aggregateRoot.Version)
             {
-                _logger.Log(LogLevel.Error, $"Aggregate's current version is: {aggregateRoot.Version} - expected is: {trackedAggregate.Version}.");
+                _logger.LogError($"Aggregate's current version is: {aggregateRoot.Version} - expected is: {trackedAggregate.Version}.");
 
                 throw new ExpectedVersionException<TAggregate>(aggregateRoot, trackedAggregate.Version);
             }
@@ -335,7 +360,7 @@ namespace EnjoyCQRS.EventSource.Storage
 
                 if (_eventUpdateManager != null)
                 {
-                    _logger.Log(LogLevel.Debug, "Calling Update Manager");
+                    _logger.LogDebug("Calling Update Manager");
 
                     events = _eventUpdateManager.Update(events);
                 }

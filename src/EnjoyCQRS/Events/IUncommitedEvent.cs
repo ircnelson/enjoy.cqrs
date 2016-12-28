@@ -27,6 +27,7 @@ namespace EnjoyCQRS.Events
     public interface IUncommitedEvent
     {
         DateTime CreatedAt { get; }
+        int Version { get; }
         IDomainEvent OriginalEvent { get; }
     }
 }

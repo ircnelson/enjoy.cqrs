@@ -51,26 +51,5 @@ namespace EnjoyCQRS.Extensions
 
             await eventStore.SaveSnapshotAsync(serializedSnapshot).ConfigureAwait(false);
         }
-
-        public static IEnumerable<ISerializedEvent> ToSerialized(this IAggregate aggregate,
-            IEnumerable<IMetadataProvider> metadataProviders,
-            IEventSerializer eventSerializer)
-        {
-            var serializedEvents = aggregate.UncommitedEvents.Select((e, index) =>
-            {
-                index++;
-
-                var metadatas =
-                    metadataProviders.SelectMany(md => md.Provide(aggregate, e.OriginalEvent, Metadata.Empty)).Concat(new[]
-                    {
-                        new KeyValuePair<string, object>(MetadataKeys.EventId, Guid.NewGuid()),
-                        new KeyValuePair<string, object>(MetadataKeys.EventVersion, (aggregate.Version + index))
-                    });
-
-                return eventSerializer.Serialize(aggregate, e.OriginalEvent, new Metadata(metadatas));
-            });
-
-            return serializedEvents;
-        }
     }
 }
