@@ -34,4 +34,6 @@ deploy:
   api_key:
     secure: zPU3TMfMcbGiOTRpcKdNjztuCMOtjdBB0ReA9tkMCs9XKejC9NKMVvEGvz7HFmEP
   on:
-    branch: dev
+    branch: 
+    - dev
+    - ci

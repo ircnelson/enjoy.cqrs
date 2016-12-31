@@ -24,12 +24,7 @@ var testCoverageOutputFilePath = testResultsDir.CombineWithFilePath("OpenCover.x
 var outputNugets = artifactsDir.Combine("nugets");
 
 var isAppVeyorBuild = AppVeyor.IsRunningOnAppVeyor;
-var buildNumber = "build" + Context.EnvironmentVariable("APPVEYOR_BUILD_NUMBER");
-var branch = Context.EnvironmentVariable("APPVEYOR_REPO_BRANCH");
 var coverallsToken = Context.EnvironmentVariable("COVERALLS_REPO_TOKEN");
-
-Context.Information("Test Coverage Output File: " + testCoverageOutputFilePath);
-Context.Information("Build Version: " + buildNumber);
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
@@ -69,7 +64,6 @@ Task("Build")
         Context.Information("Project: " + project.GetDirectory().FullPath);
 
         DotNetCoreBuild(project.GetDirectory().FullPath, new DotNetCoreBuildSettings {
-            VersionSuffix = Context.EnvironmentVariable("Build"),
             Configuration = configuration
         });
     }
@@ -137,19 +131,13 @@ Task("Run-Unit-Tests")
         }
         else
         {
-            var name = project.GetFilenameWithoutExtension();
-            var dirPath = project.GetDirectory().FullPath;
-            var xunit = GetFiles(dirPath + "/bin/" + configuration + "/net461/*/dotnet-test-xunit.exe").First().FullPath;
-            var testfile = GetFiles(dirPath + "/bin/" + configuration + "/net461/*/" + name + ".dll").First().FullPath;
-
-            using(var process = StartAndReturnProcess("mono", new ProcessSettings { Arguments = xunit + " " + testfile }))
+            var settings = new DotNetCoreTestSettings
             {
-                process.WaitForExit();
-                if (process.GetExitCode() != 0)
-                {
-                    throw new Exception("Mono tests failed!");
-                }
-            }
+                Configuration = configuration, 
+                Framework = "netcoreapp1.1"
+            };
+
+            DotNetCoreTest(project.GetDirectory().FullPath, settings);
         }
     }
 
@@ -164,6 +152,9 @@ Task("Create-NuGet-Packages")
     .IsDependentOn("Build")
     .Does(() => 
 {
+    var branch = Context.EnvironmentVariable("APPVEYOR_REPO_BRANCH");
+    var versionSuffix = branch + "-" + Context.EnvironmentVariable("APPVEYOR_BUILD_NUMBER");
+
     var nuspecs = GetFiles("./src/**/*.nuspec");
 
     foreach (var nuspec in nuspecs)
@@ -177,7 +168,7 @@ Task("Create-NuGet-Packages")
 
         if (isAppVeyorBuild && branch != "master") 
         {
-            dotNetCorePackSettings.VersionSuffix = buildNumber.ToString();
+            dotNetCorePackSettings.VersionSuffix = versionSuffix.ToString();
         }
 
         DotNetCorePack(nuspec.GetDirectory().FullPath, dotNetCorePackSettings);
@@ -202,13 +193,12 @@ Task("Code-Coverage")
 //////////////////////////////////////////////////////////////////////
 
 Task("Default")
-    .IsDependentOn("Build");
+    .IsDependentOn("Run-Unit-Tests");
 
 Task("AppVeyor")
     .IsDependentOn("Code-Coverage")
     .IsDependentOn("Create-NuGet-Packages")
     .IsDependentOn("Run-Unit-Tests");
-
 //////////////////////////////////////////////////////////////////////
 // EXECUTION
 //////////////////////////////////////////////////////////////////////

@@ -1,0 +1,30 @@
+language: csharp
+os:
+  - linux
+
+services: mongodb
+
+before_script:
+  - export DOCKER_HOST="127.0.0.1"
+
+# .NET CLI require Ubuntu 14.04
+sudo: required
+dist: trusty
+addons:
+  apt:
+    packages: 
+    - gettext
+    - libcurl4-openssl-dev
+    - libicu-dev
+    - libssl-dev
+    - libunwind8
+
+mono:  
+  - 4.6.0
+
+script:
+  - ./build_travis.sh
+
+cache:
+  directories:
+    - tools

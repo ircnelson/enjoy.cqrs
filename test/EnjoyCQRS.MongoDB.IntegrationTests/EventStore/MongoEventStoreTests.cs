@@ -13,7 +13,7 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
     {
         public const string CategoryName = "Integration";
         public const string CategoryValue = "MongoDB";
-        public const string DatabaseName = "test";
+        public const string DatabaseName = "enjoycqrs";
 
         private readonly MongoClient _mongoClient;
 
