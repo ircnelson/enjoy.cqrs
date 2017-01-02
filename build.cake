@@ -149,6 +149,7 @@ Task("Run-Unit-Tests")
 });
 
 Task("Create-NuGet-Packages")
+    .WithCriteria(() => !BuildSystem.AppVeyor.Environment.PullRequest.IsPullRequest)
     .IsDependentOn("Build")
     .Does(() => 
 {
@@ -176,6 +177,7 @@ Task("Create-NuGet-Packages")
 });
 
 Task("Code-Coverage")
+    .WithCriteria(() => !BuildSystem.AppVeyor.Environment.PullRequest.IsPullRequest)
     .WithCriteria(() => FileExists(testCoverageOutputFilePath))
     .WithCriteria(() => !BuildSystem.IsLocalBuild)
     .WithCriteria(() => !string.IsNullOrEmpty(coverallsToken))
