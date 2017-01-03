@@ -19,7 +19,10 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
 
         public MongoEventStoreTests()
         {
-            var mongoHost = Environment.GetEnvironmentVariable("DOCKER_HOST");
+            var mongoHost = Environment.GetEnvironmentVariable("MONGODB_HOST");
+
+            if (string.IsNullOrWhiteSpace(mongoHost)) throw new ArgumentNullException("The variable 'MONGODB_HOST' was not configured.");
+
             _mongoClient = new MongoClient($"mongodb://{mongoHost}");
 
             _mongoClient.DropDatabase(DatabaseName);
