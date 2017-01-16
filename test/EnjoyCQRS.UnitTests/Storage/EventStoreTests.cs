@@ -29,6 +29,7 @@ namespace EnjoyCQRS.UnitTests.Storage
         {
             var eventSerializer = new EventSerializer(new JsonTextSerializer());
             var snapshotSerializer = new SnapshotSerializer(new JsonTextSerializer());
+            var projectionSerializer = new ProjectionSerializer();
 
             _inMemoryDomainEventStore = new InMemoryEventStore();
             
@@ -42,7 +43,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             _mockEventPublisher = new Mock<IEventPublisher>();
             _mockEventPublisher.Setup(e => e.PublishAsync(It.IsAny<IEnumerable<IDomainEvent>>())).Returns(Task.CompletedTask);
             
-            var session = new Session(mockLoggerFactory.Object, _inMemoryDomainEventStore, _mockEventPublisher.Object, eventSerializer, snapshotSerializer);
+            var session = new Session(mockLoggerFactory.Object, _inMemoryDomainEventStore, _mockEventPublisher.Object, eventSerializer, snapshotSerializer, projectionSerializer);
             _repository = new Repository(mockLoggerFactory.Object, session);
 
             var unitOfWorkMock = new Mock<IUnitOfWork>();

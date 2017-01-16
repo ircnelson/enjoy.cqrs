@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource;
+using EnjoyCQRS.EventSource.Projections;
 using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;
 
@@ -88,6 +89,13 @@ namespace EnjoyCQRS.UnitTests.Shared.TestSuit
             await _eventStore.SaveAsync(collection).ConfigureAwait(false);
 
             CalledMethods |= EventStoreMethods.SaveAsync;
+        }
+
+        public async Task SaveProjectionAsync(IProjection projection)
+        {
+            await _eventStore.SaveProjectionAsync(projection);
+
+            CalledMethods |= EventStoreMethods.SaveAggregateProjection;
         }
     }
 }

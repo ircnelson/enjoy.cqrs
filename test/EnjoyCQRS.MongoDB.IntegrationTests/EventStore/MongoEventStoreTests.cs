@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using EnjoyCQRS.EventStore.MongoDB;
 using EnjoyCQRS.UnitTests.Shared.TestSuit;
 using FluentAssertions;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Driver;
 using Xunit;
 
@@ -16,6 +18,19 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
         public const string DatabaseName = "enjoycqrs";
 
         private readonly MongoClient _mongoClient;
+
+        static MongoEventStoreTests()
+        {
+            var pack = new ConventionPack
+            {
+                new CamelCaseElementNameConvention(),
+                new IgnoreExtraElementsConvention(true)
+            };
+
+            ConventionRegistry.Register("camel case", pack, t => true);
+
+            BsonDefaults.GuidRepresentation = GuidRepresentation.Standard;
+        }
 
         public MongoEventStoreTests()
         {
@@ -105,7 +120,7 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
         {
             using (var eventStore = new MongoEventStore(_mongoClient, DatabaseName))
             {
-                var eventStoreTestSuit = new EventStoreTestSuit(eventStore);
+                var eventStoreTestSuit = new EventStoreTestSuit(eventStore, new MongoProjectionSerializer());
                 await eventStoreTestSuit.EventTestsAsync();
             }
         }
@@ -116,7 +131,7 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
         {
             using (var eventStore = new MongoEventStore(_mongoClient, DatabaseName))
             {
-                var eventStoreTestSuit = new EventStoreTestSuit(eventStore);
+                var eventStoreTestSuit = new EventStoreTestSuit(eventStore, new MongoProjectionSerializer());
 
                 await eventStoreTestSuit.SnapshotTestsAsync();
             }
@@ -128,7 +143,7 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
         {
             using (var eventStore = new MongoEventStore(_mongoClient, DatabaseName))
             {
-                var eventStoreTestSuit = new EventStoreTestSuit(eventStore);
+                var eventStoreTestSuit = new EventStoreTestSuit(eventStore, new MongoProjectionSerializer());
 
                 await eventStoreTestSuit.DoSomeProblemAsync();
             }

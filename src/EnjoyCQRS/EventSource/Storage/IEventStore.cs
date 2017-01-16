@@ -22,18 +22,20 @@
 
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using EnjoyCQRS.Collections;
 using EnjoyCQRS.Events;
+using EnjoyCQRS.EventSource.Projections;
 
 namespace EnjoyCQRS.EventSource.Storage
 {
     /// <summary>
     /// Event Store repository abstraction.
     /// </summary>
-    public interface IEventStore : ISnapshotStore, IDisposable
+    public interface IEventStore : ISnapshotStore, IProjectionStore, IDisposable
     {
-        /// <summary>
+        /// <summary>∑
         /// Start the transaction.
         /// </summary>
         void BeginTransaction();

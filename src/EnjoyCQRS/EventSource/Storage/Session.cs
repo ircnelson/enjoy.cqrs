@@ -29,6 +29,7 @@ using EnjoyCQRS.Collections;
 using EnjoyCQRS.Core;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource.Exceptions;
+using EnjoyCQRS.EventSource.Projections;
 using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.Extensions;
 using EnjoyCQRS.Logger;
@@ -45,6 +46,7 @@ namespace EnjoyCQRS.EventSource.Storage
         private readonly IEventPublisher _eventPublisher;
         private readonly IEventSerializer _eventSerializer;
         private readonly ISnapshotSerializer _snapshotSerializer;
+        private readonly IProjectionSerializer _projectionSerializer;
         private readonly IEventUpdateManager _eventUpdateManager;
         private readonly ISnapshotStrategy _snapshotStrategy;
         private readonly IEnumerable<IMetadataProvider> _metadataProviders;
@@ -60,6 +62,7 @@ namespace EnjoyCQRS.EventSource.Storage
             IEventPublisher eventPublisher,
             IEventSerializer eventSerializer,
             ISnapshotSerializer snapshotSerializer,
+            IProjectionSerializer projectionSerializer,
             IEventUpdateManager eventUpdateManager = null,
             IEnumerable<IMetadataProvider> metadataProviders = null,
             ISnapshotStrategy snapshotStrategy = null)
@@ -67,6 +70,9 @@ namespace EnjoyCQRS.EventSource.Storage
             if (loggerFactory == null) throw new ArgumentNullException(nameof(loggerFactory));
             if (eventStore == null) throw new ArgumentNullException(nameof(eventStore));
             if (eventPublisher == null) throw new ArgumentNullException(nameof(eventPublisher));
+            if (eventSerializer == null) throw new ArgumentNullException(nameof(eventSerializer));
+            if (snapshotSerializer == null) throw new ArgumentNullException(nameof(snapshotSerializer));
+            if (projectionSerializer == null) throw new ArgumentNullException(nameof(projectionSerializer));
 
             if (metadataProviders == null) metadataProviders = Enumerable.Empty<IMetadataProvider>();
 
@@ -88,6 +94,7 @@ namespace EnjoyCQRS.EventSource.Storage
             _eventStore = eventStore;
             _eventSerializer = eventSerializer;
             _snapshotSerializer = snapshotSerializer;
+            _projectionSerializer = projectionSerializer;
             _eventUpdateManager = eventUpdateManager;
             _metadataProviders = metadataProviders;
             _eventPublisher = eventPublisher;
@@ -270,6 +277,10 @@ namespace EnjoyCQRS.EventSource.Storage
                     aggregate.UpdateVersion(aggregate.Sequence);
 
                     aggregate.ClearUncommitedEvents();
+
+                    var projection = _projectionSerializer.Serialize(aggregate);
+
+                    await _eventStore.SaveProjectionAsync(projection).ConfigureAwait(false);
                 }
 
                 _logger.Log(LogLevel.Information, "End iterate.");

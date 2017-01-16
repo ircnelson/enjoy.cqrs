@@ -22,9 +22,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using EnjoyCQRS.Events;
+using EnjoyCQRS.EventSource.Projections;
 using EnjoyCQRS.EventSource.Snapshots;
 
 namespace EnjoyCQRS.EventSource.Storage
@@ -33,13 +35,15 @@ namespace EnjoyCQRS.EventSource.Storage
     {
         public IReadOnlyList<ICommitedEvent> Events => _events.AsReadOnly();
         public IReadOnlyList<ICommitedSnapshot> Snapshots => _snapshots.AsReadOnly();
+        public IReadOnlyDictionary<ProjectionKey, object> Projections => new ReadOnlyDictionary<ProjectionKey, object>(_projections);
 
         private readonly List<ICommitedEvent> _events = new List<ICommitedEvent>();
         private readonly List<ICommitedSnapshot> _snapshots = new List<ICommitedSnapshot>();
+        private readonly Dictionary<ProjectionKey, object> _projections = new Dictionary<ProjectionKey, object>();
 
         private readonly List<ISerializedEvent> _uncommitedEvents = new List<ISerializedEvent>();
-
         private readonly List<ISerializedSnapshot> _uncommitedSnapshots = new List<ISerializedSnapshot>();
+        private readonly Dictionary<ProjectionKey, object> _uncommitedProjections = new Dictionary<ProjectionKey, object>();
 
         public bool InTransaction;
         
@@ -92,6 +96,20 @@ namespace EnjoyCQRS.EventSource.Storage
             
             _uncommitedSnapshots.Clear();
 
+            foreach (var uncommitedProjection in _uncommitedProjections.ToList())
+            {
+                if (!_projections.ContainsKey(uncommitedProjection.Key))
+                {
+                    _projections.Add(uncommitedProjection.Key, uncommitedProjection.Value);
+                }
+                else
+                {
+                    _projections[uncommitedProjection.Key] = uncommitedProjection.Value;
+                }
+            }
+
+            _uncommitedProjections.Clear();
+
             return Task.CompletedTask;
         }
 
@@ -99,6 +117,7 @@ namespace EnjoyCQRS.EventSource.Storage
         {
             _uncommitedEvents.Clear();
             _uncommitedSnapshots.Clear();
+            _uncommitedProjections.Clear();
 
             InTransaction = false;
         }
@@ -116,6 +135,20 @@ namespace EnjoyCQRS.EventSource.Storage
         public virtual Task SaveAsync(IEnumerable<ISerializedEvent> collection)
         {
             _uncommitedEvents.AddRange(collection);
+
+            return Task.CompletedTask;
+        }
+
+        public Task SaveProjectionAsync(IProjection projection)
+        {
+            var key = new ProjectionKey(projection.Id, projection.Category);
+
+            if (!_uncommitedProjections.ContainsKey(key))
+            {
+                _uncommitedProjections.Add(key, null);
+            }
+
+            _uncommitedProjections[key] = projection.Projection;
 
             return Task.CompletedTask;
         }
@@ -155,6 +188,18 @@ namespace EnjoyCQRS.EventSource.Storage
             public int AggregateVersion { get; }
             public string SerializedData { get; }
             public string SerializedMetadata { get; }
+        }
+
+        public struct ProjectionKey
+        {
+            public Guid Id { get; }
+            public string Category { get;}
+
+            public ProjectionKey(Guid id, string category)
+            {
+                Id = id;
+                Category = category;
+            }
         }
     }
 }

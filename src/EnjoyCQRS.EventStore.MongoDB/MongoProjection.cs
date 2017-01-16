@@ -1,17 +1,17 @@
 ﻿// The MIT License (MIT)
-// 
+//
 // Copyright (c) 2016 Nelson Corrêa V. Júnior
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -21,25 +21,32 @@
 // SOFTWARE.
 
 using System;
+using EnjoyCQRS.EventSource.Projections;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace EnjoyCQRS.EventStore.MongoDB
 {
-    public class MongoEventStoreSetttings
+    [BsonDiscriminator(RootClass = true)]
+    [BsonIgnoreExtraElements]
+    public class MongoProjection : IProjection
     {
-        public string EventsCollectionName { get; set; } = "Events";
-        public string SnapshotsCollectionName { get; set; } = "Snapshots";
-        public string ProjectionsCollectionName { get; set; } = "Projections";
+        [BsonId]
+        public string UniqueId => $"{Category}-{Id}";
 
-        internal void Validate()
+        [BsonElement("pid")]
+        public Guid Id { get; }
+
+        [BsonElement("category")]
+        public string Category { get; }
+
+        [BsonElement("projection")]
+        public object Projection { get; }
+
+        public MongoProjection(Guid id, string category, object projection)
         {
-            if (string.IsNullOrWhiteSpace(EventsCollectionName))
-                throw new ArgumentNullException(nameof(EventsCollectionName));
-
-            if (string.IsNullOrWhiteSpace(SnapshotsCollectionName))
-                throw new ArgumentNullException(nameof(SnapshotsCollectionName));
-
-            if (string.IsNullOrWhiteSpace(ProjectionsCollectionName))
-                throw new ArgumentNullException(nameof(ProjectionsCollectionName));
+            Id = id;
+            Category = category;
+            Projection = projection;
         }
     }
 }

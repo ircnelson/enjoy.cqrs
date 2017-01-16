@@ -3,6 +3,7 @@ using System.Reflection;
 using EnjoyCQRS.Commands;
 using EnjoyCQRS.Core;
 using EnjoyCQRS.Events;
+using EnjoyCQRS.EventSource.Projections;
 using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;
@@ -12,8 +13,8 @@ using EnjoyCQRS.MessageBus.InProcess;
 using EnjoyCQRS.UnitTests.Shared;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace EnjoyCQRS.IntegrationTests
 {
@@ -36,6 +37,7 @@ namespace EnjoyCQRS.IntegrationTests
             services.AddTransient<IEventSerializer, EventSerializer>();
             services.AddTransient<ISnapshotSerializer, SnapshotSerializer>();
             services.AddTransient<ITextSerializer, JsonTextSerializer>();
+            services.AddTransient<IProjectionSerializer, ProjectionSerializer>();
 
             services.Scan(e =>
                 e.FromAssemblyOf<FooAssembler>()

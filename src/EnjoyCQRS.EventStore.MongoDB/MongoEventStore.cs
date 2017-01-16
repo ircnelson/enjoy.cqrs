@@ -21,11 +21,13 @@
 // SOFTWARE.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource;
+using EnjoyCQRS.EventSource.Projections;
 using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;
 using MongoDB.Bson;
@@ -33,20 +35,25 @@ using MongoDB.Driver;
 
 namespace EnjoyCQRS.EventStore.MongoDB
 {
+    public delegate Task AddOrUpdateProjectionsDelegate(IEnumerable<IProjection> projections);
+
     public class MongoEventStore : IEventStore
     {
         private readonly List<Event> _uncommitedEvents = new List<Event>();
         private readonly List<SnapshotData> _uncommitedSnapshots = new List<SnapshotData>();
+        private readonly List<IProjection> _uncommitedProjections = new List<IProjection>();
 
         public MongoClient Client { get; }
         public string Database { get; }
         public MongoEventStoreSetttings Setttings { get; }
 
+        public AddOrUpdateProjectionsDelegate AddOrUpdateProjections { get; }
+
         public MongoEventStore(MongoClient client, string database) : this(client, database, new MongoEventStoreSetttings())
         {
         }
 
-        public MongoEventStore(MongoClient client, string database, MongoEventStoreSetttings setttings)
+        public MongoEventStore(MongoClient client, string database, MongoEventStoreSetttings setttings, AddOrUpdateProjectionsDelegate addOrUpdateProjections = null)
         {
             if (client == null) throw new ArgumentNullException(nameof(client));
             if (database == null) throw new ArgumentNullException(nameof(database));
@@ -57,6 +64,11 @@ namespace EnjoyCQRS.EventStore.MongoDB
             Database = database;
             Setttings = setttings;
             Client = client;
+
+            if (addOrUpdateProjections == null)
+            {
+                AddOrUpdateProjections = AddOrUpdateProjectionsAsync;
+            }
         }
 
         public Task SaveSnapshotAsync(ISerializedSnapshot snapshot)
@@ -122,14 +134,17 @@ namespace EnjoyCQRS.EventStore.MongoDB
             if (_uncommitedEvents.Count > 0)
                 await eventCollection.InsertManyAsync(_uncommitedEvents);
 
-            _uncommitedEvents.Clear();
-            _uncommitedSnapshots.Clear();
+            if (_uncommitedProjections.Count > 0)
+            {
+                await AddOrUpdateProjections(_uncommitedProjections);
+            }
+
+            Cleanup();
         }
 
         public void Rollback()
         {
-            _uncommitedEvents.Clear();
-            _uncommitedSnapshots.Clear();
+            Cleanup();
         }
 
         public async Task<IEnumerable<ICommitedEvent>> GetAllEventsAsync(Guid id)
@@ -156,13 +171,20 @@ namespace EnjoyCQRS.EventStore.MongoDB
             return Task.CompletedTask;
         }
 
+        public Task SaveProjectionAsync(IProjection projection)
+        {
+            _uncommitedProjections.Add(projection);
+
+            return Task.CompletedTask;
+        }
+
         private Event Serialize(ISerializedEvent serializedEvent)
         {
             var eventData = BsonDocument.Parse(serializedEvent.SerializedData);
             var metadata = BsonDocument.Parse(serializedEvent.SerializedMetadata);
             var id = serializedEvent.Metadata.GetValue(MetadataKeys.EventId, value => Guid.Parse(value.ToString()));
             var eventType = serializedEvent.Metadata.GetValue(MetadataKeys.EventName, value => value.ToString());
-            
+
             var @event = new Event
             {
                 Id = id,
@@ -175,6 +197,13 @@ namespace EnjoyCQRS.EventStore.MongoDB
             };
 
             return @event;
+        }
+
+        private void Cleanup()
+        {
+            _uncommitedEvents.Clear();
+            _uncommitedSnapshots.Clear();
+            _uncommitedProjections.Clear();
         }
 
         private ICommitedEvent Deserialize(Event e)
@@ -191,8 +220,9 @@ namespace EnjoyCQRS.EventStore.MongoDB
         {
             var eventData = BsonDocument.Parse(serializedSnapshot.SerializedData);
             var metadata = BsonDocument.Parse(serializedSnapshot.SerializedMetadata);
-            var id = serializedSnapshot.Metadata.GetValue(MetadataKeys.SnapshotId, value => Guid.Parse(value.ToString()));
-            
+            var id = serializedSnapshot.Metadata.GetValue(MetadataKeys.SnapshotId,
+                value => Guid.Parse(value.ToString()));
+
             var snapshot = new SnapshotData
             {
                 Id = id,
@@ -204,6 +234,37 @@ namespace EnjoyCQRS.EventStore.MongoDB
             };
 
             return snapshot;
+        }
+
+        private async Task AddOrUpdateProjectionsAsync(IEnumerable<IProjection> projections)
+        {
+            var db = Client.GetDatabase(Database);
+            var projectionCollection = db.GetCollection<MongoProjection>(Setttings.ProjectionsCollectionName);
+
+            var filterBuilder = new FilterDefinitionBuilder<MongoProjection>();
+
+            foreach (var uncommitedProjection in projections.Cast<MongoProjection>())
+            {
+                var filter = FilterDefinition<MongoProjection>.Empty
+                             & filterBuilder.Eq(e => e.Id, uncommitedProjection.Id)
+                             & filterBuilder.Eq(e => e.Category, uncommitedProjection.Category);
+
+                var document = await projectionCollection.FindAsync(filter);
+
+                if (await document.AnyAsync())
+                {
+                    var update = Builders<MongoProjection>.Update;
+
+                    var updateDefinition = update
+                        .Set(e => e.Projection, uncommitedProjection.Projection);
+
+                    await projectionCollection.FindOneAndUpdateAsync(filter, updateDefinition);
+                }
+                else
+                {
+                    await projectionCollection.InsertOneAsync(uncommitedProjection);
+                }
+            }
         }
     }
 }

@@ -183,7 +183,9 @@ namespace EnjoyCQRS.UnitTests.EventUpgrader
             var eventStore = new InMemoryEventStore();
             var eventSerializer = new EventSerializer(new JsonTextSerializer());
             var snapshotSerializer = new SnapshotSerializer(new JsonTextSerializer());
-            var session = new Session(loggerFactory, eventStore, eventPublisher, eventSerializer, snapshotSerializer, eventUpdateManager);
+            var projectionSerializer = new ProjectionSerializer();
+
+            var session = new Session(loggerFactory, eventStore, eventPublisher, eventSerializer, snapshotSerializer, projectionSerializer, eventUpdateManager);
             
             var aggregate = (TAggregate) Activator.CreateInstance(typeof(TAggregate), args: aggregateId);
             

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using EnjoyCQRS.EventSource;
+using EnjoyCQRS.EventSource.Projections;
 using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;
 using EnjoyCQRS.Logger;
@@ -13,19 +14,22 @@ namespace EnjoyCQRS.UnitTests.Shared.TestSuit
 {
     public class EventStoreTestSuit
     {
+        private readonly IProjectionSerializer _projectionSerializer = new ProjectionSerializer();
         private readonly EventStoreWrapper _eventStore;
         
-        public EventStoreTestSuit(IEventStore eventStore)
+        public EventStoreTestSuit(IEventStore eventStore, IProjectionSerializer projectionSerializer = null)
         {
+            _projectionSerializer = projectionSerializer;
+
             _eventStore = new EventStoreWrapper(eventStore);
         }
-        
+
         public async Task EventTestsAsync()
         {
             var bar = GenerateBar();
 
             var session = CreateSession();
-            
+
             await session.AddAsync(bar).ConfigureAwait(false);
             await session.SaveChangesAsync().ConfigureAwait(false);
 
@@ -33,10 +37,11 @@ namespace EnjoyCQRS.UnitTests.Shared.TestSuit
 
             var bar2 = await session.GetByIdAsync<Bar>(bar.Id).ConfigureAwait(false);
 
-            var result = _eventStore.CalledMethods.HasFlag(EventStoreMethods.Ctor 
+            var result = _eventStore.CalledMethods.HasFlag(EventStoreMethods.Ctor
                 | EventStoreMethods.BeginTransaction
-                | EventStoreMethods.SaveAsync 
-                | EventStoreMethods.CommitAsync 
+                | EventStoreMethods.SaveAsync
+                | EventStoreMethods.SaveAggregateProjection
+                | EventStoreMethods.CommitAsync
                 | EventStoreMethods.GetAllEventsAsync);
 
             bar.Id.Should().Be(bar2.Id);
@@ -59,7 +64,8 @@ namespace EnjoyCQRS.UnitTests.Shared.TestSuit
             
             var result = _eventStore.CalledMethods.HasFlag(
                 EventStoreMethods.Ctor 
-                | EventStoreMethods.SaveAsync 
+                | EventStoreMethods.SaveAsync
+                | EventStoreMethods.SaveAggregateProjection
                 | EventStoreMethods.SaveSnapshotAsync 
                 | EventStoreMethods.CommitAsync 
                 | EventStoreMethods.GetLatestSnapshotByIdAsync 
@@ -94,14 +100,14 @@ namespace EnjoyCQRS.UnitTests.Shared.TestSuit
 
         private ISession CreateSession()
         {
-            var session = new Session(new NoopLoggerFactory(), _eventStore, new EventPublisher(StubEventRouter.Ok()), new EventSerializer(new JsonTextSerializer()), new SnapshotSerializer(new JsonTextSerializer()), null, null, new IntervalSnapshotStrategy(10));
+            var session = new Session(new NoopLoggerFactory(), _eventStore, new EventPublisher(StubEventRouter.Ok()), new EventSerializer(new JsonTextSerializer()), new SnapshotSerializer(new JsonTextSerializer()), _projectionSerializer, null, null, new IntervalSnapshotStrategy(10));
 
             return session;
         }
 
         private ISession CreateFaultSession()
         {
-            var faultSession = new Session(new NoopLoggerFactory(), _eventStore, new EventPublisher(StubEventRouter.Fault()), new EventSerializer(new JsonTextSerializer()), new SnapshotSerializer(new JsonTextSerializer()), null, null, new IntervalSnapshotStrategy(10));
+            var faultSession = new Session(new NoopLoggerFactory(), _eventStore, new EventPublisher(StubEventRouter.Fault()), new EventSerializer(new JsonTextSerializer()), new SnapshotSerializer(new JsonTextSerializer()), _projectionSerializer, null, null, new IntervalSnapshotStrategy(10));
 
             return faultSession;
         }
