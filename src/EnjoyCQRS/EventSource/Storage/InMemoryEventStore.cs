@@ -141,7 +141,7 @@ namespace EnjoyCQRS.EventSource.Storage
 
         public Task SaveProjectionAsync(IProjection projection)
         {
-            var key = new ProjectionKey(projection.Id, projection.Category);
+            var key = new ProjectionKey(projection.ProjectionId, projection.Category);
 
             if (!_uncommitedProjections.ContainsKey(key))
             {

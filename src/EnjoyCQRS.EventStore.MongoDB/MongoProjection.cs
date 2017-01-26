@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 //
 // Copyright (c) 2016 Nelson Corrêa V. Júnior
 //
@@ -23,28 +23,29 @@
 using System;
 using EnjoyCQRS.EventSource.Projections;
 using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson;
 
 namespace EnjoyCQRS.EventStore.MongoDB
 {
-    [BsonDiscriminator(RootClass = true)]
+    [BsonDiscriminator(Required = false, RootClass = false)]
     [BsonIgnoreExtraElements]
     public class MongoProjection : IProjection
     {
         [BsonId]
-        public string UniqueId => $"{Category}-{Id}";
+        public string Id => $"{Category}:{ProjectionId}";
 
         [BsonElement("pid")]
-        public Guid Id { get; }
+        public Guid ProjectionId { get; private set; }
 
         [BsonElement("category")]
-        public string Category { get; }
+        public string Category { get; private set; }
 
         [BsonElement("projection")]
-        public object Projection { get; }
+        public object Projection { get; private set; }
 
-        public MongoProjection(Guid id, string category, object projection)
+        public MongoProjection(Guid projectionId, string category, object projection)
         {
-            Id = id;
+            ProjectionId = projectionId;
             Category = category;
             Projection = projection;
         }

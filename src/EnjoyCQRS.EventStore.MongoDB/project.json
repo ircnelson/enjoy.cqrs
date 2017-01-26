@@ -1,10 +1,10 @@
-﻿{
-  "version": "2.2.0-*",
-
+{
+  "version": "2.4.0-*",
   "dependencies": {
     "EnjoyCQRS": {
       "target": "project"
-    }
+    },
+    "Newtonsoft.Json": "*"
   },
 
   "frameworks": {
@@ -13,10 +13,11 @@
         "dotnet5.6"
       ],
       "dependencies": {
-        "System.Reflection.TypeExtensions": "4.1.0",
+        "Microsoft.CSharp": "4.0.1",
         "MongoDB.Bson": "2.4.0",
         "MongoDB.Driver": "2.4.0",
-        "MongoDB.Driver.Core": "2.4.0"
+        "MongoDB.Driver.Core": "2.4.0",
+        "System.Reflection.TypeExtensions": "4.3.0"
       }
     },
 

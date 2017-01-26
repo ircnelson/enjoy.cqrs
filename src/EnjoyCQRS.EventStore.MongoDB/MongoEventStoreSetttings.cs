@@ -30,6 +30,11 @@ namespace EnjoyCQRS.EventStore.MongoDB
         public string SnapshotsCollectionName { get; set; } = "Snapshots";
         public string ProjectionsCollectionName { get; set; } = "Projections";
 
+        /// <summary>
+        /// Used in <see cref="MongoProjectionRepository"/> to create Dynamic Proxy when pass some interface in <see cref="MongoProjectionRepository.GetAsync{TProjection}(string)"/>.
+        /// </summary>
+        public bool UseDynamicProxyForInterfaces { get; set; } = true;
+
         internal void Validate()
         {
             if (string.IsNullOrWhiteSpace(EventsCollectionName))

@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 // 
 // Copyright (c) 2016 Nelson Corrêa V. Júnior
 // 
@@ -21,7 +21,6 @@
 // SOFTWARE.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -246,7 +245,7 @@ namespace EnjoyCQRS.EventStore.MongoDB
             foreach (var uncommitedProjection in projections.Cast<MongoProjection>())
             {
                 var filter = FilterDefinition<MongoProjection>.Empty
-                             & filterBuilder.Eq(e => e.Id, uncommitedProjection.Id)
+                             & filterBuilder.Eq(e => e.ProjectionId, uncommitedProjection.ProjectionId)
                              & filterBuilder.Eq(e => e.Category, uncommitedProjection.Category);
 
                 var document = await projectionCollection.FindAsync(filter);
@@ -255,8 +254,7 @@ namespace EnjoyCQRS.EventStore.MongoDB
                 {
                     var update = Builders<MongoProjection>.Update;
 
-                    var updateDefinition = update
-                        .Set(e => e.Projection, uncommitedProjection.Projection);
+                    var updateDefinition = update.Set(e => e.Projection, uncommitedProjection.Projection);
 
                     await projectionCollection.FindOneAndUpdateAsync(filter, updateDefinition);
                 }
