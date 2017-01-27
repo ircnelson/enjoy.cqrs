@@ -1,10 +1,16 @@
-﻿using System;
+using System;
 using EnjoyCQRS.EventSource;
 using System.Collections.Generic;
+using EnjoyCQRS.Attributes;
+using EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.BarAggregate.Projections;
 
 namespace EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.BarAggregate
 {
-    public class Bar : Aggregate, IBar
+    [ProjectionProvider(typeof(BarOnlyIdProjectionProvider))]
+    [ProjectionProvider(typeof(BarWithoutMessagesProjectionProvider))]
+    [ProjectionProvider(typeof(BarProjectionProvider))]
+    [ProjectionProvider(typeof(BarProjectionProvider))]
+    public class Bar : Aggregate
     {
         private List<string> _messages = new List<string>();
 
@@ -53,13 +59,5 @@ namespace EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.BarAggregate
                 _messages.Add(e.Text);
             });
         }
-    }
-
-    public interface IBar
-    {
-        Guid Id { get; }
-        string LastText { get; }
-        DateTime UpdatedAt { get; }
-        IReadOnlyList<string> Messages { get; }
     }
 }

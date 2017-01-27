@@ -1,14 +1,13 @@
 using System;
-using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Projections;
 
 namespace EnjoyCQRS.UnitTests.Shared
 {
     public class ProjectionSerializer : IProjectionSerializer
     {
-        public IProjection Serialize(IAggregate aggregate)
+        public IProjection Serialize(Guid id, object projection)
         {
-            return new AggregateProjection(aggregate.Id, aggregate);
+            return new AggregateProjection(id, projection);
         }
 
         public class AggregateProjection : IProjection

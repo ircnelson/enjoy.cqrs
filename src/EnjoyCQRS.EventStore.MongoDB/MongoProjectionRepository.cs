@@ -1,10 +1,8 @@
-﻿using EnjoyCQRS.EventSource.Projections;
+using EnjoyCQRS.EventSource.Projections;
 using MongoDB.Driver;
 using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using System.Reflection;
-using GreenPipes.Internals.Reflection;
 using MongoDB.Driver.Linq;
 
 namespace EnjoyCQRS.EventStore.MongoDB
@@ -70,13 +68,6 @@ namespace EnjoyCQRS.EventStore.MongoDB
 
         private async Task<object> QuerySingleResult(Type projectionType, FilterDefinition<MongoProjection> filter)
         {
-            if (projectionType.GetTypeInfo().IsInterface)
-            {
-                var builder = new DynamicImplementationBuilder();
-
-                projectionType = builder.GetImplementationType(projectionType);
-            }
-            
             var db = Client.GetDatabase(Database);
             var collection = db.GetCollection<MongoProjection>(Setttings.ProjectionsCollectionName);
             

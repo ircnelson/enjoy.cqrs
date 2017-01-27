@@ -1,9 +1,12 @@
 ﻿using System;
 using EnjoyCQRS.EventSource;
 using EnjoyCQRS.UnitTests.Domain.Stubs.Events;
+using EnjoyCQRS.Attributes;
+using EnjoyCQRS.EventSource.Projections;
 
 namespace EnjoyCQRS.UnitTests.Domain.Stubs
 {
+    [ProjectionProvider(typeof(StubAggregateProjectionProvider))]
     public class StubAggregate : Aggregate
     {
         public string Name { get; private set; }
@@ -53,5 +56,13 @@ namespace EnjoyCQRS.UnitTests.Domain.Stubs
             });
         }
         
+    }
+
+    public class StubAggregateProjectionProvider : IProjectionProvider
+    {
+        public object CreateProjection(IAggregate aggregate)
+        {
+            return aggregate;
+        }
     }
 }

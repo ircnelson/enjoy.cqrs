@@ -21,7 +21,6 @@
 // SOFTWARE.
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -47,6 +46,7 @@ namespace EnjoyCQRS.EventSource.Storage
         private readonly IEventSerializer _eventSerializer;
         private readonly ISnapshotSerializer _snapshotSerializer;
         private readonly IProjectionSerializer _projectionSerializer;
+        private readonly ProjectionProviderAttributeScanner _projectionProviderScanner;
         private readonly IEventUpdateManager _eventUpdateManager;
         private readonly ISnapshotStrategy _snapshotStrategy;
         private readonly IEnumerable<IMetadataProvider> _metadataProviders;
@@ -63,6 +63,7 @@ namespace EnjoyCQRS.EventSource.Storage
             IEventSerializer eventSerializer,
             ISnapshotSerializer snapshotSerializer,
             IProjectionSerializer projectionSerializer,
+            IProjectionProviderScanner projectionProviderScanner = null,
             IEventUpdateManager eventUpdateManager = null,
             IEnumerable<IMetadataProvider> metadataProviders = null,
             ISnapshotStrategy snapshotStrategy = null)
@@ -82,6 +83,11 @@ namespace EnjoyCQRS.EventSource.Storage
                 new EventTypeMetadataProvider(),
                 new CorrelationIdMetadataProvider()
             });
+
+            if (projectionProviderScanner == null)
+            {
+                _projectionProviderScanner = new ProjectionProviderAttributeScanner();
+            }
 
             if (snapshotStrategy == null)
             {
@@ -278,9 +284,21 @@ namespace EnjoyCQRS.EventSource.Storage
 
                     aggregate.ClearUncommitedEvents();
 
-                    var projection = _projectionSerializer.Serialize(aggregate);
+                    _logger.LogInformation($"Scanning projection providers for {aggregate.GetType().Name}.");
 
-                    await _eventStore.SaveProjectionAsync(projection).ConfigureAwait(false);
+                    var scanResult = await _projectionProviderScanner.ScanAsync(aggregate.GetType()).ConfigureAwait(false);
+
+                    _logger.LogInformation($"Projection providers found: {scanResult.Providers.Count()}.");
+
+                    foreach (var provider in scanResult.Providers)
+                    {
+                        var projection = provider.CreateProjection(aggregate);
+
+                        var projectionSerialized = _projectionSerializer.Serialize(aggregate.Id, projection);
+
+                        await _eventStore.SaveProjectionAsync(projectionSerialized).ConfigureAwait(false);
+                    }
+                                        
                 }
 
                 _logger.Log(LogLevel.Information, "End iterate.");

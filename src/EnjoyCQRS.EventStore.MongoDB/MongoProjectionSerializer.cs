@@ -22,14 +22,15 @@
 
 using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Projections;
+using System;
 
 namespace EnjoyCQRS.EventStore.MongoDB
 {
     public class MongoProjectionSerializer : IProjectionSerializer
     {
-        public IProjection Serialize(IAggregate aggregate)
+        public IProjection Serialize(Guid id, object projection)
         {
-            return new MongoProjection(aggregate.Id, aggregate.GetType().Name, aggregate);
+            return new MongoProjection(id, projection.GetType().Name, projection);
         }
     }
 }
