@@ -46,7 +46,7 @@ namespace EnjoyCQRS.EventSource.Storage
         private readonly IEventSerializer _eventSerializer;
         private readonly ISnapshotSerializer _snapshotSerializer;
         private readonly IProjectionSerializer _projectionSerializer;
-        private readonly ProjectionProviderAttributeScanner _projectionProviderScanner;
+        private readonly IProjectionProviderScanner _projectionProviderScanner;
         private readonly IEventUpdateManager _eventUpdateManager;
         private readonly ISnapshotStrategy _snapshotStrategy;
         private readonly IEnumerable<IMetadataProvider> _metadataProviders;
