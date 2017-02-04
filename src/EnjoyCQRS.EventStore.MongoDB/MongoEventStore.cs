@@ -100,11 +100,16 @@ namespace EnjoyCQRS.EventStore.MongoDB
             var db = Client.GetDatabase(Database);
             var collection = db.GetCollection<Event>(Setttings.EventsCollectionName);
 
-            var filter = Builders<Event>.Filter;
             var sort = Builders<Event>.Sort;
+            var filterBuilder = Builders<Event>.Filter;
 
+            var filter = filterBuilder.Empty
+                & filterBuilder.Eq(x => x.AggregateId, aggregateId)
+                & filterBuilder.Gt(x => x.Version, version)
+                & filterBuilder.Exists(x => x.Metadata[MetadataKeys.EventIgnore], exists: false);
+            
             var events = await collection
-                .Find(filter.Eq(x => x.AggregateId, aggregateId) & filter.Gt(x => x.Version, version))
+                .Find(filter)
                 .Sort(sort.Ascending(x => x.Metadata[MetadataKeys.EventVersion]))
                 .ToListAsync();
 
@@ -151,11 +156,15 @@ namespace EnjoyCQRS.EventStore.MongoDB
             var db = Client.GetDatabase(Database);
             var collection = db.GetCollection<Event>(Setttings.EventsCollectionName);
 
-            var filter = Builders<Event>.Filter;
             var sort = Builders<Event>.Sort;
+            var filterBuilder = Builders<Event>.Filter;
 
+            var filter = filterBuilder.Empty 
+                & filterBuilder.Eq(x => x.AggregateId, id)
+                & filterBuilder.Exists(x => x.Metadata[MetadataKeys.EventIgnore], exists: false);
+            
             var events = await collection
-                .Find(filter.Eq(x => x.AggregateId, id))
+                .Find(filter)
                 .Sort(sort.Ascending(x => x.Metadata[MetadataKeys.EventVersion]))
                 .ToListAsync();
 

@@ -57,6 +57,7 @@ namespace EnjoyCQRS.EventSource
         public const string EventClrType = "eventClrType";
         public const string EventName = "eventName";
         public const string EventVersion = "eventVersion";
+        public const string EventIgnore = "ignore";
 
         public const string CorrelationId = "correlationId";
 
