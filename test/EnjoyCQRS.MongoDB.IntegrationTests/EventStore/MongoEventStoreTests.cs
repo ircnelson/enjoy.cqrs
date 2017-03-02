@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using EnjoyCQRS.EventSource;
+using EnjoyCQRS.EventSource.Projections;
 using EnjoyCQRS.EventStore.MongoDB;
+using EnjoyCQRS.UnitTests.Shared;
 using EnjoyCQRS.UnitTests.Shared.TestSuit;
 using FluentAssertions;
 using MongoDB.Bson;
@@ -122,10 +123,9 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
         {
             using (var eventStore = new MongoEventStore(_mongoClient, DatabaseName))
             {
-                var eventStoreTestSuit = new EventStoreTestSuit(eventStore, new MongoProjectionSerializer());
+                var eventStoreTestSuit = new EventStoreTestSuit(eventStore, new ProjectionSerializer(new JsonTextSerializer()));
 
                 var aggregate = await eventStoreTestSuit.EventTestsAsync();
-                var aggregateType = aggregate.GetType();
 
                 using (var projectionRepository = new MongoProjectionRepository(_mongoClient, DatabaseName))
                 {
@@ -145,7 +145,7 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
         {
             using (var eventStore = new MongoEventStore(_mongoClient, DatabaseName))
             {
-                var eventStoreTestSuit = new EventStoreTestSuit(eventStore, new MongoProjectionSerializer());
+                var eventStoreTestSuit = new EventStoreTestSuit(eventStore, new ProjectionSerializer(new JsonTextSerializer()));
 
                 await eventStoreTestSuit.SnapshotTestsAsync();
             }
@@ -157,7 +157,7 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
         {
             using (var eventStore = new MongoEventStore(_mongoClient, DatabaseName))
             {
-                var eventStoreTestSuit = new EventStoreTestSuit(eventStore, new MongoProjectionSerializer());
+                var eventStoreTestSuit = new EventStoreTestSuit(eventStore, new ProjectionSerializer(new JsonTextSerializer()));
 
                 await eventStoreTestSuit.DoSomeProblemAsync();
             }

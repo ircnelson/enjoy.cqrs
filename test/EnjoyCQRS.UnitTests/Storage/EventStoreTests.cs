@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource;
+using EnjoyCQRS.EventSource.Projections;
 using EnjoyCQRS.EventSource.Storage;
 using EnjoyCQRS.Logger;
 using EnjoyCQRS.MessageBus;
@@ -29,7 +30,7 @@ namespace EnjoyCQRS.UnitTests.Storage
         {
             var eventSerializer = new EventSerializer(new JsonTextSerializer());
             var snapshotSerializer = new SnapshotSerializer(new JsonTextSerializer());
-            var projectionSerializer = new ProjectionSerializer();
+            var projectionSerializer = new ProjectionSerializer(new JsonTextSerializer());
 
             _inMemoryDomainEventStore = new InMemoryEventStore();
             

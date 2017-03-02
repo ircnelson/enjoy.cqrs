@@ -34,25 +34,23 @@ using MongoDB.Driver;
 
 namespace EnjoyCQRS.EventStore.MongoDB
 {
-    public delegate Task AddOrUpdateProjectionsDelegate(IEnumerable<IProjection> projections);
+    public delegate Task AddOrUpdateProjectionsDelegate(IEnumerable<ISerializedProjection> projections);
 
     public class MongoEventStore : IEventStore
     {
-        private readonly List<Event> _uncommitedEvents = new List<Event>();
-        private readonly List<SnapshotData> _uncommitedSnapshots = new List<SnapshotData>();
-        private readonly List<IProjection> _uncommitedProjections = new List<IProjection>();
+        protected readonly List<Event> UncommitedEvents = new List<Event>();
+        protected readonly List<SnapshotData> UncommitedSnapshots = new List<SnapshotData>();
+        protected readonly List<ISerializedProjection> UncommitedProjections = new List<ISerializedProjection>();
 
         public MongoClient Client { get; }
         public string Database { get; }
         public MongoEventStoreSetttings Setttings { get; }
-
-        public AddOrUpdateProjectionsDelegate AddOrUpdateProjections { get; }
-
+        
         public MongoEventStore(MongoClient client, string database) : this(client, database, new MongoEventStoreSetttings())
         {
         }
 
-        public MongoEventStore(MongoClient client, string database, MongoEventStoreSetttings setttings, AddOrUpdateProjectionsDelegate addOrUpdateProjections = null)
+        public MongoEventStore(MongoClient client, string database, MongoEventStoreSetttings setttings)
         {
             if (client == null) throw new ArgumentNullException(nameof(client));
             if (database == null) throw new ArgumentNullException(nameof(database));
@@ -63,17 +61,12 @@ namespace EnjoyCQRS.EventStore.MongoDB
             Database = database;
             Setttings = setttings;
             Client = client;
-
-            if (addOrUpdateProjections == null)
-            {
-                AddOrUpdateProjections = AddOrUpdateProjectionsAsync;
-            }
         }
 
         public Task SaveSnapshotAsync(ISerializedSnapshot snapshot)
         {
             var snapshotData = Serialize(snapshot);
-            _uncommitedSnapshots.Add(snapshotData);
+            UncommitedSnapshots.Add(snapshotData);
 
             return Task.CompletedTask;
         }
@@ -126,21 +119,21 @@ namespace EnjoyCQRS.EventStore.MongoDB
 
         public async Task CommitAsync()
         {
-            if (_uncommitedEvents.Count == 0) return;
+            if (UncommitedEvents.Count == 0) return;
 
             var db = Client.GetDatabase(Database);
             var eventCollection = db.GetCollection<Event>(Setttings.EventsCollectionName);
             var snapshotCollection = db.GetCollection<SnapshotData>(Setttings.SnapshotsCollectionName);
 
-            if (_uncommitedSnapshots.Count > 0)
-                await snapshotCollection.InsertManyAsync(_uncommitedSnapshots);
+            if (UncommitedSnapshots.Count > 0)
+                await snapshotCollection.InsertManyAsync(UncommitedSnapshots);
 
-            if (_uncommitedEvents.Count > 0)
-                await eventCollection.InsertManyAsync(_uncommitedEvents);
+            if (UncommitedEvents.Count > 0)
+                await eventCollection.InsertManyAsync(UncommitedEvents);
 
-            if (_uncommitedProjections.Count > 0)
+            if (UncommitedProjections.Count > 0)
             {
-                await AddOrUpdateProjections(_uncommitedProjections);
+                await AddOrUpdateProjectionsAsync(UncommitedProjections);
             }
 
             Cleanup();
@@ -174,14 +167,14 @@ namespace EnjoyCQRS.EventStore.MongoDB
         public Task SaveAsync(IEnumerable<ISerializedEvent> collection)
         {
             var eventList = collection.Select(Serialize);
-            _uncommitedEvents.AddRange(eventList);
+            UncommitedEvents.AddRange(eventList);
 
             return Task.CompletedTask;
         }
 
-        public Task SaveProjectionAsync(IProjection projection)
+        public Task SaveProjectionAsync(ISerializedProjection projection)
         {
-            _uncommitedProjections.Add(projection);
+            UncommitedProjections.Add(projection);
 
             return Task.CompletedTask;
         }
@@ -209,9 +202,9 @@ namespace EnjoyCQRS.EventStore.MongoDB
 
         private void Cleanup()
         {
-            _uncommitedEvents.Clear();
-            _uncommitedSnapshots.Clear();
-            _uncommitedProjections.Clear();
+            UncommitedEvents.Clear();
+            UncommitedSnapshots.Clear();
+            UncommitedProjections.Clear();
         }
 
         private ICommitedEvent Deserialize(Event e)
@@ -244,32 +237,38 @@ namespace EnjoyCQRS.EventStore.MongoDB
             return snapshot;
         }
 
-        private async Task AddOrUpdateProjectionsAsync(IEnumerable<IProjection> projections)
+        protected virtual async Task AddOrUpdateProjectionsAsync(IEnumerable<ISerializedProjection> serializedProjections)
         {
             var db = Client.GetDatabase(Database);
             var projectionCollection = db.GetCollection<MongoProjection>(Setttings.ProjectionsCollectionName);
 
-            var filterBuilder = new FilterDefinitionBuilder<MongoProjection>();
+            var filterBuilder = Builders<MongoProjection>.Filter;
+            var updateBuilder = Builders<MongoProjection>.Update;
 
-            foreach (var uncommitedProjection in projections.Cast<MongoProjection>())
+            foreach (var uncommitedProjection in serializedProjections)
             {
                 var filter = FilterDefinition<MongoProjection>.Empty
                              & filterBuilder.Eq(e => e.ProjectionId, uncommitedProjection.ProjectionId)
                              & filterBuilder.Eq(e => e.Category, uncommitedProjection.Category);
 
-                var document = await projectionCollection.FindAsync(filter);
+                var documents = await projectionCollection.FindAsync(filter);
 
-                if (await document.AnyAsync())
+                var mongoProjection = MongoProjection.Create(uncommitedProjection);
+
+                if (documents.Any())
                 {
-                    var update = Builders<MongoProjection>.Update;
+                    var document = await documents.FirstOrDefaultAsync();
 
-                    var updateDefinition = update.Set(e => e.Projection, uncommitedProjection.Projection);
+                    if (document != null)
+                    {
+                        var updateDefinition = updateBuilder.Set(e => e.Projection, mongoProjection.Projection);
 
-                    await projectionCollection.FindOneAndUpdateAsync(filter, updateDefinition);
+                        await projectionCollection.FindOneAndUpdateAsync(filter, updateDefinition);
+                    }
                 }
                 else
                 {
-                    await projectionCollection.InsertOneAsync(uncommitedProjection);
+                    await projectionCollection.InsertOneAsync(mongoProjection);
                 }
             }
         }

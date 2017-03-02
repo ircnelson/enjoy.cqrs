@@ -29,6 +29,6 @@ namespace EnjoyCQRS.EventSource.Projections
     /// </summary>
     public interface IProjectionStore
     {
-        Task SaveProjectionAsync(IProjection projection);
+        Task SaveProjectionAsync(ISerializedProjection projection);
     }
 }

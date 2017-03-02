@@ -25,7 +25,7 @@ namespace EnjoyCQRS.UnitTests.Domain.Stubs
         {
             return new StubAggregate(Guid.NewGuid(), name);
         }
-        
+
         public void ChangeName(string name)
         {
             Emit(new NameChangedEvent(Id, name));
@@ -55,14 +55,28 @@ namespace EnjoyCQRS.UnitTests.Domain.Stubs
                 RelatedId = x.StubAggregateId;
             });
         }
-        
+
     }
 
     public class StubAggregateProjectionProvider : IProjectionProvider
     {
         public object CreateProjection(IAggregate aggregate)
         {
-            return aggregate;
+            var target = aggregate as StubAggregate;
+
+            return new StubAggregateProjection
+            {
+                Id = target.Id,
+                Name = target.Name,
+                RelatedId = target.RelatedId
+            };
         }
+    }
+
+    public class StubAggregateProjection
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public Guid RelatedId { get; set; }
     }
 }

@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using System.Reflection;
-using EnjoyCQRS.Commands;
+﻿using EnjoyCQRS.Commands;
 using EnjoyCQRS.Core;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource.Projections;

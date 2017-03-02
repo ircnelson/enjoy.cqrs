@@ -31,13 +31,7 @@ namespace EnjoyCQRS.EventSource.Snapshots
         
         public bool CheckSnapshotSupport(Type aggregateType)
         {
-            Type baseType;
-
-#if REFLECTIONBRIDGE && (!(NET40 || NET35 || NET20))
-            baseType = aggregateType.BaseType;
-#else
-            baseType = aggregateType.GetTypeInfo().BaseType;
-#endif
+            var baseType = aggregateType.GetTypeInfo().BaseType;
 
             if (baseType == null) return false;
 

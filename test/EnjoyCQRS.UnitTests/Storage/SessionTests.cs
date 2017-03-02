@@ -511,12 +511,12 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             await session.SaveChangesAsync().ConfigureAwait(false);
 
-            var projectionKey = new InMemoryEventStore.ProjectionKey(stubAggregate1.Id, "aggregate");
+            var projectionKey = new InMemoryEventStore.ProjectionKey(stubAggregate1.Id, typeof(StubAggregateProjection).Name);
 
             eventStore.Projections.ContainsKey(projectionKey).Should().BeTrue();
 
-            var projection = eventStore.Projections[projectionKey].As<StubAggregate>();
-
+            var projection = _textSerializer.Deserialize<StubAggregateProjection>(eventStore.Projections[projectionKey].ToString());
+            
             projection.Id.Should().Be(stubAggregate1.Id);
             projection.Name.Should().Be(stubAggregate1.Name);
         }
@@ -536,18 +536,18 @@ namespace EnjoyCQRS.UnitTests.Storage
             await session.AddAsync(stubAggregate1).ConfigureAwait(false);
             await session.SaveChangesAsync().ConfigureAwait(false);
 
-            stubAggregate1 = await session.GetByIdAsync<StubAggregate>(stubAggregate1.Id);
+            stubAggregate1 = await session.GetByIdAsync<StubAggregate>(stubAggregate1.Id).ConfigureAwait(false);
 
             stubAggregate1.ChangeName("Jesse Pinkman");
 
-            await session.SaveChangesAsync();
+            await session.SaveChangesAsync().ConfigureAwait(false);
 
             eventStore.Projections.Count.Should().Be(1);
 
-            var projectionKey = new InMemoryEventStore.ProjectionKey(stubAggregate1.Id, "aggregate");
+            var projectionKey = new InMemoryEventStore.ProjectionKey(stubAggregate1.Id, typeof(StubAggregateProjection).Name);
             eventStore.Projections.ContainsKey(projectionKey).Should().BeTrue();
 
-            var projection = eventStore.Projections[projectionKey].As<StubAggregate>();
+            var projection = _textSerializer.Deserialize<StubAggregateProjection>(eventStore.Projections[projectionKey].ToString());
 
             projection.Id.Should().Be(stubAggregate1.Id);
             projection.Name.Should().Be(stubAggregate1.Name);
@@ -574,7 +574,7 @@ namespace EnjoyCQRS.UnitTests.Storage
 
         private static IProjectionSerializer CreateProjectionSerializer()
         {
-            return new ProjectionSerializer();
+            return new ProjectionSerializer(new JsonTextSerializer());
         }
 
         private static void DoThrowExcetion()

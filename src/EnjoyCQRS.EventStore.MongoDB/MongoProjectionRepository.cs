@@ -2,6 +2,7 @@ using EnjoyCQRS.EventSource.Projections;
 using MongoDB.Driver;
 using System;
 using System.Threading.Tasks;
+using MongoDB.Bson;
 using Newtonsoft.Json;
 using MongoDB.Driver.Linq;
 
@@ -76,9 +77,7 @@ namespace EnjoyCQRS.EventStore.MongoDB
                 .Limit(1)
                 .FirstAsync();
             
-            var json = JsonConvert.SerializeObject(record.Projection, JsonSerializerSettings);
-
-            var projection = JsonConvert.DeserializeObject(json, projectionType, JsonSerializerSettings);
+            var projection = JsonConvert.DeserializeObject(record.Projection.ToJson(), projectionType, JsonSerializerSettings);
             
             return projection;
         }

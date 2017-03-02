@@ -66,5 +66,6 @@ namespace EnjoyCQRS.EventSource.Storage
 
             aggregates.Remove(aggregateId);
         }
+        
     }
 }

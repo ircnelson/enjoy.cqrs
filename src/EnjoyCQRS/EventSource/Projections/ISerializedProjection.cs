@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 //
 // Copyright (c) 2016 Nelson Corrêa V. Júnior
 //
@@ -20,17 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using EnjoyCQRS.EventSource;
-using EnjoyCQRS.EventSource.Projections;
 using System;
 
-namespace EnjoyCQRS.EventStore.MongoDB
+namespace EnjoyCQRS.EventSource.Projections
 {
-    public class MongoProjectionSerializer : IProjectionSerializer
+    public interface ISerializedProjection
     {
-        public IProjection Serialize(Guid id, object projection)
-        {
-            return new MongoProjection(id, projection.GetType().Name, projection);
-        }
+        Guid ProjectionId { get; }
+        string Category { get; }
+        string Projection { get; }
     }
 }

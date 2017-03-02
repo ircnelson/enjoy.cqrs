@@ -27,9 +27,7 @@ using MongoDB.Bson;
 
 namespace EnjoyCQRS.EventStore.MongoDB
 {
-    [BsonDiscriminator(Required = false, RootClass = false)]
-    [BsonIgnoreExtraElements]
-    public class MongoProjection : IProjection
+    public class MongoProjection
     {
         [BsonId]
         public string Id => $"{Category}:{ProjectionId}";
@@ -41,9 +39,14 @@ namespace EnjoyCQRS.EventStore.MongoDB
         public string Category { get; private set; }
 
         [BsonElement("projection")]
-        public object Projection { get; private set; }
+        public BsonDocument Projection { get; private set; }
 
-        public MongoProjection(Guid projectionId, string category, object projection)
+        public static MongoProjection Create(ISerializedProjection projection)
+        {
+            return new MongoProjection(projection.ProjectionId, projection.Category, BsonDocument.Parse(projection.Projection));
+        }
+
+        private MongoProjection(Guid projectionId, string category, BsonDocument projection)
         {
             ProjectionId = projectionId;
             Category = category;

@@ -139,7 +139,7 @@ namespace EnjoyCQRS.EventSource.Storage
             return Task.CompletedTask;
         }
 
-        public Task SaveProjectionAsync(IProjection projection)
+        public Task SaveProjectionAsync(ISerializedProjection projection)
         {
             var key = new ProjectionKey(projection.ProjectionId, projection.Category);
 

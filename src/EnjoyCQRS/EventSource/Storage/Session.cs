@@ -118,10 +118,15 @@ namespace EnjoyCQRS.EventSource.Storage
             _logger.LogDebug($"Getting aggregate '{typeof(TAggregate).FullName}' with identifier: '{id}'.");
 
             var aggregate = _aggregateTracker.GetById<TAggregate>(id);
-
+            
             _logger.LogDebug("Returning an aggregate tracked.");
 
-            if (aggregate != null) return aggregate;
+            if (aggregate != null)
+            {
+                RegisterForTracking(aggregate);
+
+                return aggregate;
+            }
 
             aggregate = new TAggregate();
 
@@ -358,7 +363,11 @@ namespace EnjoyCQRS.EventSource.Storage
         {
             _logger.LogDebug($"Adding to track: {aggregateRoot.GetType().FullName}.");
 
-            _aggregates.Add(aggregateRoot);
+            if (_aggregates.All(e => e.Id != aggregateRoot.Id))
+            {
+                _aggregates.Add(aggregateRoot);
+            }
+
             _aggregateTracker.Add(aggregateRoot);
         }
 

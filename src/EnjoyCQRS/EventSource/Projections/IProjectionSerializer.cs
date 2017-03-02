@@ -26,6 +26,6 @@ namespace EnjoyCQRS.EventSource.Projections
 {
     public interface IProjectionSerializer
     {
-        IProjection Serialize(Guid id, object projection);
+        ISerializedProjection Serialize(Guid id, object projection);
     }
 }

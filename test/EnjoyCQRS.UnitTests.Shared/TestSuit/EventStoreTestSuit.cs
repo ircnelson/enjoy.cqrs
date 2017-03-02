@@ -14,7 +14,7 @@ namespace EnjoyCQRS.UnitTests.Shared.TestSuit
 {
     public class EventStoreTestSuit
     {
-        private readonly IProjectionSerializer _projectionSerializer = new ProjectionSerializer();
+        private readonly IProjectionSerializer _projectionSerializer = new ProjectionSerializer(new JsonTextSerializer());
         private readonly EventStoreWrapper _eventStore;
         
         public EventStoreTestSuit(IEventStore eventStore, IProjectionSerializer projectionSerializer = null)

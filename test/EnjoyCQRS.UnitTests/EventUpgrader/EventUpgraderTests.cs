@@ -7,6 +7,7 @@ using EnjoyCQRS.Core;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Exceptions;
+using EnjoyCQRS.EventSource.Projections;
 using EnjoyCQRS.EventSource.Storage;
 using EnjoyCQRS.Logger;
 using EnjoyCQRS.MessageBus.InProcess;
@@ -183,7 +184,7 @@ namespace EnjoyCQRS.UnitTests.EventUpgrader
             var eventStore = new InMemoryEventStore();
             var eventSerializer = new EventSerializer(new JsonTextSerializer());
             var snapshotSerializer = new SnapshotSerializer(new JsonTextSerializer());
-            var projectionSerializer = new ProjectionSerializer();
+            var projectionSerializer = new ProjectionSerializer(new JsonTextSerializer());
 
             var session = new Session(loggerFactory, eventStore, eventPublisher, eventSerializer, snapshotSerializer, projectionSerializer, eventUpdateManager: eventUpdateManager);
             
