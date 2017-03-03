@@ -243,33 +243,19 @@ namespace EnjoyCQRS.EventStore.MongoDB
             var projectionCollection = db.GetCollection<MongoProjection>(Setttings.ProjectionsCollectionName);
 
             var filterBuilder = Builders<MongoProjection>.Filter;
-            var updateBuilder = Builders<MongoProjection>.Update;
 
             foreach (var uncommitedProjection in serializedProjections)
             {
                 var filter = FilterDefinition<MongoProjection>.Empty
                              & filterBuilder.Eq(e => e.ProjectionId, uncommitedProjection.ProjectionId)
                              & filterBuilder.Eq(e => e.Category, uncommitedProjection.Category);
-
-                var documents = await projectionCollection.FindAsync(filter);
-
+                
                 var mongoProjection = MongoProjection.Create(uncommitedProjection);
-
-                if (documents.Any())
+                
+                await projectionCollection.FindOneAndReplaceAsync(filter, mongoProjection, new FindOneAndReplaceOptions<MongoProjection>
                 {
-                    var document = await documents.FirstOrDefaultAsync();
-
-                    if (document != null)
-                    {
-                        var updateDefinition = updateBuilder.Set(e => e.Projection, mongoProjection.Projection);
-
-                        await projectionCollection.FindOneAndUpdateAsync(filter, updateDefinition);
-                    }
-                }
-                else
-                {
-                    await projectionCollection.InsertOneAsync(mongoProjection);
-                }
+                    IsUpsert = true
+                });
             }
         }
     }
