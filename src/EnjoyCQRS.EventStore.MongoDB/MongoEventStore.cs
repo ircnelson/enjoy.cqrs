@@ -119,17 +119,20 @@ namespace EnjoyCQRS.EventStore.MongoDB
 
         public async Task CommitAsync()
         {
-            if (UncommitedEvents.Count == 0) return;
-
             var db = Client.GetDatabase(Database);
-            var eventCollection = db.GetCollection<Event>(Setttings.EventsCollectionName);
-            var snapshotCollection = db.GetCollection<SnapshotData>(Setttings.SnapshotsCollectionName);
+
 
             if (UncommitedSnapshots.Count > 0)
+            {
+                var snapshotCollection = db.GetCollection<SnapshotData>(Setttings.SnapshotsCollectionName);
                 await snapshotCollection.InsertManyAsync(UncommitedSnapshots);
+            }
 
             if (UncommitedEvents.Count > 0)
+            {
+                var eventCollection = db.GetCollection<Event>(Setttings.EventsCollectionName);
                 await eventCollection.InsertManyAsync(UncommitedEvents);
+            }
 
             if (UncommitedProjections.Count > 0)
             {
