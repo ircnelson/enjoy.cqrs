@@ -64,8 +64,8 @@ namespace EnjoyCQRS.EventSource.Storage
         public virtual Task<IEnumerable<ICommitedEvent>> GetEventsForwardAsync(Guid aggregateId, int version)
         {
             var events = Events
-            .Where(e => e.AggregateId == aggregateId && e.AggregateVersion > version)
-            .OrderBy(e => e.AggregateVersion)
+            .Where(e => e.AggregateId == aggregateId && e.Version > version)
+            .OrderBy(e => e.Version)
             .ToList();
 
             return Task.FromResult<IEnumerable<ICommitedEvent>>(events);
@@ -126,7 +126,7 @@ namespace EnjoyCQRS.EventSource.Storage
         {
             var events = Events
             .Where(e => e.AggregateId == id)
-            .OrderBy(e => e.AggregateVersion)
+            .OrderBy(e => e.Version)
             .ToList();
 
             return Task.FromResult<IEnumerable<ICommitedEvent>>(events);
@@ -155,23 +155,24 @@ namespace EnjoyCQRS.EventSource.Storage
 
         private static ICommitedEvent InstantiateCommitedEvent(ISerializedEvent serializedEvent)
         {
-            return new InMemoryCommitedEvent(serializedEvent.AggregateId, serializedEvent.AggregateVersion, serializedEvent.SerializedData, serializedEvent.SerializedMetadata);
+            return new InMemoryCommitedEvent(serializedEvent.AggregateId, serializedEvent.Version, serializedEvent.SerializedData, serializedEvent.SerializedMetadata);
         }
 
         internal class InMemoryCommitedEvent : ICommitedEvent
         {
+            public Guid AggregateId { get; }
+            public int Version { get; }
+            public string SerializedData { get; }
+            public string SerializedMetadata { get; }
+
             public InMemoryCommitedEvent(Guid aggregateId, int aggregateVersion, string serializedData, string serializedMetadata)
             {
                 AggregateId = aggregateId;
-                AggregateVersion = aggregateVersion;
+                Version = aggregateVersion;
                 SerializedData = serializedData;
                 SerializedMetadata = serializedMetadata;
             }
 
-            public Guid AggregateId { get; }
-            public int AggregateVersion { get; }
-            public string SerializedData { get; }
-            public string SerializedMetadata { get; }
         }
 
         internal class InMemoryCommitedSnapshot : ICommitedSnapshot

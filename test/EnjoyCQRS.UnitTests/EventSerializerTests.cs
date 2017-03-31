@@ -29,7 +29,7 @@ namespace EnjoyCQRS.UnitTests
             });
             
             var mockCommitedEvent = new Mock<ICommitedEvent>();
-            mockCommitedEvent.Setup(e => e.AggregateVersion).Returns(1);
+            mockCommitedEvent.Setup(e => e.Version).Returns(1);
             mockCommitedEvent.Setup(e => e.AggregateId).Returns(Guid.NewGuid);
             mockCommitedEvent.Setup(e => e.SerializedData).Returns(serializedData);
             mockCommitedEvent.Setup(e => e.SerializedMetadata).Returns(textSerializer.Serialize(metadata));

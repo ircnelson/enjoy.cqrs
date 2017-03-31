@@ -405,7 +405,7 @@ namespace EnjoyCQRS.EventSource.Storage
 
                 aggregate.LoadFromHistory(new CommitedDomainEventCollection(events));
 
-                aggregate.UpdateVersion(flatten.Select(e => e.AggregateVersion).Max());
+                aggregate.UpdateVersion(flatten.Select(e => e.Version).Max());
             }
         }
     }

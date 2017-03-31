@@ -27,7 +27,7 @@ namespace EnjoyCQRS.EventSource
     public class SerializedEvent : ISerializedEvent
     {
         public Guid AggregateId { get; }
-        public int AggregateVersion { get; }
+        public int Version { get; }
         public string SerializedMetadata { get; }
         public string SerializedData { get; }
         public IMetadata Metadata { get; }
@@ -39,7 +39,7 @@ namespace EnjoyCQRS.EventSource
             IMetadata metadata)
         {
             AggregateId = aggregateId;
-            AggregateVersion = aggregateVersion;
+            Version = aggregateVersion;
             SerializedData = serializedData;
             SerializedMetadata = serializedMetadata;
             Metadata = metadata;

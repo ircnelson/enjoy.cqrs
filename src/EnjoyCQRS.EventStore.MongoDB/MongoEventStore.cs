@@ -99,7 +99,7 @@ namespace EnjoyCQRS.EventStore.MongoDB
             var filter = filterBuilder.Empty
                 & filterBuilder.Eq(x => x.AggregateId, aggregateId)
                 & filterBuilder.Gt(x => x.Version, version)
-                & filterBuilder.Exists(x => x.Metadata[MetadataKeys.EventIgnore], exists: false);
+                & filterBuilder.Or(filterBuilder.Exists(x => x.Metadata[MetadataKeys.EventIgnore], exists: false), filterBuilder.Eq(x => x.Metadata[MetadataKeys.EventIgnore], false));
             
             var events = await collection
                 .Find(filter)
@@ -157,8 +157,8 @@ namespace EnjoyCQRS.EventStore.MongoDB
 
             var filter = filterBuilder.Empty 
                 & filterBuilder.Eq(x => x.AggregateId, id)
-                & filterBuilder.Exists(x => x.Metadata[MetadataKeys.EventIgnore], exists: false);
-            
+                & filterBuilder.Or(filterBuilder.Exists(x => x.Metadata[MetadataKeys.EventIgnore], exists: false), filterBuilder.Eq(x => x.Metadata[MetadataKeys.EventIgnore], false));
+
             var events = await collection
                 .Find(filter)
                 .Sort(sort.Ascending(x => x.Metadata[MetadataKeys.EventVersion]))
@@ -195,7 +195,7 @@ namespace EnjoyCQRS.EventStore.MongoDB
                 Timestamp = DateTime.UtcNow,
                 EventType = eventType,
                 AggregateId = serializedEvent.AggregateId,
-                Version = serializedEvent.AggregateVersion,
+                Version = serializedEvent.Version,
                 EventData = eventData,
                 Metadata = metadata
             };
