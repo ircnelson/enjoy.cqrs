@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace EnjoyCQRS.EventSource.Projections
@@ -54,7 +55,6 @@ namespace EnjoyCQRS.EventSource.Projections
         /// <summary>
         /// Get the projection based on category and id.
         /// </summary>
-        /// <param name="category"></param>
         /// <param name="id"></param>
         /// <returns></returns>
         Task<TProjection> GetAsync(Guid id);
@@ -68,5 +68,21 @@ namespace EnjoyCQRS.EventSource.Projections
         /// <param name="name"></param>
         /// <returns></returns>
         Task<TProjection> GetAsync(string name);
+
+        /// <summary>
+        /// Find projection based on expression.
+        /// </summary>
+        /// <param name="category"></param>
+        /// <param name="expr"></param>
+        /// <returns></returns>
+        Task<IEnumerable<TProjection>> FindAsync(string category, Expression<Func<TProjection, bool>> expr);
+
+        /// <summary>
+        /// Find projection based on expression.
+        /// </summary>
+        /// <param name="category"></param>
+        /// <param name="expr"></param>
+        /// <returns></returns>
+        Task<IEnumerable<TProjection>> FindAsync(Expression<Func<TProjection, bool>> expr);
     }
 }

@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
+using EnjoyCQRS.Core;
 using EnjoyCQRS.EventSource.Projections;
 using EnjoyCQRS.EventStore.MongoDB;
 using EnjoyCQRS.UnitTests.Shared;
@@ -11,11 +14,15 @@ using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Driver;
 using Xunit;
 using EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.BarAggregate.Projections;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
 
 namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
 {
     public class MongoEventStoreTests : IDisposable
     {
+        private static ITextSerializer _bsonSerializer = new BsonTextSerializer();
+
         public const string CategoryName = "Integration";
         public const string CategoryValue = "MongoDB";
         public const string DatabaseName = "enjoycqrs";
@@ -30,7 +37,9 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
                 new IgnoreExtraElementsConvention(true)
             };
 
-            ConventionRegistry.Register("camel case", pack, t => true);
+            ConventionRegistry.Register("camelCase", pack, t => true);
+
+            BsonSerializer.RegisterSerializer(typeof(DateTime), DateTimeSerializer.LocalInstance);
 
             BsonDefaults.GuidRepresentation = GuidRepresentation.Standard;
         }
@@ -123,7 +132,7 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
         {
             using (var eventStore = new MongoEventStore(_mongoClient, DatabaseName))
             {
-                var eventStoreTestSuit = new EventStoreTestSuit(eventStore, new ProjectionSerializer(new JsonTextSerializer()));
+                var eventStoreTestSuit = new EventStoreTestSuit(eventStore, new ProjectionSerializer(_bsonSerializer));
 
                 var aggregate = await eventStoreTestSuit.EventTestsAsync();
 
@@ -133,8 +142,15 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
 
                     projection.Id.Should().Be(aggregate.Id);
                     projection.LastText.Should().Be(aggregate.LastText);
-                    projection.UpdatedAt.ToString().Should().Be(aggregate.UpdatedAt.ToString());
+                    projection.UpdatedAt.ToString("G").Should().Be(aggregate.UpdatedAt.ToString("G"));
                     projection.Messages.Count.Should().Be(aggregate.Messages.Count);
+                }
+
+                using (var projectionRepository = new MongoProjectionRepository<BarProjection>(_mongoClient, DatabaseName))
+                {
+                    var projections = await projectionRepository.FindAsync(e => e.Id == aggregate.Id);
+
+                    projections.Count().Should().BeGreaterOrEqualTo(1);
                 }
             }
         }
@@ -145,7 +161,7 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
         {
             using (var eventStore = new MongoEventStore(_mongoClient, DatabaseName))
             {
-                var eventStoreTestSuit = new EventStoreTestSuit(eventStore, new ProjectionSerializer(new JsonTextSerializer()));
+                var eventStoreTestSuit = new EventStoreTestSuit(eventStore, new ProjectionSerializer(_bsonSerializer));
 
                 await eventStoreTestSuit.SnapshotTestsAsync();
             }
@@ -157,7 +173,7 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
         {
             using (var eventStore = new MongoEventStore(_mongoClient, DatabaseName))
             {
-                var eventStoreTestSuit = new EventStoreTestSuit(eventStore, new ProjectionSerializer(new JsonTextSerializer()));
+                var eventStoreTestSuit = new EventStoreTestSuit(eventStore, new ProjectionSerializer(_bsonSerializer));
 
                 await eventStoreTestSuit.DoSomeProblemAsync();
             }

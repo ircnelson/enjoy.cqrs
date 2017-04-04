@@ -2,9 +2,9 @@ using EnjoyCQRS.EventSource.Projections;
 using MongoDB.Driver;
 using System;
 using System.Threading.Tasks;
+using EnjoyCQRS.Core;
 using MongoDB.Bson;
 using Newtonsoft.Json;
-using MongoDB.Driver.Linq;
 
 namespace EnjoyCQRS.EventStore.MongoDB
 {
@@ -14,11 +14,8 @@ namespace EnjoyCQRS.EventStore.MongoDB
         public string Database { get; }
         public MongoEventStoreSetttings Setttings { get; }
 
-        public JsonSerializerSettings JsonSerializerSettings { get; set; } = new JsonSerializerSettings
-        {
-            DateTimeZoneHandling = DateTimeZoneHandling.Local
-        };
-
+        private readonly BsonTextSerializer _bsonTextSerializer = new BsonTextSerializer();
+        
         public MongoProjectionRepository(MongoClient client, string database) : this(client, database, new MongoEventStoreSetttings())
         {
         }
@@ -76,14 +73,15 @@ namespace EnjoyCQRS.EventStore.MongoDB
                 .Find(filter)
                 .Limit(1)
                 .FirstAsync();
-            
-            var projection = JsonConvert.DeserializeObject(record.Projection.ToJson(), projectionType, JsonSerializerSettings);
+
+            var projection = _bsonTextSerializer.Deserialize(record.Projection.ToJson(), projectionType.AssemblyQualifiedName);
             
             return projection;
         }
-
+        
         public void Dispose()
         {
         }
+
     }
 }
