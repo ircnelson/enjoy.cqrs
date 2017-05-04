@@ -36,49 +36,62 @@ Task("Clean")
     CleanDirectory(artifactsDir);
 });
 
-Task("Restore-NuGet-Packages")
+Task ("Restore-NuGet-Packages")
     .IsDependentOn("Clean")
     .Does(() =>
 {
     DotNetCoreRestore("./", new DotNetCoreRestoreSettings
     {
         Verbose = false,
-        Verbosity = DotNetCoreRestoreVerbosity.Warning,
+      
         Sources = new [] {
             "https://api.nuget.org/v3/index.json"
         }
     });
 });
 
-Task("Build")
-    .IsDependentOn("Restore-NuGet-Packages")
-    .Does(() =>
+Task ("Build")
+    .IsDependentOn ("Restore-NuGet-Packages")
+    .Does (() =>
 {
-    var projects = GetFiles("./**/*.xproj");
-    
+	var settings = new DotNetCoreBuildSettings { Configuration = configuration };
+	if(!IsRunningOnWindows()){
+		settings.Framework = "netstandard1.6";
+	}
+	var projects = GetFiles("./src/**/*.csproj");
     foreach(var project in projects)
     {
-        Context.Information("Project: " + project.GetDirectory().FullPath);
-
-        DotNetCoreBuild(project.GetDirectory().FullPath, new DotNetCoreBuildSettings {
-            Configuration = configuration
-        });
+        Context.Information("Building Project: " + project.FullPath);
+        DotNetCoreBuild(project.FullPath, settings);
     }
-    
+
+	projects = GetFiles("./test/**/*.csproj");
+    foreach(var project in projects)
+    {
+		if(!IsRunningOnWindows()){
+			if(project.GetFilenameWithoutExtension().ToString().EndsWith("Shared")){
+				settings.Framework = "netstandard1.6";
+			} else {
+				settings.Framework = "netcoreapp1.1";
+			}
+		}
+        Context.Information("Building Project: " + project.FullPath);
+        DotNetCoreBuild(project.FullPath, settings);
+    }
 });
 
-Task("Run-Unit-Tests")
-    .IsDependentOn("Build")
-    .Does(() =>
+Task ("Run-Unit-Tests")
+    .IsDependentOn ("Build")
+    .Does (() =>
 {
-    var projects = GetFiles("./test/**/*Tests.xproj");
+    var projects = GetFiles("./test/**/*Tests.csproj");
 
     CreateDirectory(testResultsDir);
-
     Context.Information("Found " + projects.Count() + " projects");
 
     foreach (var project in projects)
     {
+		Context.Information("Processing test project " + project.FullPath);
         if (IsRunningOnWindows())
         {
             var apiUrl = EnvironmentVariable("APPVEYOR_API_URL");
@@ -92,13 +105,12 @@ Task("Run-Unit-Tests")
                 }
 
                 Action<ICakeContext> testAction = tool => {
-
-                    tool.DotNetCoreTest(project.GetDirectory().FullPath, new DotNetCoreTestSettings {
+                    tool.DotNetCoreTest(project.FullPath, new DotNetCoreTestSettings {
                         Configuration = configuration,
                         NoBuild = true,
-                        Verbose = false,
-                        ArgumentCustomization = args =>
-                            args.Append("-xml").Append(testResultsDir.CombineWithFilePath(project.GetFilenameWithoutExtension()).FullPath + ".xml")
+                        Verbose = false
+                        // ArgumentCustomization = args =>
+                        //     args.Append("-xml").Append(testResultsDir.CombineWithFilePath(project.GetFilenameWithoutExtension()).FullPath + ".xml")
                     });
                 };
 
@@ -134,7 +146,7 @@ Task("Run-Unit-Tests")
                 Framework = "netcoreapp1.1"
             };
 
-            DotNetCoreTest(project.GetDirectory().FullPath, settings);
+            DotNetCoreTest(project.FullPath, settings);
         }
     }
 
@@ -145,7 +157,7 @@ Task("Run-Unit-Tests")
     }
 });
 
-Task("Create-NuGet-Packages")
+Task ("Create-NuGet-Packages")
     .WithCriteria(() => !BuildSystem.AppVeyor.Environment.PullRequest.IsPullRequest)
     .IsDependentOn("Build")
     .Does(() => 
@@ -173,7 +185,7 @@ Task("Create-NuGet-Packages")
     }
 });
 
-Task("Code-Coverage")
+Task ("Code-Coverage")
     .WithCriteria(() => !BuildSystem.AppVeyor.Environment.PullRequest.IsPullRequest)
     .WithCriteria(() => FileExists(testCoverageOutputFilePath))
     .WithCriteria(() => !BuildSystem.IsLocalBuild)
@@ -191,7 +203,7 @@ Task("Code-Coverage")
 // TASK TARGETS
 //////////////////////////////////////////////////////////////////////
 
-Task("Default")
+Task ("Default")
     .IsDependentOn("Run-Unit-Tests");
 
 Task("AppVeyor")
@@ -202,4 +214,4 @@ Task("AppVeyor")
 // EXECUTION
 //////////////////////////////////////////////////////////////////////
 
-RunTarget(target);
+RunTarget (target);

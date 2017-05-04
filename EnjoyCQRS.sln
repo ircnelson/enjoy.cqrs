@@ -1,30 +1,37 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F375D78C-9BF2-446A-927A-E6DBBF82C843}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{5433AD41-6D53-41BC-A73B-B9CA977893D3}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "EnjoyCQRS", "src\EnjoyCQRS\EnjoyCQRS.xproj", "{A753A5D4-570C-48C6-82BA-1B268BBFB173}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "EnjoyCQRS.UnitTests", "test\EnjoyCQRS.UnitTests\EnjoyCQRS.UnitTests.xproj", "{73E0C1BD-F62F-4675-AA1B-8DAE130A9379}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EA79EBDC-AE65-4DFF-961E-477046B534F9}"
 	ProjectSection(SolutionItems) = preProject
-		global.json = global.json
+		.travis.yml = .travis.yml
+		appveyor.yml = appveyor.yml
+		build.cake = build.cake
+		build.ps1 = build.ps1
+		build.sh = build.sh
+		build_travis.sh = build_travis.sh
+		LICENSE = LICENSE
+		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "EnjoyCQRS.TestFramework", "src\EnjoyCQRS.TestFramework\EnjoyCQRS.TestFramework.xproj", "{9EB68094-BDD7-4D60-89B4-E2E7C17E568F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EnjoyCQRS", "src\EnjoyCQRS\EnjoyCQRS.csproj", "{A753A5D4-570C-48C6-82BA-1B268BBFB173}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "EnjoyCQRS.UnitTests.Shared", "test\EnjoyCQRS.UnitTests.Shared\EnjoyCQRS.UnitTests.Shared.xproj", "{CBAB5ED2-B4F6-40D2-9AB6-7D29AF60C732}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EnjoyCQRS.UnitTests", "test\EnjoyCQRS.UnitTests\EnjoyCQRS.UnitTests.csproj", "{73E0C1BD-F62F-4675-AA1B-8DAE130A9379}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "EnjoyCQRS.EventStore.MongoDB", "src\EnjoyCQRS.EventStore.MongoDB\EnjoyCQRS.EventStore.MongoDB.xproj", "{1EA03A11-1553-4EC4-8184-5ED97794D5BD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EnjoyCQRS.UnitTests.Shared", "test\EnjoyCQRS.UnitTests.Shared\EnjoyCQRS.UnitTests.Shared.csproj", "{CBAB5ED2-B4F6-40D2-9AB6-7D29AF60C732}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "EnjoyCQRS.MongoDB.IntegrationTests", "test\EnjoyCQRS.MongoDB.IntegrationTests\EnjoyCQRS.MongoDB.IntegrationTests.xproj", "{E9CABC60-5A99-492B-B6DA-4161295C2491}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EnjoyCQRS.MongoDB.IntegrationTests", "test\EnjoyCQRS.MongoDB.IntegrationTests\EnjoyCQRS.MongoDB.IntegrationTests.csproj", "{E9CABC60-5A99-492B-B6DA-4161295C2491}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "EnjoyCQRS.IntegrationTests", "test\EnjoyCQRS.IntegrationTests\EnjoyCQRS.IntegrationTests.xproj", "{975FACD9-62FD-46FF-8525-959B6FEB926A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EnjoyCQRS.IntegrationTests", "test\EnjoyCQRS.IntegrationTests\EnjoyCQRS.IntegrationTests.csproj", "{975FACD9-62FD-46FF-8525-959B6FEB926A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EnjoyCQRS.EventStore.MongoDB", "src\EnjoyCQRS.EventStore.MongoDB\EnjoyCQRS.EventStore.MongoDB.csproj", "{0AB0DFF4-27C4-4CD6-BBB2-96CFEAF0ED98}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EnjoyCQRS.TestFramework", "src\EnjoyCQRS.TestFramework\EnjoyCQRS.TestFramework.csproj", "{C817E0F4-6A8C-47A8-8C32-CD259C497802}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -40,18 +47,10 @@ Global
 		{73E0C1BD-F62F-4675-AA1B-8DAE130A9379}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{73E0C1BD-F62F-4675-AA1B-8DAE130A9379}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{73E0C1BD-F62F-4675-AA1B-8DAE130A9379}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9EB68094-BDD7-4D60-89B4-E2E7C17E568F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9EB68094-BDD7-4D60-89B4-E2E7C17E568F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9EB68094-BDD7-4D60-89B4-E2E7C17E568F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9EB68094-BDD7-4D60-89B4-E2E7C17E568F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CBAB5ED2-B4F6-40D2-9AB6-7D29AF60C732}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CBAB5ED2-B4F6-40D2-9AB6-7D29AF60C732}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CBAB5ED2-B4F6-40D2-9AB6-7D29AF60C732}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CBAB5ED2-B4F6-40D2-9AB6-7D29AF60C732}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1EA03A11-1553-4EC4-8184-5ED97794D5BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1EA03A11-1553-4EC4-8184-5ED97794D5BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1EA03A11-1553-4EC4-8184-5ED97794D5BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1EA03A11-1553-4EC4-8184-5ED97794D5BD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E9CABC60-5A99-492B-B6DA-4161295C2491}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E9CABC60-5A99-492B-B6DA-4161295C2491}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E9CABC60-5A99-492B-B6DA-4161295C2491}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -60,6 +59,14 @@ Global
 		{975FACD9-62FD-46FF-8525-959B6FEB926A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{975FACD9-62FD-46FF-8525-959B6FEB926A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{975FACD9-62FD-46FF-8525-959B6FEB926A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0AB0DFF4-27C4-4CD6-BBB2-96CFEAF0ED98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0AB0DFF4-27C4-4CD6-BBB2-96CFEAF0ED98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0AB0DFF4-27C4-4CD6-BBB2-96CFEAF0ED98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0AB0DFF4-27C4-4CD6-BBB2-96CFEAF0ED98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C817E0F4-6A8C-47A8-8C32-CD259C497802}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C817E0F4-6A8C-47A8-8C32-CD259C497802}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C817E0F4-6A8C-47A8-8C32-CD259C497802}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C817E0F4-6A8C-47A8-8C32-CD259C497802}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -67,10 +74,10 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{A753A5D4-570C-48C6-82BA-1B268BBFB173} = {F375D78C-9BF2-446A-927A-E6DBBF82C843}
 		{73E0C1BD-F62F-4675-AA1B-8DAE130A9379} = {5433AD41-6D53-41BC-A73B-B9CA977893D3}
-		{9EB68094-BDD7-4D60-89B4-E2E7C17E568F} = {F375D78C-9BF2-446A-927A-E6DBBF82C843}
 		{CBAB5ED2-B4F6-40D2-9AB6-7D29AF60C732} = {5433AD41-6D53-41BC-A73B-B9CA977893D3}
-		{1EA03A11-1553-4EC4-8184-5ED97794D5BD} = {F375D78C-9BF2-446A-927A-E6DBBF82C843}
 		{E9CABC60-5A99-492B-B6DA-4161295C2491} = {5433AD41-6D53-41BC-A73B-B9CA977893D3}
 		{975FACD9-62FD-46FF-8525-959B6FEB926A} = {5433AD41-6D53-41BC-A73B-B9CA977893D3}
+		{0AB0DFF4-27C4-4CD6-BBB2-96CFEAF0ED98} = {F375D78C-9BF2-446A-927A-E6DBBF82C843}
+		{C817E0F4-6A8C-47A8-8C32-CD259C497802} = {F375D78C-9BF2-446A-927A-E6DBBF82C843}
 	EndGlobalSection
 EndGlobal

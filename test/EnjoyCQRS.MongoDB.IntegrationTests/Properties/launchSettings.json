@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "EnjoyCQRS.MongoDB.IntegrationTests": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "MONGODB_HOST": "localhost:27017"
+      }
+    }
+  }
+}

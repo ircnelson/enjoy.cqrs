@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using EnjoyCQRS.Core;
 using EnjoyCQRS.EventSource.Projections;
 using EnjoyCQRS.EventStore.MongoDB;
-using EnjoyCQRS.UnitTests.Shared;
 using EnjoyCQRS.UnitTests.Shared.TestSuit;
 using FluentAssertions;
 using MongoDB.Bson;
@@ -21,7 +19,7 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests.EventStore
 {
     public class MongoEventStoreTests : IDisposable
     {
-        private static ITextSerializer _bsonSerializer = new BsonTextSerializer();
+        private static readonly ITextSerializer _bsonSerializer = new BsonTextSerializer();
 
         public const string CategoryName = "Integration";
         public const string CategoryValue = "MongoDB";
