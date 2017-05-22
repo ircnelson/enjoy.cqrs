@@ -34,8 +34,6 @@ using MongoDB.Driver;
 
 namespace EnjoyCQRS.EventStore.MongoDB
 {
-    public delegate Task AddOrUpdateProjectionsDelegate(IEnumerable<ISerializedProjection> projections);
-
     public class MongoEventStore : IEventStore
     {
         protected readonly List<Event> UncommitedEvents = new List<Event>();
@@ -120,8 +118,7 @@ namespace EnjoyCQRS.EventStore.MongoDB
         public async Task CommitAsync()
         {
             var db = Client.GetDatabase(Database);
-
-
+            
             if (UncommitedSnapshots.Count > 0)
             {
                 var snapshotCollection = db.GetCollection<SnapshotData>(Setttings.SnapshotsCollectionName);
@@ -186,13 +183,15 @@ namespace EnjoyCQRS.EventStore.MongoDB
         {
             var eventData = BsonDocument.Parse(serializedEvent.SerializedData);
             var metadata = BsonDocument.Parse(serializedEvent.SerializedMetadata);
+
             var id = serializedEvent.Metadata.GetValue(MetadataKeys.EventId, value => Guid.Parse(value.ToString()));
             var eventType = serializedEvent.Metadata.GetValue(MetadataKeys.EventName, value => value.ToString());
+            var timestamp = serializedEvent.Metadata.GetValue(MetadataKeys.Timestamp, value => (DateTime) value);
 
             var @event = new Event
             {
                 Id = id,
-                Timestamp = DateTime.UtcNow,
+                Timestamp = timestamp,
                 EventType = eventType,
                 AggregateId = serializedEvent.AggregateId,
                 Version = serializedEvent.Version,
