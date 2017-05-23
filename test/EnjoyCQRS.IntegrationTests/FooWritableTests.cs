@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
+using EnjoyCQRS.EventSource;
 
 namespace EnjoyCQRS.IntegrationTests
 {
@@ -71,17 +72,42 @@ namespace EnjoyCQRS.IntegrationTests
             response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
-        private TestServer TestServerFactory(IEventStore eventStore)
+        [Trait(CategoryName, CategoryValue)]
+        [Fact]
+        public async Task Verify_custom_metadata()
+        {
+            // Arrange
+            var eventStore = new InMemoryEventStore();
+            var eventsMetadataService = new EventsMetadataService();
+
+            var server = TestServerFactory(eventStore, eventsMetadataService);
+
+            var response = await server.CreateRequest("/command/foo").PostAsync();
+
+            var eventsWithMetadata = eventsMetadataService.GetEvents().ToList();
+
+            eventsWithMetadata.Count().Should().Be(1);
+            var fakeUser = eventsWithMetadata[0].Metadata.GetValue(FakeUserMetadataProvider.MetadataKey, e => (dynamic)e);
+
+            Assert.NotNull(fakeUser);
+        }
+
+        private TestServer TestServerFactory(IEventStore eventStore, EventsMetadataService eventsMetadataService = null)
         {   
             var builder = new WebHostBuilder()
                 .UseStartup<Startup>()
-                .ConfigureServices(collection => collection.AddScoped(provider => eventStore));
+                .ConfigureServices(collection => {
+
+                    collection.AddScoped(e => eventsMetadataService);
+                    collection.AddScoped(provider => eventStore);
+                    collection.AddScoped<IMetadataProvider, FakeUserMetadataProvider>();
+                });
 
             var testServer = new TestServer(builder);
 
             return testServer;
         }
-
+        
         private Guid ExtractAggregateIdFromResponseContent(string content)
         {
             var match = Regex.Match(content, "{\"AggregateId\":\"(.*)\"}", RegexOptions.IgnoreCase | RegexOptions.Compiled);

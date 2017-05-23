@@ -89,7 +89,7 @@ namespace EnjoyCQRS.EventSource.Storage
 
             if (projectionProviderScanner == null)
             {
-                _projectionProviderScanner = new ProjectionProviderAttributeScanner();
+                projectionProviderScanner = new ProjectionProviderAttributeScanner();
             }
 
             if (snapshotStrategy == null)
@@ -99,7 +99,7 @@ namespace EnjoyCQRS.EventSource.Storage
 
             if (eventsMetadataService == null)
             {
-                _eventsMetadataService = new EventsMetadataService();
+                eventsMetadataService = new EventsMetadataService();
             }
 
             _logger = loggerFactory.Create(nameof(Session));
@@ -110,8 +110,10 @@ namespace EnjoyCQRS.EventSource.Storage
             _snapshotSerializer = snapshotSerializer;
             _projectionSerializer = projectionSerializer;
             _eventUpdateManager = eventUpdateManager;
+            _projectionProviderScanner = projectionProviderScanner;
             _metadataProviders = metadataProviders;
             _eventPublisher = eventPublisher;
+            _eventsMetadataService = eventsMetadataService;
         }
 
         /// <summary>
