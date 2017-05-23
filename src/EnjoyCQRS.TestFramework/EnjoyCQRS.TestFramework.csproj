@@ -10,6 +10,7 @@
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <Description>EnjoyCQRS.TestFramework is a framework to provides the minimal infrastructure for testing the CQRS &amp; Event Sourcing architecture.</Description>
   </PropertyGroup>
 
   <ItemGroup>
