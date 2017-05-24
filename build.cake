@@ -1,8 +1,8 @@
 #addin Cake.Coveralls
 
 #tool "nuget:?package=xunit.runner.console"
-#tool "nuget:https://www.nuget.org/api/v2?package=OpenCover&version=4.6.519"
-#tool "nuget:https://www.nuget.org/api/v2?package=ReportGenerator&version=2.4.5"
+#tool "nuget:?package=OpenCover&version=4.6.519"
+#tool "nuget:?package=ReportGenerator&version=2.4.5"
 #tool coveralls.io
 
 //////////////////////////////////////////////////////////////////////
@@ -109,8 +109,8 @@ Task ("Run-Unit-Tests")
                         Configuration = configuration,
                         NoBuild = true,
                         Verbose = false
-                        // ArgumentCustomization = args =>
-                        //     args.Append("-xml").Append(testResultsDir.CombineWithFilePath(project.GetFilenameWithoutExtension()).FullPath + ".xml")
+                        //ArgumentCustomization = args =>
+                        //    args.Append("-xml").Append(testResultsDir.CombineWithFilePath(project.GetFilenameWithoutExtension()).FullPath + ".xml")
                     });
                 };
 
@@ -119,7 +119,9 @@ Task ("Run-Unit-Tests")
                         testCoverageOutputFilePath,
                         new OpenCoverSettings {
                             ReturnTargetCodeOffset = 0,
-                            ArgumentCustomization = args => args.Append("-mergeoutput")
+							OldStyle = true,
+                            MergeOutput = true,
+							Register = "user"
                         }
                         .WithFilter("+[EnjoyCQRS*]* -[xunit.*]* -[FluentAssertions*]* -[*Tests]* -[*Tests.Shared]* ")
                         .ExcludeByAttribute("*.ExcludeFromCodeCoverage*")

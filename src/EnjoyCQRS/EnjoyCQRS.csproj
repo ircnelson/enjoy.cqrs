@@ -3,6 +3,7 @@
   <PropertyGroup>
     <VersionPrefix>2.5.0</VersionPrefix>
     <TargetFrameworks>netstandard1.6;net461</TargetFrameworks>
+    <DebugType>full</DebugType>
     <PreserveCompilationContext>true</PreserveCompilationContext>
     <AssemblyName>EnjoyCQRS</AssemblyName>
     <PackageId>EnjoyCQRS</PackageId>

@@ -3,6 +3,7 @@
   <PropertyGroup>
     <VersionPrefix>2.5.0</VersionPrefix>
     <TargetFrameworks>netstandard1.6;net461</TargetFrameworks>
+    <DebugType>full</DebugType>
     <AssemblyName>EnjoyCQRS.EventStore.MongoDB</AssemblyName>
     <PackageId>EnjoyCQRS.EventStore.MongoDB</PackageId>
     <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dotnet5.6</PackageTargetFallback>
