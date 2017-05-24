@@ -60,6 +60,7 @@ namespace EnjoyCQRS.EventSource
         public const string EventIgnore = "ignore";
 
         public const string CorrelationId = "correlationId";
+        public const string Timestamp = "timestamp";
 
         public const string SnapshotClrType = "snapshotClrType";
         public const string SnapshotId = "snapshotId";

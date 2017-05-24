@@ -3,6 +3,7 @@
   <PropertyGroup>
     <VersionPrefix>2.4.2</VersionPrefix>
     <TargetFrameworks>netstandard1.6;net461</TargetFrameworks>
+    <DebugType>full</DebugType>
     <AssemblyName>EnjoyCQRS.TestFramework</AssemblyName>
     <PackageId>EnjoyCQRS.TestFramework</PackageId>
     <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dotnet5.6;portable-net45+win8</PackageTargetFallback>
@@ -10,6 +11,7 @@
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <Description>EnjoyCQRS.TestFramework is a framework to provides the minimal infrastructure for testing the CQRS &amp; Event Sourcing architecture.</Description>
   </PropertyGroup>
 
   <ItemGroup>

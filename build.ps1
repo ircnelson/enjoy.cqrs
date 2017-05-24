@@ -46,6 +46,7 @@ Param(
     [string]$Configuration = "Release",
     [ValidateSet("Quiet", "Minimal", "Normal", "Verbose", "Diagnostic")]
     [string]$Verbosity = "Verbose",
+    [switch]$proxy=$false,
     [switch]$Experimental,
     [Alias("DryRun","Noop")]
     [switch]$WhatIf,
@@ -54,6 +55,18 @@ Param(
     [Parameter(Position=0,Mandatory=$false,ValueFromRemainingArguments=$true)]
     [string[]]$ScriptArgs
 )
+
+function Create-WebClient() 
+{
+    $webclient = New-Object System.Net.WebClient;
+    
+    if ($proxy) {
+        $webclient.Proxy = [System.Net.WebRequest]::DefaultWebProxy;
+        $webclient.Proxy.Credentials = Get-Credential
+    }
+
+    return $webclient;
+}
 
 [Reflection.Assembly]::LoadWithPartialName("System.Security") | Out-Null
 function MD5HashFile([string] $filePath)
@@ -126,7 +139,7 @@ if ((Test-Path $PSScriptRoot) -and !(Test-Path $TOOLS_DIR)) {
 # Make sure that packages.config exist.
 if (!(Test-Path $PACKAGES_CONFIG)) {
     Write-Verbose -Message "Downloading packages.config..."
-    try { (New-Object System.Net.WebClient).DownloadFile("http://cakebuild.net/download/bootstrapper/packages", $PACKAGES_CONFIG) } catch {
+    try { (Create-WebClient).DownloadFile("http://cakebuild.net/download/bootstrapper/packages", $PACKAGES_CONFIG) } catch {
         Throw "Could not download packages.config."
     }
 }
@@ -146,7 +159,7 @@ if (!(Test-Path $NUGET_EXE)) {
 if (!(Test-Path $NUGET_EXE)) {
     Write-Verbose -Message "Downloading NuGet.exe..."
     try {
-        (New-Object System.Net.WebClient).DownloadFile($NUGET_URL, $NUGET_EXE)
+        (Create-WebClient).DownloadFile($NUGET_URL, $NUGET_EXE)
     } catch {
         Throw "Could not download NuGet.exe."
     }

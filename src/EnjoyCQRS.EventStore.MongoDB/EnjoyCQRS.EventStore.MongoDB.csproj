@@ -1,8 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <VersionPrefix>2.4.7</VersionPrefix>
+    <VersionPrefix>2.5.0</VersionPrefix>
     <TargetFrameworks>netstandard1.6;net461</TargetFrameworks>
+    <DebugType>full</DebugType>
     <AssemblyName>EnjoyCQRS.EventStore.MongoDB</AssemblyName>
     <PackageId>EnjoyCQRS.EventStore.MongoDB</PackageId>
     <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dotnet5.6</PackageTargetFallback>
@@ -10,6 +11,8 @@
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <Version>2.5.0</Version>
+    <Description>EnjoyCQRS.EventStore.MongoDB is an Event Store implementation using MongoDB.</Description>
   </PropertyGroup>
 
   <ItemGroup>
