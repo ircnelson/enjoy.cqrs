@@ -13,6 +13,7 @@
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <Version>2.5.0</Version>
     <Description>EnjoyCQRS.EventStore.MongoDB is an Event Store implementation using MongoDB.</Description>
+    <Authors>ircnelson</Authors>
   </PropertyGroup>
 
   <ItemGroup>
