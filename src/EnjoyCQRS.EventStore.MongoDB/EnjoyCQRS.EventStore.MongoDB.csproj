@@ -1,19 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <VersionPrefix>2.5.0</VersionPrefix>
     <TargetFrameworks>netstandard1.6;net461</TargetFrameworks>
-    <DebugType>full</DebugType>
     <AssemblyName>EnjoyCQRS.EventStore.MongoDB</AssemblyName>
+    <AssemblyVersion>2.5.0.0</AssemblyVersion>
+    <FileVersion>2.5.0.0</FileVersion>
+    <VersionPrefix>2.5.0</VersionPrefix>
+    <Authors>ircnelson</Authors>
+    <Company>EnjoyCQRS</Company>
+    <Description>EnjoyCQRS.EventStore.MongoDB is an Event Store implementation using MongoDB.</Description>
+    <Copyright>Copyright 2016</Copyright>
+    <Summary>EnjoyCQRS.EventStore.MongoDB is an Event Store implementation using MongoDB.</Summary>
     <PackageId>EnjoyCQRS.EventStore.MongoDB</PackageId>
+    <PackageTags>.NET CQRS MongoDB EventSource EventSourcing</PackageTags>
+    <PackageProjectUrl>https://github.com/ircnelson/enjoy.cqrs</PackageProjectUrl>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/ircnelson/enjoy.cqrs/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/ircnelson/enjoy.cqrs</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
     <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dotnet5.6</PackageTargetFallback>
-    <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.6' ">1.6.1</NetStandardImplicitPackageVersion>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <Version>2.5.0</Version>
-    <Description>EnjoyCQRS.EventStore.MongoDB is an Event Store implementation using MongoDB.</Description>
-    <Authors>ircnelson</Authors>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.6' ">1.6.1</NetStandardImplicitPackageVersion>
   </PropertyGroup>
 
   <ItemGroup>

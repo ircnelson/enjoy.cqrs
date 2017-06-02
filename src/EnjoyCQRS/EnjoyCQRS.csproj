@@ -1,23 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <VersionPrefix>2.6.0</VersionPrefix>
     <TargetFrameworks>netstandard1.6;net461</TargetFrameworks>
-    <DebugType>full</DebugType>
-    <PreserveCompilationContext>true</PreserveCompilationContext>
     <AssemblyName>EnjoyCQRS</AssemblyName>
+    <AssemblyVersion>2.6.0.0</AssemblyVersion>
+    <FileVersion>2.6.0.0</FileVersion>
+    <VersionPrefix>2.6.0</VersionPrefix>
+    <Authors>ircnelson</Authors>
+    <Company>EnjoyCQRS</Company>
+    <Description>EnjoyCQRS is a framework to provides the minimal infrastructure for CQRS &amp; Event Sourcing architecture.</Description>
+    <Copyright>Copyright 2016</Copyright>
+    <Summary>EnjoyCQRS is a framework to provides the minimal infrastructure for CQRS &amp; Event Sourcing architecture.</Summary>
     <PackageId>EnjoyCQRS</PackageId>
+    <PackageTags>.NET CQRS EventSource EventSourcing</PackageTags>
+    <PackageProjectUrl>https://github.com/ircnelson/enjoy.cqrs</PackageProjectUrl>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/ircnelson/enjoy.cqrs/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/ircnelson/enjoy.cqrs</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
     <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dotnet5.6;portable-net45+win8</PackageTargetFallback>
-    <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.6' ">1.6.1</NetStandardImplicitPackageVersion>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <Version>2.6.0</Version>
-    <Description>EnjoyCQRS is a framework to provides the minimal infrastructure for CQRS &amp; Event Sourcing architecture.</Description>
-    <Authors>ircnelson</Authors>
-    <AssemblyVersion>2.6.0.0</AssemblyVersion>
-    <FileVersion>2.6.0.0</FileVersion>
-    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.6' ">1.6.1</NetStandardImplicitPackageVersion>
   </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.6' ">
