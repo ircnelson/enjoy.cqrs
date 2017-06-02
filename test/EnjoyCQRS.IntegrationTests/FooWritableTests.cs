@@ -87,9 +87,10 @@ namespace EnjoyCQRS.IntegrationTests
             var eventsWithMetadata = eventsMetadataService.GetEvents().ToList();
 
             eventsWithMetadata.Count().Should().Be(1);
-            var fakeUser = eventsWithMetadata[0].Metadata.GetValue(FakeUserMetadataProvider.MetadataKey, e => (dynamic)e);
+            var fakeUser = eventsWithMetadata[0].Metadata.GetValue(FakeUserMetadataProvider.MetadataKey, e => (User)e);
 
-            Assert.NotNull(fakeUser);
+            fakeUser.Name.Should().Be("Xomano");
+            fakeUser.UserCode.Should().Be(123);
         }
 
         private TestServer TestServerFactory(IEventStore eventStore, EventsMetadataService eventsMetadataService = null)
@@ -98,7 +99,7 @@ namespace EnjoyCQRS.IntegrationTests
                 .UseStartup<Startup>()
                 .ConfigureServices(collection => {
 
-                    collection.AddScoped(e => eventsMetadataService);
+                    collection.AddScoped<IEventsMetadataService>(e => eventsMetadataService);
                     collection.AddScoped(provider => eventStore);
                     collection.AddScoped<IMetadataProvider, FakeUserMetadataProvider>();
                 });

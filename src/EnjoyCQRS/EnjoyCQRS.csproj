@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <VersionPrefix>2.5.0</VersionPrefix>
+    <VersionPrefix>2.6.0</VersionPrefix>
     <TargetFrameworks>netstandard1.6;net461</TargetFrameworks>
     <DebugType>full</DebugType>
     <PreserveCompilationContext>true</PreserveCompilationContext>
@@ -12,9 +12,12 @@
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <Version>2.5.0</Version>
+    <Version>2.6.0</Version>
     <Description>EnjoyCQRS is a framework to provides the minimal infrastructure for CQRS &amp; Event Sourcing architecture.</Description>
     <Authors>ircnelson</Authors>
+    <AssemblyVersion>2.6.0.0</AssemblyVersion>
+    <FileVersion>2.6.0.0</FileVersion>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.6' ">

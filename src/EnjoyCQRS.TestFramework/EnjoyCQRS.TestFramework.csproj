@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <VersionPrefix>2.4.2</VersionPrefix>
+    <VersionPrefix>2.4.3</VersionPrefix>
     <TargetFrameworks>netstandard1.6;net461</TargetFrameworks>
     <DebugType>full</DebugType>
     <AssemblyName>EnjoyCQRS.TestFramework</AssemblyName>
@@ -13,6 +13,7 @@
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <Description>EnjoyCQRS.TestFramework is a framework to provides the minimal infrastructure for testing the CQRS &amp; Event Sourcing architecture.</Description>
     <Authors>ircnelson</Authors>
+    <Version>2.4.3</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,7 +22,7 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
-    <PackageReference Include="Moq" Version="4.7.9" />
+    <PackageReference Include="Moq" Version="4.7.12" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.6' ">

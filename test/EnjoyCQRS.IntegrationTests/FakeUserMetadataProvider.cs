@@ -10,13 +10,19 @@ namespace EnjoyCQRS.IntegrationTests
 
         public IEnumerable<KeyValuePair<string, object>> Provide<TAggregate>(TAggregate aggregate, IDomainEvent @event, IMetadata metadata) where TAggregate : IAggregate
         {
-            var user = new
+            var user = new User
             {
-                Name = "Xomano",
-                UserCode = 123
+                UserCode = 123,
+                Name = "Xomano"
             };
 
             yield return new KeyValuePair<string, object>(MetadataKey, user);
         }
+    }
+
+    public class User
+    {
+        public int UserCode { get; set; }
+        public string Name { get; set; }
     }
 }
