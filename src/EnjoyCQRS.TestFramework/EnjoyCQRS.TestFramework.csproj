@@ -1,17 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <VersionPrefix>2.4.2</VersionPrefix>
     <TargetFrameworks>netstandard1.6;net461</TargetFrameworks>
-    <DebugType>full</DebugType>
     <AssemblyName>EnjoyCQRS.TestFramework</AssemblyName>
+    <AssemblyVersion>2.4.3.0</AssemblyVersion>
+    <FileVersion>2.4.3.0</FileVersion>
+    <VersionPrefix>2.4.3</VersionPrefix>
+    <Authors>ircnelson</Authors>
+    <Company>EnjoyCQRS</Company>
+    <Copyright>Copyright 2016</Copyright>
+    <Description>EnjoyCQRS.TestFramework is a framework to provides the minimal infrastructure for testing the CQRS &amp; Event Sourcing architecture.</Description>
+    <Summary>CQRS Test Framework.</Summary>
     <PackageId>EnjoyCQRS.TestFramework</PackageId>
+    <PackageTags>.NET CQRS EventSource EventSourcing TestFramework</PackageTags>
+    <PackageProjectUrl>https://github.com/ircnelson/enjoy.cqrs</PackageProjectUrl>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/ircnelson/enjoy.cqrs/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/ircnelson/enjoy.cqrs</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
     <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dotnet5.6;portable-net45+win8</PackageTargetFallback>
-    <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.6' ">1.6.1</NetStandardImplicitPackageVersion>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <Description>EnjoyCQRS.TestFramework is a framework to provides the minimal infrastructure for testing the CQRS &amp; Event Sourcing architecture.</Description>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.6' ">1.6.1</NetStandardImplicitPackageVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,7 +31,7 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
-    <PackageReference Include="Moq" Version="4.7.9" />
+    <PackageReference Include="Moq" Version="4.7.12" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.6' ">
