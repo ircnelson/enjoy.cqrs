@@ -37,3 +37,9 @@ script:
 cache:
   directories:
     - tools
+
+branches:
+  only:
+  - master
+  - dev
+  

@@ -14,7 +14,6 @@ Any suggestion is welcome.
 ## Features
 
 * Unit of Work
-    - You can work with BASE or ACID
 * Command dispatcher abstraction
 * Event publisher
 * Event Store abstraction
@@ -23,14 +22,8 @@ Any suggestion is welcome.
 
 ## Configure development enviroment
 
-1. Install Docker
-2. Pull mongo image. (See https://hub.docker.com/_/mongo/)
-	* e.g.: docker run --name srv-mongo -p 27017:27017 -d mongo
-
-
-* Discovering docker ip:
-	* unix: $(ifconfig en0 | awk '/ *inet /{print $2}')
-
+1. Install MongoDB
+2. Set environment variable called 'MONGODB_HOST' with MongoDB's IP/HOST
 
 ## Event store implementations
 
