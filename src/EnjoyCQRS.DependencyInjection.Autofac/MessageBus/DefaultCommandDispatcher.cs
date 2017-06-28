@@ -20,25 +20,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using EnjoyCQRS.Events;
-using System.Collections.Generic;
-using System.Linq;
+using Autofac;
+using EnjoyCQRS.Commands;
+using EnjoyCQRS.MessageBus;
+using System.Threading.Tasks;
 
-namespace EnjoyCQRS.EventSource
+namespace EnjoyCQRS.DependencyInjection.Autofac.MessageBus
 {
-    public class EventsMetadataService : IEventsMetadataService
+    public class DefaultCommandDispatcher : CommandDispatcher
     {
-        private readonly IDictionary<IDomainEvent, EventMetadataItem> _items = new Dictionary<IDomainEvent, EventMetadataItem>();
+        private readonly ILifetimeScope _scope;
 
-        public IReadOnlyCollection<EventMetadataItem> GetEvents()
+        public DefaultCommandDispatcher(ILifetimeScope scope)
         {
-            return _items.Values.ToList().AsReadOnly();
+            _scope = scope;
         }
 
-        public void Add<TEvent>(TEvent @event, IMetadata metadata)
-            where TEvent : IDomainEvent
+        protected override async Task RouteAsync<TCommand>(TCommand command)
         {
-            _items.Add(@event, EventMetadataItem.Create(@event, metadata));
+            
+            var handler = _scope.Resolve<ICommandHandler<TCommand>>();
+            await handler.ExecuteAsync(command);
         }
     }
 }

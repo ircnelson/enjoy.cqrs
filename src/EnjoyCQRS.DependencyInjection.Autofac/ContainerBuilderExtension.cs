@@ -20,25 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using EnjoyCQRS.Events;
-using System.Collections.Generic;
-using System.Linq;
+using Autofac;
+using EnjoyCQRS.Core;
+using System;
 
-namespace EnjoyCQRS.EventSource
+namespace EnjoyCQRS.DependencyInjection.AutofacExtensions
 {
-    public class EventsMetadataService : IEventsMetadataService
+    public static class ContainerBuilderExtension
     {
-        private readonly IDictionary<IDomainEvent, EventMetadataItem> _items = new Dictionary<IDomainEvent, EventMetadataItem>();
-
-        public IReadOnlyCollection<EventMetadataItem> GetEvents()
+        public static void UseEnjoyCQRS(this ContainerBuilder builder, Func<IEnjoyDependenciesBuilder<IComponentContext>, IEnjoyDependenciesBuilder<IComponentContext>> options = null)
         {
-            return _items.Values.ToList().AsReadOnly();
-        }
-
-        public void Add<TEvent>(TEvent @event, IMetadata metadata)
-            where TEvent : IDomainEvent
-        {
-            _items.Add(@event, EventMetadataItem.Create(@event, metadata));
+            builder.RegisterModule(new EnjoyCQRSModule(options));
         }
     }
 }

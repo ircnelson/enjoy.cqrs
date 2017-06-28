@@ -40,7 +40,7 @@ namespace EnjoyCQRS.EventSource.Storage
 {
     public class Session : ISession
     {
-        private readonly EventsMetadataService _eventsMetadataService;
+        private readonly IEventsMetadataService _eventsMetadataService;
         private readonly AggregateTracker _aggregateTracker = new AggregateTracker();
         private readonly List<Aggregate> _aggregates = new List<Aggregate>();
         private readonly IEventStore _eventStore;
@@ -69,7 +69,7 @@ namespace EnjoyCQRS.EventSource.Storage
             IEventUpdateManager eventUpdateManager = null,
             IEnumerable<IMetadataProvider> metadataProviders = null,
             ISnapshotStrategy snapshotStrategy = null,
-            EventsMetadataService eventsMetadataService = null)
+            IEventsMetadataService eventsMetadataService = null)
         {
             if (loggerFactory == null) throw new ArgumentNullException(nameof(loggerFactory));
             if (eventStore == null) throw new ArgumentNullException(nameof(eventStore));

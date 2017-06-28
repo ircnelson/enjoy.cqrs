@@ -20,25 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using EnjoyCQRS.Events;
 using System.Collections.Generic;
-using System.Linq;
+using EnjoyCQRS.Events;
 
 namespace EnjoyCQRS.EventSource
 {
-    public class EventsMetadataService : IEventsMetadataService
+    public interface IEventsMetadataService
     {
-        private readonly IDictionary<IDomainEvent, EventMetadataItem> _items = new Dictionary<IDomainEvent, EventMetadataItem>();
+        IReadOnlyCollection<EventMetadataItem> GetEvents();
 
-        public IReadOnlyCollection<EventMetadataItem> GetEvents()
-        {
-            return _items.Values.ToList().AsReadOnly();
-        }
-
-        public void Add<TEvent>(TEvent @event, IMetadata metadata)
-            where TEvent : IDomainEvent
-        {
-            _items.Add(@event, EventMetadataItem.Create(@event, metadata));
-        }
+        void Add<TEvent>(TEvent @event, IMetadata metadata)
+            where TEvent : IDomainEvent;
     }
 }

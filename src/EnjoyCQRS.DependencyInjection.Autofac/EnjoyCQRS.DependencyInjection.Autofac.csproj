@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard1.6;net461</TargetFrameworks>
+    <AssemblyName>EnjoyCQRS.DependencyInjection.Autofac</AssemblyName>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
+    <VersionPrefix>1.0.0</VersionPrefix>
+    <Authors>ircnelson</Authors>
+    <Company>EnjoyCQRS</Company>
+    <Description>EnjoyCQRS.DependencyInjection.Autofac is an Autofac extensions.</Description>
+    <Copyright>Copyright 2016</Copyright>
+    <Summary>Register dependencies in Autofac Container.</Summary>
+    <PackageId>EnjoyCQRS.DependencyInjection.Autofac</PackageId>
+    <PackageTags>.NET CQRS EventSource EventSourcing Autofac Extensions</PackageTags>
+    <PackageProjectUrl>https://github.com/ircnelson/enjoy.cqrs</PackageProjectUrl>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/ircnelson/enjoy.cqrs/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/ircnelson/enjoy.cqrs</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Version>1.1.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac" Version="4.4.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EnjoyCQRS\EnjoyCQRS.csproj" />
+  </ItemGroup>
+
+</Project>

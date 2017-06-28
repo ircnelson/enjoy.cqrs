@@ -20,25 +20,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using EnjoyCQRS.Events;
-using System.Collections.Generic;
-using System.Linq;
+using EnjoyCQRS.Core;
+using System;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
-namespace EnjoyCQRS.EventSource
+namespace EnjoyCQRS.DependencyInjection.Autofac.Core
 {
-    public class EventsMetadataService : IEventsMetadataService
+    public class NewtonsoftSerializer : ITextSerializer
     {
-        private readonly IDictionary<IDomainEvent, EventMetadataItem> _items = new Dictionary<IDomainEvent, EventMetadataItem>();
+        private JsonSerializerSettings _jsonSerializerSettings;
 
-        public IReadOnlyCollection<EventMetadataItem> GetEvents()
+        public NewtonsoftSerializer()
         {
-            return _items.Values.ToList().AsReadOnly();
+            _jsonSerializerSettings = new JsonSerializerSettings {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            };
         }
 
-        public void Add<TEvent>(TEvent @event, IMetadata metadata)
-            where TEvent : IDomainEvent
+        public NewtonsoftSerializer(JsonSerializerSettings jsonSerializerSettings)
         {
-            _items.Add(@event, EventMetadataItem.Create(@event, metadata));
+            _jsonSerializerSettings = jsonSerializerSettings;
+        }
+
+        public string Serialize(object @object)
+        {
+            return JsonConvert.SerializeObject(@object, _jsonSerializerSettings);
+        }
+
+        public object Deserialize(string textSerialized, string type)
+        {
+            return JsonConvert.DeserializeObject(textSerialized, Type.GetType(type), _jsonSerializerSettings);
+        }
+
+        public T Deserialize<T>(string textSerialized)
+        {
+            return JsonConvert.DeserializeObject<T>(textSerialized, _jsonSerializerSettings);
         }
     }
 }

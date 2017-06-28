@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+VisualStudioVersion = 15.0.26403.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F375D78C-9BF2-446A-927A-E6DBBF82C843}"
 EndProject
@@ -32,6 +32,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EnjoyCQRS.EventStore.MongoDB", "src\EnjoyCQRS.EventStore.MongoDB\EnjoyCQRS.EventStore.MongoDB.csproj", "{0AB0DFF4-27C4-4CD6-BBB2-96CFEAF0ED98}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EnjoyCQRS.TestFramework", "src\EnjoyCQRS.TestFramework\EnjoyCQRS.TestFramework.csproj", "{C817E0F4-6A8C-47A8-8C32-CD259C497802}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnjoyCQRS.DependencyInjection.Autofac", "src\EnjoyCQRS.DependencyInjection.Autofac\EnjoyCQRS.DependencyInjection.Autofac.csproj", "{1668F5ED-2C06-4C47-B2D9-B9C29FA35DB2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnjoyCQRS.DependencyInjection.AutofacTests", "test\EnjoyCQRS.DependencyInjection.AutofacTests\EnjoyCQRS.DependencyInjection.AutofacTests.csproj", "{515DD919-7993-4AF3-A96E-7B9D8D61503C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -67,6 +71,14 @@ Global
 		{C817E0F4-6A8C-47A8-8C32-CD259C497802}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C817E0F4-6A8C-47A8-8C32-CD259C497802}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C817E0F4-6A8C-47A8-8C32-CD259C497802}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1668F5ED-2C06-4C47-B2D9-B9C29FA35DB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1668F5ED-2C06-4C47-B2D9-B9C29FA35DB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1668F5ED-2C06-4C47-B2D9-B9C29FA35DB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1668F5ED-2C06-4C47-B2D9-B9C29FA35DB2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{515DD919-7993-4AF3-A96E-7B9D8D61503C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{515DD919-7993-4AF3-A96E-7B9D8D61503C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{515DD919-7993-4AF3-A96E-7B9D8D61503C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{515DD919-7993-4AF3-A96E-7B9D8D61503C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -79,5 +91,7 @@ Global
 		{975FACD9-62FD-46FF-8525-959B6FEB926A} = {5433AD41-6D53-41BC-A73B-B9CA977893D3}
 		{0AB0DFF4-27C4-4CD6-BBB2-96CFEAF0ED98} = {F375D78C-9BF2-446A-927A-E6DBBF82C843}
 		{C817E0F4-6A8C-47A8-8C32-CD259C497802} = {F375D78C-9BF2-446A-927A-E6DBBF82C843}
+		{1668F5ED-2C06-4C47-B2D9-B9C29FA35DB2} = {F375D78C-9BF2-446A-927A-E6DBBF82C843}
+		{515DD919-7993-4AF3-A96E-7B9D8D61503C} = {5433AD41-6D53-41BC-A73B-B9CA977893D3}
 	EndGlobalSection
 EndGlobal
