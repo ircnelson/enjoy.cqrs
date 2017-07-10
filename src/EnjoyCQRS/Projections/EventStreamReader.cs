@@ -20,30 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace EnjoyCQRS.EventStore.MongoDB
+namespace EnjoyCQRS.Projections
 {
-    public class MongoEventStoreSetttings
+    public abstract class EventStreamReader
     {
-        public string EventsCollectionName { get; set; } = "Events";
-        public string SnapshotsCollectionName { get; set; } = "Snapshots";
-        public string ProjectionsCollectionName { get; set; } = "Projections";
-        public string TempProjectionsCollectionName { get; set; } = "TempProjections";
+        public delegate void OnDeserializeEventDelegate(object @event);
 
-        internal void Validate()
-        {
-            if (string.IsNullOrWhiteSpace(EventsCollectionName))
-                throw new ArgumentNullException(nameof(EventsCollectionName));
-
-            if (string.IsNullOrWhiteSpace(SnapshotsCollectionName))
-                throw new ArgumentNullException(nameof(SnapshotsCollectionName));
-
-            if (string.IsNullOrWhiteSpace(ProjectionsCollectionName))
-                throw new ArgumentNullException(nameof(ProjectionsCollectionName));
-
-            if (string.IsNullOrWhiteSpace(TempProjectionsCollectionName))
-                throw new ArgumentNullException(nameof(TempProjectionsCollectionName));
-        }
+        public abstract Task ReadAsync(CancellationToken cancellationToken, OnDeserializeEventDelegate onDeserializeEvent);
     }
 }

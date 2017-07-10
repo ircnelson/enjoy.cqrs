@@ -9,6 +9,7 @@ using EnjoyCQRS.MessageBus.InProcess;
 using EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.BarAggregate;
 using EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.FooAggregate;
 using FluentAssertions;
+using EnjoyCQRS.UnitTests.Shared.Helpers;
 
 namespace EnjoyCQRS.UnitTests.Shared.TestSuit
 {
@@ -101,16 +102,21 @@ namespace EnjoyCQRS.UnitTests.Shared.TestSuit
 
         private ISession CreateSession()
         {
-            var session = new Session(new NoopLoggerFactory(), _eventStore, new EventPublisher(StubEventRouter.Ok()), new EventSerializer(new JsonTextSerializer()), new SnapshotSerializer(new JsonTextSerializer()), _projectionSerializer, null, null, null, new IntervalSnapshotStrategy(10));
+            var session = SessionHelper.Create(_eventStore, 
+                projectionSerializer: _projectionSerializer, 
+                snapshotStrategy: new IntervalSnapshotStrategy(10));
 
             return session;
         }
 
         private ISession CreateFaultSession()
         {
-            var faultSession = new Session(new NoopLoggerFactory(), _eventStore, new EventPublisher(StubEventRouter.Fault()), new EventSerializer(new JsonTextSerializer()), new SnapshotSerializer(new JsonTextSerializer()), _projectionSerializer, null, null, null, new IntervalSnapshotStrategy(10));
-
-            return faultSession;
+            var session = SessionHelper.Create(_eventStore, 
+                projectionSerializer: _projectionSerializer, 
+                eventRouter: StubEventRouter.Fault(),
+                snapshotStrategy: new IntervalSnapshotStrategy(10));
+            
+            return session;
         }
 
         private static Foo GenerateFoo(int quantity = 10)

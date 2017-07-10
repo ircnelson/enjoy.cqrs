@@ -40,10 +40,26 @@ namespace EnjoyCQRS.EventStore.MongoDB
         protected readonly List<SnapshotData> UncommitedSnapshots = new List<SnapshotData>();
         protected readonly List<ISerializedProjection> UncommitedProjections = new List<ISerializedProjection>();
 
-        public MongoClient Client { get; }
+        public IMongoClient Client { get; }
         public string Database { get; }
         public MongoEventStoreSetttings Setttings { get; }
-        
+
+        public MongoEventStore(IMongoDatabase database) : this (database, new MongoEventStoreSetttings())
+        {
+        }
+
+        public MongoEventStore(IMongoDatabase database, MongoEventStoreSetttings setttings)
+        {
+            if (database == null) throw new ArgumentNullException(nameof(database));
+            if (setttings == null) throw new ArgumentNullException(nameof(setttings));
+
+            setttings.Validate();
+
+            Database = database.DatabaseNamespace.DatabaseName;
+            Setttings = setttings;
+            Client = database.Client;
+        }
+
         public MongoEventStore(MongoClient client, string database) : this(client, database, new MongoEventStoreSetttings())
         {
         }
