@@ -3,7 +3,7 @@
 
 namespace EnjoyCQRS.Projections
 {
-    public interface IDocumentReader<in TKey, TView>
+    public interface IProjectionReader<in TKey, TView>
     {
         bool TryGet(TKey key, out TView view);
     }

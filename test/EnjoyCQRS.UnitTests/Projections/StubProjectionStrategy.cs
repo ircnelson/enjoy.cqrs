@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace EnjoyCQRS.UnitTests.Projections
 {
-    public class StubDocumentStrategy : IDocumentStrategy
+    public class StubProjectionStrategy : IProjectionStrategy
     {
         public TEntity Deserialize<TEntity>(Stream stream)
         {

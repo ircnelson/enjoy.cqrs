@@ -8,28 +8,28 @@ using System.Threading.Tasks;
 
 namespace EnjoyCQRS.Projections.InMemory
 {
-    public sealed class MemoryDocumentStore : IDocumentStore
+    public sealed class MemoryProjectionStore : IProjectionStore
     {
         private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, byte[]>> _store = new ConcurrentDictionary<string, ConcurrentDictionary<string, byte[]>>();
-        private readonly IDocumentStrategy _strategy;
+        private readonly IProjectionStrategy _strategy;
 
-        public MemoryDocumentStore(IDocumentStrategy strategy)
+        public MemoryProjectionStore(IProjectionStrategy strategy)
         {
             _strategy = strategy;
         }
 
-        public MemoryDocumentStore(IDocumentStrategy strategy, ConcurrentDictionary<string, ConcurrentDictionary<string, byte[]>> store) : this (strategy)
+        public MemoryProjectionStore(IProjectionStrategy strategy, ConcurrentDictionary<string, ConcurrentDictionary<string, byte[]>> store) : this (strategy)
         {
             _store = store;
         }
 
-        public IDocumentWriter<TKey, TEntity> GetWriter<TKey, TEntity>()
+        public IProjectionWriter<TKey, TEntity> GetWriter<TKey, TEntity>()
         {
             var bucket = _strategy.GetEntityBucket<TEntity>();
 
             var store = _store.GetOrAdd(bucket, s => new ConcurrentDictionary<string, byte[]>());
 
-            return new MemoryDocumentReaderWriter<TKey, TEntity>(_strategy, store);
+            return new MemoryProjectionReaderWriter<TKey, TEntity>(_strategy, store);
         }
 
 
@@ -55,16 +55,16 @@ namespace EnjoyCQRS.Projections.InMemory
         }
 
 
-        public IDocumentReader<TKey, TEntity> GetReader<TKey, TEntity>()
+        public IProjectionReader<TKey, TEntity> GetReader<TKey, TEntity>()
         {
             var bucket = _strategy.GetEntityBucket<TEntity>();
 
             var store = _store.GetOrAdd(bucket, s => new ConcurrentDictionary<string, byte[]>());
 
-            return new MemoryDocumentReaderWriter<TKey, TEntity>(_strategy, store);
+            return new MemoryProjectionReaderWriter<TKey, TEntity>(_strategy, store);
         }
 
-        public IDocumentStrategy Strategy
+        public IProjectionStrategy Strategy
         {
             get { return _strategy; }
         }

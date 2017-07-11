@@ -5,13 +5,13 @@ using Xunit;
 
 namespace EnjoyCQRS.UnitTests.Projections
 {
-    public abstract class DocumentReaderWriterTest
+    public abstract class ProjectionReaderWriterTests
     {
-        public IDocumentReader<Guid, int> _reader;
-        public IDocumentWriter<Guid, int> _writer;
+        public IProjectionReader<Guid, int> _reader;
+        public IProjectionWriter<Guid, int> _writer;
 
-        public IDocumentReader<Guid, Test1> _guidKeyClassReader;
-        public IDocumentWriter<Guid, Test1> _guidKeyClassWriter;
+        public IProjectionReader<Guid, Test1> _guidKeyClassReader;
+        public IProjectionWriter<Guid, Test1> _guidKeyClassWriter;
 
         [Fact]
         public void Get_not_created_entity()

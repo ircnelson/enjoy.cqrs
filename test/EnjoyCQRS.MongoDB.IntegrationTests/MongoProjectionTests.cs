@@ -50,9 +50,9 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests
 
             var eventStreamReader = new MongoEventStreamReader(_fixture.Database, new JsonTextSerializer());
             
-            var strategy = new MongoDocumentStrategy();
+            var strategy = new MongoProjectionStrategy();
             
-            var documentStore = new MongoDocumentStore(strategy, _fixture.Database);
+            var documentStore = new MongoProjectionStore(strategy, _fixture.Database);
 
             var writer1 = documentStore.GetWriter<Guid, AllUserView>();
             var allUserProjection = new AllUserProjections(writer1);

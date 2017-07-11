@@ -5,7 +5,7 @@ namespace EnjoyCQRS.UnitTests.Shared.Projection
 {
     public class OnlyActiveUserProjections : Projector<Guid, ActiveUserView>
     {
-        public OnlyActiveUserProjections(IDocumentWriter<Guid, ActiveUserView> store) : base(store)
+        public OnlyActiveUserProjections(IProjectionWriter<Guid, ActiveUserView> store) : base(store)
         {
         }
 

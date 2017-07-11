@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace EnjoyCQRS.UnitTests.Projections
 {
-    public abstract class DocumentStoreTest
+    public abstract class ProjectionStoreTests
     {
-        protected IDocumentStore Store { get; set; }
+        protected IProjectionStore Store { get; set; }
 
         [Fact]
         public async Task Get_not_created_bucket()

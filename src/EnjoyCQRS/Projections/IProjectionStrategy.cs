@@ -5,7 +5,7 @@ using System.IO;
 
 namespace EnjoyCQRS.Projections
 {
-    public interface IDocumentStrategy
+    public interface IProjectionStrategy
     {
         string GetEntityBucket<TEntity>();
         string GetEntityLocation<TEntity>(object key);

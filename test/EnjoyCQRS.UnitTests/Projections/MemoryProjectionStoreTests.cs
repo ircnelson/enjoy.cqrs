@@ -11,14 +11,14 @@ using Xunit;
 namespace EnjoyCQRS.UnitTests.Projections
 {
     [Trait("Unit", "Projection")]
-    public class MemoryDocumentStoreTest : DocumentStoreTest
+    public class MemoryProjectionStoreTests : ProjectionStoreTests
     {
         private ConcurrentDictionary<string, ConcurrentDictionary<string, byte[]>> _storeDictionary;
 
-        public MemoryDocumentStoreTest()
+        public MemoryProjectionStoreTests()
         {
             _storeDictionary = new ConcurrentDictionary<string, ConcurrentDictionary<string, byte[]>>();
-            Store = new MemoryDocumentStore(new StubDocumentStrategy(), _storeDictionary);
+            Store = new MemoryProjectionStore(new StubProjectionStrategy(), _storeDictionary);
         }
 
         [Fact]
@@ -35,7 +35,7 @@ namespace EnjoyCQRS.UnitTests.Projections
             await Store.ApplyAsync(bucket1, records);
             await Store.ApplyAsync(bucket2, records);
 
-            ((MemoryDocumentStore)Store).ResetAll();
+            ((MemoryProjectionStore)Store).ResetAll();
 
             var result1 = (await Store.EnumerateContentsAsync(bucket1)).ToList();
             var result2 = (await Store.EnumerateContentsAsync(bucket2)).ToList();

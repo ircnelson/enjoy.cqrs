@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace EnjoyCQRS.Projections
 {
-    public interface IDocumentStore
+    public interface IProjectionStore
     {
         string[] GetBuckets();
-        IDocumentWriter<TKey, TEntity> GetWriter<TKey, TEntity>();
-        IDocumentReader<TKey, TEntity> GetReader<TKey, TEntity>();
+        IProjectionWriter<TKey, TEntity> GetWriter<TKey, TEntity>();
+        IProjectionReader<TKey, TEntity> GetReader<TKey, TEntity>();
         Task<IEnumerable<DocumentRecord>> EnumerateContentsAsync(string bucket);
         Task ApplyAsync(string bucket, IEnumerable<DocumentRecord> records);
         void Cleanup(string bucket);

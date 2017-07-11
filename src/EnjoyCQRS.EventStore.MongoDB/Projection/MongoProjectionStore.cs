@@ -29,18 +29,18 @@ using MongoDB.Driver;
 
 namespace EnjoyCQRS.EventStore.MongoDB.Projection
 {
-    public class MongoDocumentStore : IDocumentStore
+    public class MongoProjectionStore : IProjectionStore
     {
         private readonly IMongoDatabase _database;
         private readonly IMongoCollection<BsonDocument> _projectionCollection;
         private readonly IMongoCollection<BsonDocument> _tempProjectionCollection;
-        private readonly MongoDocumentStrategy _strategy;
+        private readonly MongoProjectionStrategy _strategy;
 
         private readonly MongoEventStoreSetttings _settings = new MongoEventStoreSetttings();
 
 
-        public MongoDocumentStore(
-            MongoDocumentStrategy strategy, 
+        public MongoProjectionStore(
+            MongoProjectionStrategy strategy, 
             IMongoDatabase database, 
             MongoEventStoreSetttings settings = null)
         {
@@ -91,16 +91,16 @@ namespace EnjoyCQRS.EventStore.MongoDB.Projection
             return buckets;
         }
 
-        public IDocumentReader<TKey, TView> GetReader<TKey, TView>()
+        public IProjectionReader<TKey, TView> GetReader<TKey, TView>()
         {
-            return new MongoDocumentReaderWriter<TKey, TView>(_strategy, _tempProjectionCollection);
+            return new MongoProjectionReaderWriter<TKey, TView>(_strategy, _tempProjectionCollection);
         }
 
-        public IDocumentWriter<TKey, TView> GetWriter<TKey, TView>()
+        public IProjectionWriter<TKey, TView> GetWriter<TKey, TView>()
         {
             var tempCollection = _database.GetCollection<BsonDocument>(_settings.TempProjectionsCollectionName);
 
-            return new MongoDocumentReaderWriter<TKey, TView>(_strategy, _tempProjectionCollection);
+            return new MongoProjectionReaderWriter<TKey, TView>(_strategy, _tempProjectionCollection);
         }
 
         public void Cleanup(string bucket)

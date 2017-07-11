@@ -5,7 +5,7 @@ using System;
 
 namespace EnjoyCQRS.Projections
 {
-    public interface IDocumentWriter<in TKey, TEntity>
+    public interface IProjectionWriter<in TKey, TEntity>
     {
         TEntity AddOrUpdate(TKey key, Func<TEntity> addValueFactory, Func<TEntity, TEntity> updateValueFactory);
         bool TryDelete(TKey key);

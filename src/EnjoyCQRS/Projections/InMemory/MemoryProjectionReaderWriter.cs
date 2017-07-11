@@ -7,12 +7,12 @@ using System.IO;
 
 namespace EnjoyCQRS.Projections.InMemory
 {
-    public sealed class MemoryDocumentReaderWriter<TKey, TEntity> : IDocumentReader<TKey, TEntity>, IDocumentWriter<TKey, TEntity>
+    public sealed class MemoryProjectionReaderWriter<TKey, TEntity> : IProjectionReader<TKey, TEntity>, IProjectionWriter<TKey, TEntity>
     {
-        private readonly IDocumentStrategy _strategy;
+        private readonly IProjectionStrategy _strategy;
         private readonly ConcurrentDictionary<string, byte[]> _store;
 
-        public MemoryDocumentReaderWriter(IDocumentStrategy strategy, ConcurrentDictionary<string, byte[]> store)
+        public MemoryProjectionReaderWriter(IProjectionStrategy strategy, ConcurrentDictionary<string, byte[]> store)
         {
             _store = store;
             _strategy = strategy;

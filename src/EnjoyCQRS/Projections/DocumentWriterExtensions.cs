@@ -7,7 +7,7 @@ namespace EnjoyCQRS.Projections
 {
     public static class DocumentWriterExtensions
     {
-        public static TEntity AddOrUpdate<TKey, TEntity>(this IDocumentWriter<TKey, TEntity> writer, TKey key, Func<TEntity> addFactory, Action<TEntity> update)
+        public static TEntity AddOrUpdate<TKey, TEntity>(this IProjectionWriter<TKey, TEntity> writer, TKey key, Func<TEntity> addFactory, Action<TEntity> update)
         {
             return writer.AddOrUpdate(key, addFactory, entity =>
             {
@@ -16,7 +16,7 @@ namespace EnjoyCQRS.Projections
             });
         }
 
-        public static TEntity AddOrUpdate<TKey, TEntity>(this IDocumentWriter<TKey, TEntity> writer, TKey key, TEntity newView, Action<TEntity> updateViewFactory)
+        public static TEntity AddOrUpdate<TKey, TEntity>(this IProjectionWriter<TKey, TEntity> writer, TKey key, TEntity newView, Action<TEntity> updateViewFactory)
         {
             return writer.AddOrUpdate(key, () => newView, view =>
             {
@@ -25,7 +25,7 @@ namespace EnjoyCQRS.Projections
             });
         }
 
-        public static TEntity Add<TKey, TEntity>(this IDocumentWriter<TKey, TEntity> writer, TKey key, TEntity newEntity)
+        public static TEntity Add<TKey, TEntity>(this IProjectionWriter<TKey, TEntity> writer, TKey key, TEntity newEntity)
         {
             return writer.AddOrUpdate(key, newEntity, e =>
             {
@@ -34,7 +34,7 @@ namespace EnjoyCQRS.Projections
             });
         }
 
-        public static TEntity UpdateOrThrow<TKey, TEntity>(this IDocumentWriter<TKey, TEntity> writer, TKey key, Func<TEntity, TEntity> change)
+        public static TEntity UpdateOrThrow<TKey, TEntity>(this IProjectionWriter<TKey, TEntity> writer, TKey key, Func<TEntity, TEntity> change)
         {
             return writer.AddOrUpdate(key, () =>
             {
@@ -43,7 +43,7 @@ namespace EnjoyCQRS.Projections
             }, change);
         }
 
-        public static TEntity UpdateOrThrow<TKey, TEntity>(this IDocumentWriter<TKey, TEntity> writer, TKey key, Action<TEntity> change)
+        public static TEntity UpdateOrThrow<TKey, TEntity>(this IProjectionWriter<TKey, TEntity> writer, TKey key, Action<TEntity> change)
         {
             return writer.AddOrUpdate(key, () =>
             {
@@ -52,7 +52,7 @@ namespace EnjoyCQRS.Projections
             }, change);
         }
 
-        public static TView UpdateEnforcingNew<TKey, TView>(this IDocumentWriter<TKey, TView> writer, TKey key,
+        public static TView UpdateEnforcingNew<TKey, TView>(this IProjectionWriter<TKey, TView> writer, TKey key,
             Action<TView> update)
             where TView : new()
         {

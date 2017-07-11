@@ -30,13 +30,13 @@ using MongoDB.Driver;
 
 namespace EnjoyCQRS.EventStore.MongoDB.Projection
 {
-    public class MongoDocumentReaderWriter<TKey, TView> : IDocumentReader<TKey, TView>, IDocumentWriter<TKey, TView>
+    public class MongoProjectionReaderWriter<TKey, TView> : IProjectionReader<TKey, TView>, IProjectionWriter<TKey, TView>
     {
         
-        private readonly IDocumentStrategy _strategy;
+        private readonly IProjectionStrategy _strategy;
         private readonly IMongoCollection<BsonDocument> _collection;
 
-        public MongoDocumentReaderWriter(IDocumentStrategy strategy, IMongoCollection<BsonDocument> collection)
+        public MongoProjectionReaderWriter(IProjectionStrategy strategy, IMongoCollection<BsonDocument> collection)
         {
             _strategy = strategy;
             _collection = collection;

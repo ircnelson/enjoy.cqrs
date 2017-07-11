@@ -29,15 +29,13 @@ using System;
 
 namespace EnjoyCQRS.EventStore.MongoDB.Projection
 {
-    public class MongoDocumentStrategy : IDocumentStrategy
+    public class MongoProjectionStrategy : IProjectionStrategy
     {
-        private readonly string _viewName;
-
         private static ITextSerializer Serializer = new BsonTextSerializer();
-
+        
         public string GetEntityBucket<TView>()
         {
-            return typeof(TView).Name;
+            return typeof(TView).Name;  // cache it
         }
 
         public string GetEntityLocation<TView>(object key)
@@ -45,7 +43,7 @@ namespace EnjoyCQRS.EventStore.MongoDB.Projection
             var filter = new BsonDocument
             {
                 { "_id", (Guid) key },
-                { "_t", _viewName }
+                { "_t", typeof(TView).Name } // cache it
             };
 
             return filter.ToJson();

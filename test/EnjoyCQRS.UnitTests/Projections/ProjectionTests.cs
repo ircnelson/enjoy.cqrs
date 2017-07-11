@@ -44,9 +44,9 @@ namespace EnjoyCQRS.UnitTests.Projections
 
             var eventStreamReader = new StubEventStreamReader(source);
             
-            var strategy = new StubDocumentStrategy();
+            var strategy = new StubProjectionStrategy();
             var store = new ConcurrentDictionary<string, ConcurrentDictionary<string, byte[]>>();
-            var documentStore = new MemoryDocumentStore(strategy, store);
+            var documentStore = new MemoryProjectionStore(strategy, store);
 
             var writer = documentStore.GetWriter<Guid, AllUserView>();
             var reader = documentStore.GetReader<Guid, AllUserView>();
@@ -99,9 +99,9 @@ namespace EnjoyCQRS.UnitTests.Projections
 
             var eventStreamReader = new StubEventStreamReader(source);
 
-            var strategy = new StubDocumentStrategy();
+            var strategy = new StubProjectionStrategy();
             var store = new ConcurrentDictionary<string, ConcurrentDictionary<string, byte[]>>();
-            var documentStore = new MemoryDocumentStore(strategy, store);
+            var documentStore = new MemoryProjectionStore(strategy, store);
 
             var writer1 = documentStore.GetWriter<Guid, AllUserView>();
             var allUserProjection = new AllUserProjections(writer1);

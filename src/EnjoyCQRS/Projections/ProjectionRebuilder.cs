@@ -31,11 +31,11 @@ namespace EnjoyCQRS.Projections
 {
     public class ProjectionRebuilder
     {
-        private readonly IDocumentStore _documentStore;
+        private readonly IProjectionStore _documentStore;
         private readonly IEnumerable _projectors;
         private readonly EventStreamReader _eventStreamReader;
 
-        public ProjectionRebuilder(EventStreamReader eventStreamReader, IDocumentStore documentStore, IEnumerable projectors)
+        public ProjectionRebuilder(EventStreamReader eventStreamReader, IProjectionStore documentStore, IEnumerable projectors)
         {
             _eventStreamReader = eventStreamReader ?? throw new ArgumentNullException(nameof(eventStreamReader));
             _documentStore = documentStore ?? throw new ArgumentNullException(nameof(documentStore));
