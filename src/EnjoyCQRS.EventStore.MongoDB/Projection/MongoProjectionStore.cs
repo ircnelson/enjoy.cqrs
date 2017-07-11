@@ -26,6 +26,7 @@ using System.Threading.Tasks;
 using EnjoyCQRS.Projections;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Bson.Serialization;
 
 namespace EnjoyCQRS.EventStore.MongoDB.Projection
 {
@@ -114,32 +115,18 @@ namespace EnjoyCQRS.EventStore.MongoDB.Projection
         {
             var filter = FilterByBucketName(bucket);
 
-            var query = await _tempProjectionCollection.Find(filter, new FindOptions
-            {
-                BatchSize = 500
-            })
-            .ToCursorAsync()
-            .ConfigureAwait(false);
-
             var bulkOperation = new List<WriteModel<BsonDocument>>();
 
-            while (await query.MoveNextAsync().ConfigureAwait(false))
+            foreach (var record in records)
             {
-                //bulkOperation.Clear();
+                var bytes = record.Read();
 
-                //foreach (var doc in query.Current)
-                //{
-                //    bulkOperation.Add(new InsertOneModel<BsonDocument>(doc));
-                //}
+                var doc = BsonSerializer.Deserialize<BsonDocument>(bytes);
 
-                //await _projectionCollection.BulkWriteAsync(bulkOperation, new BulkWriteOptions { IsOrdered = true })
-                //    .ConfigureAwait(false);
-
-                foreach (var doc in query.Current)
-                {
-                    await _projectionCollection.InsertOneAsync(doc);
-                }
+                bulkOperation.Add(new InsertOneModel<BsonDocument>(doc));
             }
+
+            await _projectionCollection.BulkWriteAsync(bulkOperation).ConfigureAwait(false);
         }
 
         private FilterDefinition<BsonDocument> FilterByBucketName(string bucket)

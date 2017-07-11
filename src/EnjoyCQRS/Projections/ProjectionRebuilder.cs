@@ -52,8 +52,7 @@ namespace EnjoyCQRS.Projections
 
                 // TODO: logging
 
-                await _eventStreamReader.ReadAsync(cancellationToken, WireEvent)
-                    .ConfigureAwait(false);
+                await _eventStreamReader.ReadAsync(cancellationToken, WireEvent).ConfigureAwait(false);
                 
                 var tasks = new List<Task>();
 
@@ -61,11 +60,11 @@ namespace EnjoyCQRS.Projections
                 {
                     var task = Task.Run(async () =>
                     {
-                        var contents = await _documentStore.EnumerateContentsAsync(bucket);
+                        var contents = await _documentStore.EnumerateContentsAsync(bucket).ConfigureAwait(false);
 
                         _documentStore.Cleanup(bucket);
 
-                        await _documentStore.ApplyAsync(bucket, contents);
+                        await _documentStore.ApplyAsync(bucket, contents).ConfigureAwait(false);
                     });
 
                     tasks.Add(task);
