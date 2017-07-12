@@ -33,7 +33,7 @@ namespace EnjoyCQRS.Projections.InMemory
         }
 
 
-        public Task ApplyAsync(string bucket, IEnumerable<DocumentRecord> records)
+        public Task ApplyAsync(string bucket, IEnumerable<ProjectionRecord> records)
         {
             var pairs = records.Select(r => new KeyValuePair<string, byte[]>(r.Key, r.Read())).ToArray();
 
@@ -69,13 +69,13 @@ namespace EnjoyCQRS.Projections.InMemory
             get { return _strategy; }
         }
 
-        public Task<IEnumerable<DocumentRecord>> EnumerateContentsAsync(string bucket)
+        public Task<IEnumerable<ProjectionRecord>> EnumerateContentsAsync(string bucket)
         {
             var store = _store.GetOrAdd(bucket, s => new ConcurrentDictionary<string, byte[]>());
 
-            var records = store.Select(p => new DocumentRecord(p.Key, () => p.Value)).ToArray();
+            var records = store.Select(p => new ProjectionRecord(p.Key, () => p.Value)).ToArray();
 
-            return Task.FromResult<IEnumerable<DocumentRecord>>(records);
+            return Task.FromResult<IEnumerable<ProjectionRecord>>(records);
         }
 
         public string[] GetBuckets()

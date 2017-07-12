@@ -12,17 +12,17 @@ namespace EnjoyCQRS.Projections
         string[] GetBuckets();
         IProjectionWriter<TKey, TEntity> GetWriter<TKey, TEntity>();
         IProjectionReader<TKey, TEntity> GetReader<TKey, TEntity>();
-        Task<IEnumerable<DocumentRecord>> EnumerateContentsAsync(string bucket);
-        Task ApplyAsync(string bucket, IEnumerable<DocumentRecord> records);
+        Task<IEnumerable<ProjectionRecord>> EnumerateContentsAsync(string bucket);
+        Task ApplyAsync(string bucket, IEnumerable<ProjectionRecord> records);
         void Cleanup(string bucket);
     }
 
-    public sealed class DocumentRecord
+    public sealed class ProjectionRecord
     {
         public string Key { get; }
         public Func<byte[]> Read { get; }
 
-        public DocumentRecord(string key, Func<byte[]> read)
+        public ProjectionRecord(string key, Func<byte[]> read)
         {
             Key = key;
             Read = read;

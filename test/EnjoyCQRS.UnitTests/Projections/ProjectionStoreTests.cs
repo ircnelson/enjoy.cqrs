@@ -26,10 +26,10 @@ namespace EnjoyCQRS.UnitTests.Projections
         public async Task Write_bucket()
         {
             var bucket = "test-bucket";
-            var records = new List<DocumentRecord>
+            var records = new List<ProjectionRecord>
                                       {
-                                          new DocumentRecord("first", () => Encoding.UTF8.GetBytes("test message 1")),
-                                          new DocumentRecord("second", () => Encoding.UTF8.GetBytes("test message 2")),
+                                          new ProjectionRecord("first", () => Encoding.UTF8.GetBytes("test message 1")),
+                                          new ProjectionRecord("second", () => Encoding.UTF8.GetBytes("test message 2")),
                                       };
             await Store.ApplyAsync(bucket, records);
 
@@ -51,9 +51,9 @@ namespace EnjoyCQRS.UnitTests.Projections
             var bucket1 = "test-bucket1";
             var bucket2 = "test-bucket2";
 
-            var records = new List<DocumentRecord>
+            var records = new List<ProjectionRecord>
                                       {
-                                          new DocumentRecord("first", () => Encoding.UTF8.GetBytes("test message 1")),
+                                          new ProjectionRecord("first", () => Encoding.UTF8.GetBytes("test message 1")),
                                       };
 
             await Store.ApplyAsync(bucket1, records);

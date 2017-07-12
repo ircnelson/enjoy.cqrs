@@ -70,7 +70,7 @@ namespace EnjoyCQRS.Projections
                     tasks.Add(task);
                 }
                 
-                Task.WaitAll(tasks.ToArray());
+                Task.WaitAll(tasks.ToArray(), cancellationToken);
 
                 // TODO: logging
             }

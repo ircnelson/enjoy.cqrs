@@ -57,9 +57,9 @@ namespace EnjoyCQRS.EventStore.MongoDB.Projection
             _tempProjectionCollection = _database.GetCollection<BsonDocument>(_settings.TempProjectionsCollectionName);
         }
 
-        public async Task<IEnumerable<DocumentRecord>> EnumerateContentsAsync(string bucket)
+        public async Task<IEnumerable<ProjectionRecord>> EnumerateContentsAsync(string bucket)
         {
-            var documentRecords = new System.Collections.Concurrent.ConcurrentBag<DocumentRecord>();
+            var documentRecords = new System.Collections.Concurrent.ConcurrentBag<ProjectionRecord>();
             
             var filter = FilterByBucketName(bucket);
 
@@ -71,7 +71,7 @@ namespace EnjoyCQRS.EventStore.MongoDB.Projection
             {
                 foreach (var item in cursor.Current)
                 {
-                    documentRecords.Add(new DocumentRecord(item["_id"].AsGuid.ToString(), () => item.ToBson()));
+                    documentRecords.Add(new ProjectionRecord(item["_id"].AsGuid.ToString(), () => item.ToBson()));
                 }
             }
 
@@ -111,7 +111,7 @@ namespace EnjoyCQRS.EventStore.MongoDB.Projection
             _projectionCollection.DeleteMany(filter);
         }
 
-        public async Task ApplyAsync(string bucket, IEnumerable<DocumentRecord> records)
+        public async Task ApplyAsync(string bucket, IEnumerable<ProjectionRecord> records)
         {
             var filter = FilterByBucketName(bucket);
 

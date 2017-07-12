@@ -27,9 +27,9 @@ namespace EnjoyCQRS.UnitTests.Projections
             var bucket1 = "test-bucket1";
             var bucket2 = "test-bucket2";
 
-            var records = new List<DocumentRecord>
+            var records = new List<ProjectionRecord>
                                       {
-                                          new DocumentRecord("first", () => Encoding.UTF8.GetBytes("test message 1")),
+                                          new ProjectionRecord("first", () => Encoding.UTF8.GetBytes("test message 1")),
                                       };
 
             await Store.ApplyAsync(bucket1, records);
