@@ -31,38 +31,56 @@ namespace EnjoyCQRS.Projections
 {
     public class ProjectorMethodMapper
     {
+        private static bool _alreadyMapped = false;
         private static readonly Dictionary<Type, List<Wire>> _mappings = new Dictionary<Type, List<Wire>>();
+        private static object _lock = new object();
 
         public static void CreateMap(IEnumerable projectors, string methodName = "When")
         {
-            foreach (var projector in projectors)
+            lock (_lock)
             {
-                var methodInfos = projector
-                    .GetType()
-                    .GetTypeInfo()
-                    .GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-                    .Where(e => e.Name == methodName)
-                    .Where(e => e.GetParameters().Length == 1);
+                if (_alreadyMapped) return;
 
-                foreach (var methodInfo in methodInfos)
+                foreach (var projector in projectors)
                 {
-                    var eventType = methodInfo.GetParameters()[0].ParameterType;
+                    var methodInfos = projector
+                        .GetType()
+                        .GetTypeInfo()
+                        .GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+                        .Where(e => e.Name == methodName)
+                        .Where(e => e.GetParameters().Length == 1);
 
-                    var info = methodInfo;
-
-                    if (!_mappings.TryGetValue(eventType, out List<Wire> list))
+                    foreach (var methodInfo in methodInfos)
                     {
-                        list = new List<Wire>();
-                        _mappings.Add(eventType, list);
-                    }
+                        var eventType = methodInfo.GetParameters()[0].ParameterType;
 
-                    list.Add(BuildWire(projector, eventType, methodInfo));
+                        var info = methodInfo;
+
+                        if (!_mappings.TryGetValue(eventType, out List<Wire> list))
+                        {
+                            list = new List<Wire>();
+                            _mappings.Add(eventType, list);
+                        }
+
+                        list.Add(BuildWire(projector, eventType, methodInfo));
+                    }
                 }
+
+                _alreadyMapped = true;
             }
+        }
+
+        public static IEnumerable<Type> GetMappedEvents()
+        {
+            if (_mappings == null) return null;
+
+            return _mappings.Keys.ToList();
         }
         
         public static List<Wire> GetWiresOf(Type @event)
         {
+            if (!_mappings.ContainsKey(@event)) return null;
+
             return _mappings[@event];
         }
         

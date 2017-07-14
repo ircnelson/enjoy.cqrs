@@ -26,6 +26,7 @@ using EnjoyCQRS.Core;
 using EnjoyCQRS.Projections;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using System;
 
 namespace EnjoyCQRS.EventStore.MongoDB.Projection
 {
@@ -35,7 +36,9 @@ namespace EnjoyCQRS.EventStore.MongoDB.Projection
         private readonly ITextSerializer _textSerializer;
         private readonly MongoEventStoreSetttings _settings = new MongoEventStoreSetttings();
 
-        public virtual int BatchSize { get; } = 100;
+        public virtual int BatchSize { get; } = 400;
+
+        public Func<FilterDefinitionBuilder<BsonDocument>, FilterDefinition<BsonDocument>> Match { get; set; }
 
         public MongoEventStreamReader(
             IMongoDatabase database, 
@@ -50,7 +53,7 @@ namespace EnjoyCQRS.EventStore.MongoDB.Projection
             _textSerializer = textSerializer;
             _database = database;
         }
-
+        
         public override async Task ReadAsync(CancellationToken cancellationToken, OnDeserializeEventDelegate onDeserializeEvent)
         {
             var eventsCollection = _database.GetCollection<BsonDocument>(_settings.EventsCollectionName);
@@ -61,11 +64,18 @@ namespace EnjoyCQRS.EventStore.MongoDB.Projection
                 {"metadata.eventVersion", 1}
             };
 
-            var query = eventsCollection.Find(FilterDefinition<BsonDocument>.Empty, new FindOptions
-            {
-                BatchSize = BatchSize
+            var filterBuilder = new FilterDefinitionBuilder<BsonDocument>();
 
-            }).Sort(sort);
+            var filter = FilterDefinition<BsonDocument>.Empty;
+
+            if (Match != null)
+            {
+                filter = Match(filterBuilder);
+            }
+
+            var query = eventsCollection.Aggregate().Match(filter).Sort(sort);
+            query.Options.AllowDiskUse = true;
+            query.Options.BatchSize = BatchSize;
 
             var cursor = await query.ToCursorAsync().ConfigureAwait(false);
 

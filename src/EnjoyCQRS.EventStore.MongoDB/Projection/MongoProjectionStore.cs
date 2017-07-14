@@ -26,6 +26,7 @@ using System.Threading.Tasks;
 using EnjoyCQRS.Projections;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Bson.Serialization;
 
 namespace EnjoyCQRS.EventStore.MongoDB.Projection
 {
@@ -36,7 +37,7 @@ namespace EnjoyCQRS.EventStore.MongoDB.Projection
         private readonly IMongoCollection<BsonDocument> _tempProjectionCollection;
         private readonly MongoProjectionStrategy _strategy;
 
-        private readonly MongoEventStoreSetttings _settings = new MongoEventStoreSetttings();
+        public readonly MongoEventStoreSetttings Settings = new MongoEventStoreSetttings();
 
 
         public MongoProjectionStore(
@@ -46,14 +47,14 @@ namespace EnjoyCQRS.EventStore.MongoDB.Projection
         {
             if (settings != null)
             {
-                _settings = settings;
+                Settings = settings;
             }
 
             _strategy = strategy;
             _database = database;
 
-            _projectionCollection = _database.GetCollection<BsonDocument>(_settings.ProjectionsCollectionName);
-            _tempProjectionCollection = _database.GetCollection<BsonDocument>(_settings.TempProjectionsCollectionName);
+            _projectionCollection = _database.GetCollection<BsonDocument>(Settings.ProjectionsCollectionName);
+            _tempProjectionCollection = _database.GetCollection<BsonDocument>(Settings.TempProjectionsCollectionName);
         }
 
         public async Task<IEnumerable<DocumentRecord>> EnumerateContentsAsync(string bucket)
@@ -98,7 +99,7 @@ namespace EnjoyCQRS.EventStore.MongoDB.Projection
 
         public IProjectionWriter<TKey, TView> GetWriter<TKey, TView>()
         {
-            var tempCollection = _database.GetCollection<BsonDocument>(_settings.TempProjectionsCollectionName);
+            var tempCollection = _database.GetCollection<BsonDocument>(Settings.TempProjectionsCollectionName);
 
             return new MongoProjectionReaderWriter<TKey, TView>(_strategy, _tempProjectionCollection);
         }
@@ -114,32 +115,18 @@ namespace EnjoyCQRS.EventStore.MongoDB.Projection
         {
             var filter = FilterByBucketName(bucket);
 
-            var query = await _tempProjectionCollection.Find(filter, new FindOptions
-            {
-                BatchSize = 500
-            })
-            .ToCursorAsync()
-            .ConfigureAwait(false);
-
             var bulkOperation = new List<WriteModel<BsonDocument>>();
 
-            while (await query.MoveNextAsync().ConfigureAwait(false))
+            foreach (var record in records)
             {
-                //bulkOperation.Clear();
+                var bytes = record.Read();
 
-                //foreach (var doc in query.Current)
-                //{
-                //    bulkOperation.Add(new InsertOneModel<BsonDocument>(doc));
-                //}
+                var doc = BsonSerializer.Deserialize<BsonDocument>(bytes);
 
-                //await _projectionCollection.BulkWriteAsync(bulkOperation, new BulkWriteOptions { IsOrdered = true })
-                //    .ConfigureAwait(false);
-
-                foreach (var doc in query.Current)
-                {
-                    await _projectionCollection.InsertOneAsync(doc);
-                }
+                bulkOperation.Add(new InsertOneModel<BsonDocument>(doc));
             }
+
+            await _projectionCollection.BulkWriteAsync(bulkOperation).ConfigureAwait(false);
         }
 
         private FilterDefinition<BsonDocument> FilterByBucketName(string bucket)

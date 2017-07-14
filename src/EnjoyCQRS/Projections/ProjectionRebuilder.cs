@@ -23,7 +23,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -34,6 +33,9 @@ namespace EnjoyCQRS.Projections
         private readonly IProjectionStore _documentStore;
         private readonly IEnumerable _projectors;
         private readonly EventStreamReader _eventStreamReader;
+
+        public Action OnStartProcess;
+        public Action OnCompleteProcess;
 
         public ProjectionRebuilder(EventStreamReader eventStreamReader, IProjectionStore documentStore, IEnumerable projectors)
         {
@@ -48,12 +50,9 @@ namespace EnjoyCQRS.Projections
         {
             try
             {
-                // TODO: verify if needs to rebuild projections
-
-                // TODO: logging
-
-                await _eventStreamReader.ReadAsync(cancellationToken, WireEvent)
-                    .ConfigureAwait(false);
+                OnStartProcess?.Invoke();
+                
+                await _eventStreamReader.ReadAsync(cancellationToken, WireEvent).ConfigureAwait(false);
                 
                 var tasks = new List<Task>();
 
@@ -61,11 +60,11 @@ namespace EnjoyCQRS.Projections
                 {
                     var task = Task.Run(async () =>
                     {
-                        var contents = await _documentStore.EnumerateContentsAsync(bucket);
+                        var contents = await _documentStore.EnumerateContentsAsync(bucket).ConfigureAwait(false);
 
                         _documentStore.Cleanup(bucket);
 
-                        await _documentStore.ApplyAsync(bucket, contents);
+                        await _documentStore.ApplyAsync(bucket, contents).ConfigureAwait(false);
                     });
 
                     tasks.Add(task);
@@ -73,7 +72,7 @@ namespace EnjoyCQRS.Projections
                 
                 Task.WaitAll(tasks.ToArray());
 
-                // TODO: logging
+                OnCompleteProcess?.Invoke();
             }
             catch (OperationCanceledException)
             {
@@ -87,7 +86,12 @@ namespace EnjoyCQRS.Projections
 
         public void WireEvent(object @event)
         {
-            ProjectorMethodMapper.GetWiresOf(@event.GetType()).ForEach(projectorMethod => projectorMethod.Call(@event));
+            var wires = ProjectorMethodMapper.GetWiresOf(@event.GetType());
+
+            if (wires != null)
+            {
+                wires.ForEach(projectorMethod => projectorMethod.Call(@event));
+            }
         }
     }
 }
