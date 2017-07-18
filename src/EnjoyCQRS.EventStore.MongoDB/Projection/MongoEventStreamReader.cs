@@ -27,6 +27,7 @@ using EnjoyCQRS.Projections;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
+using System.Collections.Generic;
 
 namespace EnjoyCQRS.EventStore.MongoDB.Projection
 {
@@ -41,7 +42,7 @@ namespace EnjoyCQRS.EventStore.MongoDB.Projection
         public Func<FilterDefinitionBuilder<BsonDocument>, FilterDefinition<BsonDocument>> Match { get; set; }
 
         public MongoEventStreamReader(
-            IMongoDatabase database, 
+            IMongoDatabase database,
             ITextSerializer textSerializer,
             MongoEventStoreSetttings settings = null)
         {
@@ -53,7 +54,7 @@ namespace EnjoyCQRS.EventStore.MongoDB.Projection
             _textSerializer = textSerializer;
             _database = database;
         }
-        
+
         public override async Task ReadAsync(CancellationToken cancellationToken, OnDeserializeEventDelegate onDeserializeEvent)
         {
             var eventsCollection = _database.GetCollection<BsonDocument>(_settings.EventsCollectionName);
@@ -84,10 +85,16 @@ namespace EnjoyCQRS.EventStore.MongoDB.Projection
                 foreach (var item in cursor.Current)
                 {
                     var @event = CreateEvent(item);
+                    var metadata = CreateMetadata(item);
 
-                    onDeserializeEvent(@event);
+                    onDeserializeEvent(@event, metadata);
                 }
             }
+        }
+
+        private Dictionary<string, object> CreateMetadata(BsonDocument item)
+        {
+            return _textSerializer.Deserialize<Dictionary<string, object>>(item["metadata"].ToJson());
         }
 
         private object CreateEvent(BsonDocument record)

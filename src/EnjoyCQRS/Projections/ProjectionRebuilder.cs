@@ -84,13 +84,13 @@ namespace EnjoyCQRS.Projections
             }
         }
 
-        public void WireEvent(object @event)
+        public void WireEvent(object @event, object metadata)
         {
             var wires = ProjectorMethodMapper.GetWiresOf(@event.GetType());
 
             if (wires != null)
             {
-                wires.ForEach(projectorMethod => projectorMethod.Call(@event));
+                wires.ForEach(projectorMethod => projectorMethod.Call(@event, metadata));
             }
         }
     }

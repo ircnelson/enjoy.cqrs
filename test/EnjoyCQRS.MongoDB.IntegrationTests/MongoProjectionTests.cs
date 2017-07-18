@@ -71,8 +71,11 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests
             var tempCollection = _fixture.Database.GetCollection<BsonDocument>(_fixture.Settings.TempProjectionsCollectionName);
             var collection = _fixture.Database.GetCollection<BsonDocument>(_fixture.Settings.ProjectionsCollectionName);
 
-            tempCollection.Count(FilterDefinition<BsonDocument>.Empty).Should().Be(3);
-            collection.Count(FilterDefinition<BsonDocument>.Empty).Should().Be(3);
+            var filterBuilder = new FilterDefinitionBuilder<BsonDocument>();
+            var filter = filterBuilder.In("_t", new[] { nameof(AllUserView), nameof(ActiveUserView) });
+
+            tempCollection.Count(filter).Should().Be(3);
+            collection.Count(filter).Should().Be(3);
 
             var reader1 = documentStore.GetReader<Guid, AllUserView>();
 

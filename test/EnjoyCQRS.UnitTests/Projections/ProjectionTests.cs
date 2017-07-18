@@ -179,7 +179,7 @@ namespace EnjoyCQRS.UnitTests.Projections
 
                     var @event = JsonConvert.DeserializeObject(json, JsonSettings.Default);
 
-                    wireDelegate(@event);
+                    wireDelegate(@event, null);
                 }
             }
         }

@@ -27,6 +27,7 @@ using EnjoyCQRS.Projections;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Bson.Serialization;
+using System;
 
 namespace EnjoyCQRS.EventStore.MongoDB.Projection
 {
@@ -99,8 +100,6 @@ namespace EnjoyCQRS.EventStore.MongoDB.Projection
 
         public IProjectionWriter<TKey, TView> GetWriter<TKey, TView>()
         {
-            var tempCollection = _database.GetCollection<BsonDocument>(Settings.TempProjectionsCollectionName);
-
             return new MongoProjectionReaderWriter<TKey, TView>(_strategy, _tempProjectionCollection);
         }
 
@@ -113,8 +112,10 @@ namespace EnjoyCQRS.EventStore.MongoDB.Projection
 
         public async Task ApplyAsync(string bucket, IEnumerable<DocumentRecord> records)
         {
+            var filterBuilder = new FilterDefinitionBuilder<BsonDocument>();
+            
             var filter = FilterByBucketName(bucket);
-
+            
             var bulkOperation = new List<WriteModel<BsonDocument>>();
 
             foreach (var record in records)
@@ -122,8 +123,14 @@ namespace EnjoyCQRS.EventStore.MongoDB.Projection
                 var bytes = record.Read();
 
                 var doc = BsonSerializer.Deserialize<BsonDocument>(bytes);
+                var docId = filterBuilder.And(filter, filterBuilder.Eq(e => e["_id"], Guid.Parse(record.Key)));
 
-                bulkOperation.Add(new InsertOneModel<BsonDocument>(doc));
+                var model = new ReplaceOneModel<BsonDocument>(docId, doc)
+                {
+                    IsUpsert = true
+                };
+
+                bulkOperation.Add(model);
             }
 
             await _projectionCollection.BulkWriteAsync(bulkOperation).ConfigureAwait(false);

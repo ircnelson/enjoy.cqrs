@@ -31,42 +31,43 @@ namespace EnjoyCQRS.Projections
 {
     public class ProjectorMethodMapper
     {
-        private static bool _alreadyMapped = false;
         private static readonly Dictionary<Type, List<Wire>> _mappings = new Dictionary<Type, List<Wire>>();
         private static object _lock = new object();
 
         public static void CreateMap(IEnumerable projectors, string methodName = "When")
         {
-            lock (_lock)
+            foreach (var projector in projectors)
             {
-                if (_alreadyMapped) return;
+                var methodInfos = projector
+                    .GetType()
+                    .GetTypeInfo()
+                    .GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+                    .Where(e => e.Name == methodName)
+                    .Where(e => e.GetParameters().Length == 1);
 
-                foreach (var projector in projectors)
+                foreach (var methodInfo in methodInfos)
                 {
-                    var methodInfos = projector
-                        .GetType()
-                        .GetTypeInfo()
-                        .GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-                        .Where(e => e.Name == methodName)
-                        .Where(e => e.GetParameters().Length == 1);
+                    var argument = methodInfo.GetParameters()[0].ParameterType;
 
-                    foreach (var methodInfo in methodInfos)
+                    bool hasMetadata = false;
+                    Type eventType = argument;
+
+                    if (argument.GetTypeInfo().IsGenericType && argument.GetTypeInfo().Name == "Metadata`1")
                     {
-                        var eventType = methodInfo.GetParameters()[0].ParameterType;
-
-                        var info = methodInfo;
-
-                        if (!_mappings.TryGetValue(eventType, out List<Wire> list))
-                        {
-                            list = new List<Wire>();
-                            _mappings.Add(eventType, list);
-                        }
-
-                        list.Add(BuildWire(projector, eventType, methodInfo));
+                        eventType = argument.GetTypeInfo().GetGenericArguments()[0];
+                        hasMetadata = true;
                     }
-                }
 
-                _alreadyMapped = true;
+                    var info = methodInfo;
+
+                    if (!_mappings.TryGetValue(eventType, out List<Wire> list))
+                    {
+                        list = new List<Wire>();
+                        _mappings.Add(eventType, list);
+                    }
+
+                    list.Add(BuildWire(projector, argument, hasMetadata, methodInfo));
+                }
             }
         }
 
@@ -84,24 +85,36 @@ namespace EnjoyCQRS.Projections
             return _mappings[@event];
         }
         
-        private static Wire BuildWire(object o, Type type, MethodInfo methodInfo)
+        private static Wire BuildWire(object projector, Type whenParatemeterType, bool hasMetadata, MethodInfo methodInfo)
         {
             var info = methodInfo;
             var dm = new DynamicMethod("MethodWrapper", null, new[] { typeof(object), typeof(object) });
             var il = dm.GetILGenerator();
 
             il.Emit(OpCodes.Ldarg_0);
-            il.Emit(OpCodes.Castclass, o.GetType());
+            il.Emit(OpCodes.Castclass, projector.GetType());
             il.Emit(OpCodes.Ldarg_1);
-            il.Emit(OpCodes.Castclass, type);
+            il.Emit(OpCodes.Castclass, whenParatemeterType);
             il.EmitCall(OpCodes.Call, info, null);
             il.Emit(OpCodes.Ret);
 
             var call = (Action<object, object>)dm.CreateDelegate(typeof(Action<object, object>));
             var wire = new Wire
             {
-                Call = o1 => call(o, o1),
-                ParameterType = type
+                Call = (message, metadata) => 
+                {
+                    if (hasMetadata)
+                    {
+                        var obj = Activator.CreateInstance(whenParatemeterType, new[] { message, metadata });
+
+                        call(projector, obj);
+                    }
+                    else
+                    {
+                        call(projector, message);
+                    }
+                },
+                ParameterType = whenParatemeterType
             };
             
             return wire;
@@ -109,8 +122,8 @@ namespace EnjoyCQRS.Projections
 
         public sealed class Wire
         {
-            public Action<object> Call;
-            public Type ParameterType;
+            public Action<object, object> Call { get; set; }
+            public Type ParameterType { get; set; }
         }
     }
 }

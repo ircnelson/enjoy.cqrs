@@ -1,5 +1,6 @@
 ﻿using System;
 using EnjoyCQRS.Projections;
+using EnjoyCQRS.Core;
 
 namespace EnjoyCQRS.UnitTests.Shared.Projection
 {
@@ -9,15 +10,15 @@ namespace EnjoyCQRS.UnitTests.Shared.Projection
         {
         }
 
-        public void When(UserCreated e)
+        public void When(Metadata<UserCreated> e)
         {
-            Store.Add(e.AggregateId, new AllUserView
+            Store.Add(e.Data.AggregateId, new AllUserView
             {
-                Id = e.AggregateId,
-                Fullname = $"{e.LastName}, {e.FirstName}",
-                BirthMonth = e.BornDate.Month,
-                BirthYear = e.BornDate.Year,
-                CreatedAt = e.CreatedAt
+                Id = e.Data.AggregateId,
+                Fullname = $"{e.Data.LastName}, {e.Data.FirstName}",
+                BirthMonth = e.Data.BornDate.Month,
+                BirthYear = e.Data.BornDate.Year,
+                CreatedAt = e.Data.CreatedAt
             });
         }
 
