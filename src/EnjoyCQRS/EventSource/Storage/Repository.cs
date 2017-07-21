@@ -44,7 +44,7 @@ namespace EnjoyCQRS.EventSource.Storage
         {
             _logger.Log(LogLevel.Information, $"Called method: {nameof(Repository)}.{nameof(AddAsync)}.");
 
-            await _session.AddAsync(aggregate);
+            await _session.AddAsync(aggregate).ConfigureAwait(false);
         }
 
         public async Task<TAggregate> GetByIdAsync<TAggregate>(Guid id) where TAggregate : Aggregate, new()

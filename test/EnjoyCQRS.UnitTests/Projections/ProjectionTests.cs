@@ -56,7 +56,7 @@ namespace EnjoyCQRS.UnitTests.Projections
             
             var projectionProcessor = new ProjectionRebuilder(eventStreamReader, documentStore, new object[] { allUserProjection });
 
-            await projectionProcessor.ProcessAsync();
+            await projectionProcessor.ProcessAsync().ConfigureAwait(false);
                         
             // Assert
 

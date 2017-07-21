@@ -130,8 +130,7 @@ namespace EnjoyCQRS.EventSource.Storage
 
             if (_snapshotStrategy.CheckSnapshotSupport(aggregate.GetType()))
             {
-                var snapshotAggregate = aggregate as ISnapshotAggregate;
-                if (snapshotAggregate != null)
+                if (aggregate is ISnapshotAggregate snapshotAggregate)
                 {
                     int version = 0;
                     var snapshot = await _eventStore.GetLatestSnapshotByIdAsync(id).ConfigureAwait(false);

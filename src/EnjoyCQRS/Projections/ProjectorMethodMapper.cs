@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using EnjoyCQRS.Core;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -52,7 +53,7 @@ namespace EnjoyCQRS.Projections
                     bool hasMetadata = false;
                     Type eventType = argument;
 
-                    if (argument.GetTypeInfo().IsGenericType && argument.GetTypeInfo().Name == "Metadata`1")
+                    if (argument.GetTypeInfo().IsGenericType && argument.Name.Equals(typeof(Metadata<>).Name))
                     {
                         eventType = argument.GetTypeInfo().GetGenericArguments()[0];
                         hasMetadata = true;
@@ -66,7 +67,7 @@ namespace EnjoyCQRS.Projections
                         _mappings.Add(eventType, list);
                     }
 
-                    list.Add(BuildWire(projector, argument, hasMetadata, methodInfo));
+                    list.Add(BuildWire(projector, argument, hasMetadata, info));
                 }
             }
         }

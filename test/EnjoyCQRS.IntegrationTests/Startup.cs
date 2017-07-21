@@ -1,6 +1,5 @@
 ﻿using EnjoyCQRS.Commands;
 using EnjoyCQRS.Events;
-using EnjoyCQRS.EventSource.Projections;
 using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;

@@ -34,9 +34,9 @@ namespace EnjoyCQRS.EventSource.Projections
             return Task.FromResult(result);
         }
 
-        public async Task<ScannerResult> ScanAsync<TAggregate>() where TAggregate : IAggregate
+        public Task<ScannerResult> ScanAsync<TAggregate>() where TAggregate : IAggregate
         {
-            return await ScanAsync(typeof(TAggregate));
+            return ScanAsync(typeof(TAggregate));
         }
     }
 
