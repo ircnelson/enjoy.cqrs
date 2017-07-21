@@ -30,13 +30,10 @@ namespace EnjoyCQRS.UnitTests.Storage
         };
 
         private readonly Mock<IEventPublisher> _eventPublisherMock;
-        private readonly JsonTextSerializer _textSerializer;
 
         public SessionTests()
         {
             _eventPublisherMock = new Mock<IEventPublisher>();
-
-            _textSerializer = new JsonTextSerializer();
         }
 
         
