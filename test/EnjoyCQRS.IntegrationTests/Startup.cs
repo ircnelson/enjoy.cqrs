@@ -1,5 +1,4 @@
 ﻿using EnjoyCQRS.Commands;
-using EnjoyCQRS.Core;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource.Projections;
 using EnjoyCQRS.EventSource;
@@ -28,14 +27,9 @@ namespace EnjoyCQRS.IntegrationTests
             services.AddScoped<ISession, Session>();
             services.AddScoped<ICommandDispatcher, CustomCommandDispatcher>();
             services.AddScoped<IEventPublisher, EventPublisher>();
-
             services.AddTransient<ISnapshotStrategy, IntervalSnapshotStrategy>();
             services.AddTransient<IRepository, Repository>();
             services.AddTransient<IEventRouter, CustomEventRouter>();
-            services.AddTransient<IEventSerializer, EventSerializer>();
-            services.AddTransient<ISnapshotSerializer, SnapshotSerializer>();
-            services.AddTransient<ITextSerializer, JsonTextSerializer>();
-            services.AddTransient<IProjectionSerializer, ProjectionSerializer>();
 
             services.Scan(e =>
                 e.FromAssemblyOf<FooAssembler>()

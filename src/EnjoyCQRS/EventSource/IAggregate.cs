@@ -34,6 +34,6 @@ namespace EnjoyCQRS.EventSource
         IReadOnlyCollection<IUncommitedEvent> UncommitedEvents { get; }
         int Version { get; }
         void ClearUncommitedEvents();
-        void LoadFromHistory(CommitedDomainEventCollection domainEvents);
+        void LoadFromHistory(CommitedEventsCollection domainEvents);
     }
 }

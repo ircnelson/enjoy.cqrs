@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EnjoyCQRS.Core;
-using EnjoyCQRS.EventSource.Projections;
 using EnjoyCQRS.EventStore.MongoDB;
 using EnjoyCQRS.UnitTests.Shared.TestSuit;
 using FluentAssertions;
@@ -16,12 +14,10 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests
     [Collection("MongoDB")]
     [Trait("Integration", "MongoDB")]
     public class MongoEventStoreTests
-    {
-        private static readonly ITextSerializer _bsonSerializer = new BsonTextSerializer();
-        
+    {   
         private readonly MongoClient _mongoClient;
         private readonly DatabaseFixture _fixture;
-        
+
         public MongoEventStoreTests(DatabaseFixture fixture)
         {
             _fixture = fixture;
@@ -41,7 +37,7 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests
         {
             using (var eventStore = new MongoEventStore(_mongoClient, _fixture.DatabaseName))
             {
-                var eventStoreTestSuit = new EventStoreTestSuit(eventStore, new ProjectionSerializer(_bsonSerializer));
+                var eventStoreTestSuit = new EventStoreTestSuit(eventStore);
 
                 var aggregate = await eventStoreTestSuit.EventTestsAsync();
 
@@ -69,7 +65,7 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests
         {
             using (var eventStore = new MongoEventStore(_mongoClient, _fixture.DatabaseName))
             {
-                var eventStoreTestSuit = new EventStoreTestSuit(eventStore, new ProjectionSerializer(_bsonSerializer));
+                var eventStoreTestSuit = new EventStoreTestSuit(eventStore);
 
                 await eventStoreTestSuit.SnapshotTestsAsync();
             }
@@ -80,7 +76,7 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests
         {
             using (var eventStore = new MongoEventStore(_mongoClient, _fixture.DatabaseName))
             {
-                var eventStoreTestSuit = new EventStoreTestSuit(eventStore, new ProjectionSerializer(_bsonSerializer));
+                var eventStoreTestSuit = new EventStoreTestSuit(eventStore);
 
                 await eventStoreTestSuit.DoSomeProblemAsync();
             }

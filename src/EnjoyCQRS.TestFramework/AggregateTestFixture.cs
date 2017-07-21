@@ -45,12 +45,12 @@ namespace EnjoyCQRS.TestFramework
         {
             CaughtException = new ThereWasNoExceptionButOneWasExpectedException();
             AggregateRoot = new TAggregateRoot();
-            AggregateRoot.LoadFromHistory(new CommitedDomainEventCollection(Given()));
+            AggregateRoot.LoadFromHistory(new CommitedEventsCollection(Given()));
 
             try
             {
                 When();
-                PublishedEvents = AggregateRoot.UncommitedEvents.Select(e => e.OriginalEvent);
+                PublishedEvents = AggregateRoot.UncommitedEvents.Select(e => e.Data);
             }
             catch (Exception exception)
             {

@@ -31,14 +31,22 @@ using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using MongoDB.Bson.Serialization;
 
 namespace EnjoyCQRS.EventStore.MongoDB
 {
     public class MongoEventStore : IEventStore
     {
-        protected readonly List<Event> UncommitedEvents = new List<Event>();
-        protected readonly List<SnapshotData> UncommitedSnapshots = new List<SnapshotData>();
-        protected readonly List<ISerializedProjection> UncommitedProjections = new List<ISerializedProjection>();
+        public JsonSerializerSettings JsonSettings = new JsonSerializerSettings
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
+        };
+
+        protected readonly List<EventDocument> UncommitedEvents = new List<EventDocument>();
+        protected readonly List<SnapshotDocument> UncommitedSnapshots = new List<SnapshotDocument>();
+        protected readonly List<IProjection> UncommitedProjections = new List<IProjection>();
 
         public IMongoClient Client { get; }
         public string Database { get; }
@@ -64,7 +72,7 @@ namespace EnjoyCQRS.EventStore.MongoDB
         {
         }
 
-        public MongoEventStore(MongoClient client, string database, MongoEventStoreSetttings setttings)
+        public MongoEventStore(MongoClient client, string database, MongoEventStoreSetttings setttings = null)
         {
             if (client == null) throw new ArgumentNullException(nameof(client));
             if (database == null) throw new ArgumentNullException(nameof(database));
@@ -77,7 +85,7 @@ namespace EnjoyCQRS.EventStore.MongoDB
             Client = client;
         }
 
-        public Task SaveSnapshotAsync(ISerializedSnapshot snapshot)
+        public Task SaveSnapshotAsync(IUncommitedSnapshot snapshot)
         {
             var snapshotData = Serialize(snapshot);
             UncommitedSnapshots.Add(snapshotData);
@@ -88,10 +96,10 @@ namespace EnjoyCQRS.EventStore.MongoDB
         public async Task<ICommitedSnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
         {
             var db = Client.GetDatabase(Database);
-            var snapshotCollection = db.GetCollection<SnapshotData>(Setttings.SnapshotsCollectionName);
+            var snapshotCollection = db.GetCollection<SnapshotDocument>(Setttings.SnapshotsCollectionName);
 
-            var filter = Builders<SnapshotData>.Filter;
-            var sort = Builders<SnapshotData>.Sort;
+            var filter = Builders<SnapshotDocument>.Filter;
+            var sort = Builders<SnapshotDocument>.Sort;
 
             var snapshots = await snapshotCollection
                 .Find(filter.Eq(x => x.AggregateId, aggregateId))
@@ -105,10 +113,10 @@ namespace EnjoyCQRS.EventStore.MongoDB
         public async Task<IEnumerable<ICommitedEvent>> GetEventsForwardAsync(Guid aggregateId, int version)
         {
             var db = Client.GetDatabase(Database);
-            var collection = db.GetCollection<Event>(Setttings.EventsCollectionName);
+            var collection = db.GetCollection<EventDocument>(Setttings.EventsCollectionName);
 
-            var sort = Builders<Event>.Sort;
-            var filterBuilder = Builders<Event>.Filter;
+            var sort = Builders<EventDocument>.Sort;
+            var filterBuilder = Builders<EventDocument>.Filter;
 
             var filter = filterBuilder.Empty
                 & filterBuilder.Eq(x => x.AggregateId, aggregateId)
@@ -137,13 +145,13 @@ namespace EnjoyCQRS.EventStore.MongoDB
             
             if (UncommitedSnapshots.Count > 0)
             {
-                var snapshotCollection = db.GetCollection<SnapshotData>(Setttings.SnapshotsCollectionName);
+                var snapshotCollection = db.GetCollection<SnapshotDocument>(Setttings.SnapshotsCollectionName);
                 await snapshotCollection.InsertManyAsync(UncommitedSnapshots);
             }
 
             if (UncommitedEvents.Count > 0)
             {
-                var eventCollection = db.GetCollection<Event>(Setttings.EventsCollectionName);
+                var eventCollection = db.GetCollection<EventDocument>(Setttings.EventsCollectionName);
                 await eventCollection.InsertManyAsync(UncommitedEvents);
             }
 
@@ -163,10 +171,10 @@ namespace EnjoyCQRS.EventStore.MongoDB
         public async Task<IEnumerable<ICommitedEvent>> GetAllEventsAsync(Guid id)
         {
             var db = Client.GetDatabase(Database);
-            var collection = db.GetCollection<Event>(Setttings.EventsCollectionName);
+            var collection = db.GetCollection<EventDocument>(Setttings.EventsCollectionName);
 
-            var sort = Builders<Event>.Sort;
-            var filterBuilder = Builders<Event>.Filter;
+            var sort = Builders<EventDocument>.Sort;
+            var filterBuilder = Builders<EventDocument>.Filter;
 
             var filter = filterBuilder.Empty 
                 & filterBuilder.Eq(x => x.AggregateId, id)
@@ -180,7 +188,7 @@ namespace EnjoyCQRS.EventStore.MongoDB
             return events.Select(Deserialize).ToList();
         }
 
-        public Task SaveAsync(IEnumerable<ISerializedEvent> collection)
+        public Task SaveAsync(IEnumerable<IUncommitedEvent> collection)
         {
             var eventList = collection.Select(Serialize);
             UncommitedEvents.AddRange(eventList);
@@ -188,34 +196,73 @@ namespace EnjoyCQRS.EventStore.MongoDB
             return Task.CompletedTask;
         }
 
-        public Task SaveProjectionAsync(ISerializedProjection projection)
+        public Task SaveProjectionAsync(IProjection projection)
         {
             UncommitedProjections.Add(projection);
 
             return Task.CompletedTask;
         }
 
-        private Event Serialize(ISerializedEvent serializedEvent)
+        private EventDocument Serialize(IUncommitedEvent eventToSerialize)
         {
-            var eventData = BsonDocument.Parse(serializedEvent.SerializedData);
-            var metadata = BsonDocument.Parse(serializedEvent.SerializedMetadata);
+            var id = eventToSerialize.Metadata.GetValue(MetadataKeys.EventId, value => Guid.Parse(value.ToString()));
+            var eventType = eventToSerialize.Metadata.GetValue(MetadataKeys.EventName, value => value.ToString());
+            var timestamp = eventToSerialize.Metadata.GetValue(MetadataKeys.Timestamp, value => (DateTime)value);
 
-            var id = serializedEvent.Metadata.GetValue(MetadataKeys.EventId, value => Guid.Parse(value.ToString()));
-            var eventType = serializedEvent.Metadata.GetValue(MetadataKeys.EventName, value => value.ToString());
-            var timestamp = serializedEvent.Metadata.GetValue(MetadataKeys.Timestamp, value => (DateTime) value);
+            var json = JsonConvert.SerializeObject(eventToSerialize.Data, JsonSettings);
 
-            var @event = new Event
+            var @event = new EventDocument
             {
                 Id = id,
                 Timestamp = timestamp,
                 EventType = eventType,
-                AggregateId = serializedEvent.AggregateId,
-                Version = serializedEvent.Version,
-                EventData = eventData,
-                Metadata = metadata
+                AggregateId = eventToSerialize.AggregateId,
+                Version = eventToSerialize.Version,
+                EventData = BsonDocument.Parse(json),
+                Metadata = BsonDocument.Create(eventToSerialize.Metadata)
             };
 
             return @event;
+        }
+
+        private ICommitedEvent Deserialize(EventDocument doc)
+        {
+            var eventType = Type.GetType(doc.Metadata[MetadataKeys.EventClrType].AsString);
+            var data = JsonConvert.DeserializeObject(doc.EventData.ToJson(), eventType, JsonSettings);
+            
+            var metadata = BsonSerializer.Deserialize<Dictionary<string, object>>(doc.Metadata.ToJson());
+            var version = doc.Metadata[MetadataKeys.EventVersion].AsInt32;
+
+            return new MongoCommitedEvent(doc.AggregateId, version, data, new MetadataCollection(metadata));
+        }
+
+        private ICommitedSnapshot Deserialize(SnapshotDocument doc)
+        {
+            var snapshotType = Type.GetType(doc.Metadata[MetadataKeys.SnapshotClrType].AsString);
+            
+            var data = (ISnapshot) BsonSerializer.Deserialize(doc.Data, snapshotType);
+            var metadata = BsonSerializer.Deserialize<Dictionary<string, object>>(doc.Metadata.ToJson());
+            
+            return new MongoCommitedSnapshot(doc.AggregateId, doc.Version, data, new MetadataCollection(metadata));
+        }
+
+        private SnapshotDocument Serialize(IUncommitedSnapshot serializedSnapshot)
+        {
+            var id = serializedSnapshot.Metadata.GetValue(MetadataKeys.SnapshotId, value => Guid.Parse(value.ToString()));
+            var data = BsonDocumentWrapper.Create(serializedSnapshot.Data);
+            var metadata = BsonDocument.Create(serializedSnapshot.Metadata);
+
+            var snapshot = new SnapshotDocument
+            {
+                Id = id,
+                Timestamp = DateTime.UtcNow,
+                AggregateId = serializedSnapshot.AggregateId,
+                Version = serializedSnapshot.AggregateVersion,
+                Data = data,
+                Metadata = metadata,
+            };
+
+            return snapshot;
         }
 
         private void Cleanup()
@@ -225,52 +272,24 @@ namespace EnjoyCQRS.EventStore.MongoDB
             UncommitedProjections.Clear();
         }
 
-        private ICommitedEvent Deserialize(Event e)
-        {
-            return MongoCommitedEvent.Create(e);
-        }
-
-        private ICommitedSnapshot Deserialize(SnapshotData snapshotData)
-        {
-            return MongoCommitedSnapshot.Create(snapshotData);
-        }
-
-        private SnapshotData Serialize(ISerializedSnapshot serializedSnapshot)
-        {
-            var eventData = BsonDocument.Parse(serializedSnapshot.SerializedData);
-            var metadata = BsonDocument.Parse(serializedSnapshot.SerializedMetadata);
-            var id = serializedSnapshot.Metadata.GetValue(MetadataKeys.SnapshotId,
-                value => Guid.Parse(value.ToString()));
-
-            var snapshot = new SnapshotData
-            {
-                Id = id,
-                Timestamp = DateTime.UtcNow,
-                AggregateId = serializedSnapshot.AggregateId,
-                Version = serializedSnapshot.AggregateVersion,
-                Data = eventData,
-                Metadata = metadata,
-            };
-
-            return snapshot;
-        }
-
-        protected virtual async Task AddOrUpdateProjectionsAsync(IEnumerable<ISerializedProjection> serializedProjections)
+        protected virtual async Task AddOrUpdateProjectionsAsync(IEnumerable<IProjection> serializedProjections)
         {
             var db = Client.GetDatabase(Database);
-            var projectionCollection = db.GetCollection<MongoProjection>(Setttings.ProjectionsCollectionName);
+            var projectionCollection = db.GetCollection<BsonDocument>(Setttings.ProjectionsCollectionName);
 
-            var filterBuilder = Builders<MongoProjection>.Filter;
+            var filterBuilder = Builders<BsonDocument>.Filter;
 
             foreach (var uncommitedProjection in serializedProjections)
             {
-                var filter = FilterDefinition<MongoProjection>.Empty
-                             & filterBuilder.Eq(e => e.ProjectionId, uncommitedProjection.ProjectionId)
-                             & filterBuilder.Eq(e => e.Category, uncommitedProjection.Category);
-                
-                var mongoProjection = MongoProjection.Create(uncommitedProjection);
-                
-                await projectionCollection.FindOneAndReplaceAsync(filter, mongoProjection, new FindOneAndReplaceOptions<MongoProjection>
+                var category = uncommitedProjection.GetType().Name;
+
+                var filter = FilterDefinition<BsonDocument>.Empty
+                             & filterBuilder.Eq(e => e["_id"], uncommitedProjection.Id)
+                             & filterBuilder.Eq(e => e["_t"], category);
+
+                var doc = BsonDocumentWrapper.Create(uncommitedProjection);
+
+                await projectionCollection.FindOneAndReplaceAsync(filter, doc, new FindOneAndReplaceOptions<BsonDocument>
                 {
                     IsUpsert = true
                 });

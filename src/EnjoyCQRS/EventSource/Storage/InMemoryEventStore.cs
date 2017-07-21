@@ -41,13 +41,13 @@ namespace EnjoyCQRS.EventSource.Storage
         private readonly List<ICommitedSnapshot> _snapshots = new List<ICommitedSnapshot>();
         private readonly Dictionary<ProjectionKey, object> _projections = new Dictionary<ProjectionKey, object>();
 
-        private readonly List<ISerializedEvent> _uncommitedEvents = new List<ISerializedEvent>();
-        private readonly List<ISerializedSnapshot> _uncommitedSnapshots = new List<ISerializedSnapshot>();
+        private readonly List<IUncommitedEvent> _uncommitedEvents = new List<IUncommitedEvent>();
+        private readonly List<IUncommitedSnapshot> _uncommitedSnapshots = new List<IUncommitedSnapshot>();
         private readonly Dictionary<ProjectionKey, object> _uncommitedProjections = new Dictionary<ProjectionKey, object>();
 
         public bool InTransaction;
         
-        public virtual Task SaveSnapshotAsync(ISerializedSnapshot snapshot)
+        public virtual Task SaveSnapshotAsync(IUncommitedSnapshot snapshot)
         {
             _uncommitedSnapshots.Add(snapshot);
 
@@ -90,7 +90,7 @@ namespace EnjoyCQRS.EventSource.Storage
 
             _uncommitedEvents.Clear();
 
-            var commitedSnapshots = _uncommitedSnapshots.Select(e => new InMemoryCommitedSnapshot(e.AggregateId, e.AggregateVersion, e.SerializedData, e.SerializedMetadata));
+            var commitedSnapshots = _uncommitedSnapshots.Select(e => new InMemoryCommitedSnapshot(e.AggregateId, e.AggregateVersion, e.Data, e.Metadata));
             
             _snapshots.AddRange(commitedSnapshots);
             
@@ -132,63 +132,63 @@ namespace EnjoyCQRS.EventSource.Storage
             return Task.FromResult<IEnumerable<ICommitedEvent>>(events);
         }
 
-        public virtual Task SaveAsync(IEnumerable<ISerializedEvent> collection)
+        public virtual Task SaveAsync(IEnumerable<IUncommitedEvent> collection)
         {
             _uncommitedEvents.AddRange(collection);
 
             return Task.CompletedTask;
         }
 
-        public Task SaveProjectionAsync(ISerializedProjection projection)
+        public Task SaveProjectionAsync(IProjection projection)
         {
-            var key = new ProjectionKey(projection.ProjectionId, projection.Category);
+            var key = new ProjectionKey(projection.Id, projection.GetType().Name);
 
             if (!_uncommitedProjections.ContainsKey(key))
             {
                 _uncommitedProjections.Add(key, null);
             }
 
-            _uncommitedProjections[key] = projection.Projection;
+            _uncommitedProjections[key] = projection;
 
             return Task.CompletedTask;
         }
 
-        private static ICommitedEvent InstantiateCommitedEvent(ISerializedEvent serializedEvent)
+        private static ICommitedEvent InstantiateCommitedEvent(IUncommitedEvent serializedEvent)
         {
-            return new InMemoryCommitedEvent(serializedEvent.AggregateId, serializedEvent.Version, serializedEvent.SerializedData, serializedEvent.SerializedMetadata);
+            return new InMemoryCommitedEvent(serializedEvent.AggregateId, serializedEvent.Version, serializedEvent.Data, serializedEvent.Metadata);
         }
 
         internal class InMemoryCommitedEvent : ICommitedEvent
         {
             public Guid AggregateId { get; }
             public int Version { get; }
-            public string SerializedData { get; }
-            public string SerializedMetadata { get; }
+            public object Data { get; }
+            public IMetadata Metadata { get; }
 
-            public InMemoryCommitedEvent(Guid aggregateId, int aggregateVersion, string serializedData, string serializedMetadata)
+            public InMemoryCommitedEvent(Guid aggregateId, int aggregateVersion, object data, IMetadata metadata)
             {
                 AggregateId = aggregateId;
                 Version = aggregateVersion;
-                SerializedData = serializedData;
-                SerializedMetadata = serializedMetadata;
+                Data = data;
+                Metadata = metadata;
             }
 
         }
 
         internal class InMemoryCommitedSnapshot : ICommitedSnapshot
         {
-            public InMemoryCommitedSnapshot(Guid aggregateId, int aggregateVersion, string serializedData, string serializedMetadata)
+            public InMemoryCommitedSnapshot(Guid aggregateId, int aggregateVersion, ISnapshot serializedData, IMetadata serializedMetadata)
             {
                 AggregateId = aggregateId;
                 AggregateVersion = aggregateVersion;
-                SerializedData = serializedData;
-                SerializedMetadata = serializedMetadata;
+                Data = serializedData;
+                Metadata = serializedMetadata;
             }
 
             public Guid AggregateId { get; }
             public int AggregateVersion { get; }
-            public string SerializedData { get; }
-            public string SerializedMetadata { get; }
+            public ISnapshot Data { get; }
+            public IMetadata Metadata { get; }
         }
 
         public struct ProjectionKey

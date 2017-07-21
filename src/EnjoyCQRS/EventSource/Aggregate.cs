@@ -121,7 +121,7 @@ namespace EnjoyCQRS.EventSource
         /// Load the events in the Aggregate.
         /// </summary>
         /// <param name="domainEvents"></param>
-        public void LoadFromHistory(CommitedDomainEventCollection domainEvents)
+        public void LoadFromHistory(CommitedEventsCollection domainEvents)
         {
             foreach (var @event in domainEvents)
             {

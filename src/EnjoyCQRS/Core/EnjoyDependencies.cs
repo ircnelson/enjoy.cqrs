@@ -38,10 +38,6 @@ namespace EnjoyCQRS.Core
         public Dependency CommandDispatcher { get; } = Dependency.Of<ICommandDispatcher>();
         public Dependency UnitOfWork { get; } = Dependency.Of<IUnitOfWork>();
         public Dependency EventRouter { get; } = Dependency.Of<IEventRouter>();
-        public Dependency TextSerializer { get; } = Dependency.Of<ITextSerializer>();
-        public Dependency EventSerializer { get; } = Dependency.Of<IEventSerializer>();
-        public Dependency SnapshotSerializer { get; } = Dependency.Of<ISnapshotSerializer>();
-        public Dependency ProjectionSerializer { get; } = Dependency.Of<IProjectionSerializer>();
         public Dependency SnapshotStrategy { get; } = Dependency.Of<ISnapshotStrategy>();
         public Dependency EventPublisher { get; } = Dependency.Of<IEventPublisher>();
         public Dependency Session { get; } = Dependency.Of<ISession>();

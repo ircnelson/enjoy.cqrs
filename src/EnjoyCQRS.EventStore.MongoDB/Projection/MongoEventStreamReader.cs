@@ -22,19 +22,19 @@
 
 using System.Threading;
 using System.Threading.Tasks;
-using EnjoyCQRS.Core;
 using EnjoyCQRS.Projections;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
+using MongoDB.Bson.Serialization;
+using Newtonsoft.Json;
 
 namespace EnjoyCQRS.EventStore.MongoDB.Projection
 {
     public class MongoEventStreamReader : EventStreamReader
     {
         private readonly IMongoDatabase _database;
-        private readonly ITextSerializer _textSerializer;
         private readonly MongoEventStoreSetttings _settings = new MongoEventStoreSetttings();
 
         public virtual int BatchSize { get; } = 400;
@@ -43,15 +43,13 @@ namespace EnjoyCQRS.EventStore.MongoDB.Projection
 
         public MongoEventStreamReader(
             IMongoDatabase database,
-            ITextSerializer textSerializer,
             MongoEventStoreSetttings settings = null)
         {
             if (settings != null)
             {
                 _settings = settings;
             }
-
-            _textSerializer = textSerializer;
+            
             _database = database;
         }
 
@@ -94,7 +92,11 @@ namespace EnjoyCQRS.EventStore.MongoDB.Projection
 
         private Dictionary<string, object> CreateMetadata(BsonDocument item)
         {
-            return _textSerializer.Deserialize<Dictionary<string, object>>(item["metadata"].ToJson());
+            var metadata = item["metadata"].AsBsonDocument;
+
+            var dic = BsonSerializer.Deserialize<Dictionary<string, object>>(metadata);
+
+            return dic;
         }
 
         private object CreateEvent(BsonDocument record)
@@ -102,12 +104,22 @@ namespace EnjoyCQRS.EventStore.MongoDB.Projection
             var eventId = record["_id"].AsGuid;
             var metadata = record["metadata"];
             var timestamp = record["timestamp"].ToUniversalTime();
-
-            //var eventType = Type.GetType(metadata[EventSource.MetadataKeys.EventClrType].AsString);
+            
             var eventType = metadata[EventSource.MetadataKeys.EventClrType].AsString;
-            var eventData = record["eventData"].ToJson();
 
-            return _textSerializer.Deserialize(eventData, eventType);
+            try
+            {
+                var type = Type.GetType(eventType);
+
+                var json = record["eventData"].ToJson();
+
+                return JsonConvert.DeserializeObject(json, type);
+            }
+            catch (Exception)
+            {
+                throw new Exception($"Cannot found 'Type' for: {eventType}");
+            }
+            
         }
     }
 }

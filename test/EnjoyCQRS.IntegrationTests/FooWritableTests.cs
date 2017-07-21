@@ -13,12 +13,9 @@ using EnjoyCQRS.EventSource;
 
 namespace EnjoyCQRS.IntegrationTests
 {
+    [Trait("Integration", "WebApi")]
     public class FooWritableTests
     {
-        public const string CategoryName = "Integration";
-        public const string CategoryValue = "WebApi";
-        
-        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public async Task Should_create_foo()
         {
@@ -35,8 +32,7 @@ namespace EnjoyCQRS.IntegrationTests
 
             eventStore.Events.Count(e => e.AggregateId == aggregateId).Should().Be(1);
         }
-
-        [Trait(CategoryName, CategoryValue)]
+        
         [Fact]
         public async Task Should_do_something()
         {
@@ -56,8 +52,7 @@ namespace EnjoyCQRS.IntegrationTests
 
             aggregateId.Should().NotBeEmpty();
         }
-
-        [Trait(CategoryName, CategoryValue)]
+        
         [Fact]
         public async Task Should_emit_many_events()
         {
@@ -71,8 +66,7 @@ namespace EnjoyCQRS.IntegrationTests
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
-
-        [Trait(CategoryName, CategoryValue)]
+        
         [Fact]
         public async Task Verify_custom_metadata()
         {

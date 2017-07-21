@@ -6,7 +6,7 @@ namespace EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.BarAggregate.Project
 {
     public class BarProjectionProvider : IProjectionProvider
     {
-        public object CreateProjection(IAggregate aggregate)
+        public IProjection CreateProjection(IAggregate aggregate)
         {
             var target = (Bar)aggregate;
 
@@ -22,7 +22,7 @@ namespace EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.BarAggregate.Project
 
     public class BarWithoutMessagesProjectionProvider : IProjectionProvider
     {
-        public object CreateProjection(IAggregate aggregate)
+        public IProjection CreateProjection(IAggregate aggregate)
         {
             var target = (Bar)aggregate;
 

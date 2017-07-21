@@ -45,9 +45,9 @@ namespace EnjoyCQRS.EventSource.Projections
         /// where PersonAggregate is the category of projection and a5b4fd92-fcfa-4c50-b626-109c3e6d8967 is the aggregate id.
         /// </summary>
         /// <param name="projectionType"></param>
-        /// <param name="name"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
-        Task<object> GetAsync(Type projectionType, string name);
+        Task<object> GetAsync(Type projectionType, Guid id);
     }
 
     public interface IProjectionRepository<TProjection> : IProjectionRepository
@@ -58,17 +58,7 @@ namespace EnjoyCQRS.EventSource.Projections
         /// <param name="id"></param>
         /// <returns></returns>
         Task<TProjection> GetAsync(Guid id);
-
-        /// <summary>
-        /// <para>
-        /// Get the projection based on projection name (i.e. <see cref="TProjection"/>-a5b4fd92-fcfa-4c50-b626-109c3e6d8967),
-        /// </para>
-        /// where PersonAggregate is the category of projection and a5b4fd92-fcfa-4c50-b626-109c3e6d8967 is the aggregate id.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        Task<TProjection> GetAsync(string name);
-
+        
         /// <summary>
         /// Find projection based on expression.
         /// </summary>

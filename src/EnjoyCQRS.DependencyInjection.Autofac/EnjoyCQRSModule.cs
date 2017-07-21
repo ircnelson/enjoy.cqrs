@@ -65,11 +65,7 @@ namespace EnjoyCQRS.DependencyInjection.AutofacExtensions
             enjoyDependenciesBuilder.WithUnitOfWork<UnitOfWork>();
             enjoyDependenciesBuilder.WithEventsMetadataService<EventsMetadataService>();
             enjoyDependenciesBuilder.WithRepository<Repository>();
-            enjoyDependenciesBuilder.WithTextSerializer<NewtonsoftSerializer>();
-            enjoyDependenciesBuilder.WithSnapshotSerializer<SnapshotSerializer>();
             enjoyDependenciesBuilder.WithSnapshotStrategy<IntervalSnapshotStrategy>();
-            enjoyDependenciesBuilder.WithEventSerializer<EventSerializer>();
-            enjoyDependenciesBuilder.WithProjectionSerializer<ProjectionSerializer>();
             enjoyDependenciesBuilder.WithEventUpdateManager<EventUpdateManager>();
             enjoyDependenciesBuilder.WithLoggerFactory<NoopLoggerFactory>();
 

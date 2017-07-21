@@ -60,7 +60,7 @@ namespace EnjoyCQRS.UnitTests.Domain.Stubs
 
     public class StubAggregateProjectionProvider : IProjectionProvider
     {
-        public object CreateProjection(IAggregate aggregate)
+        public IProjection CreateProjection(IAggregate aggregate)
         {
             var target = aggregate as StubAggregate;
 
@@ -73,7 +73,7 @@ namespace EnjoyCQRS.UnitTests.Domain.Stubs
         }
     }
 
-    public class StubAggregateProjection
+    public class StubAggregateProjection : IProjection
     {
         public Guid Id { get; set; }
         public string Name { get; set; }

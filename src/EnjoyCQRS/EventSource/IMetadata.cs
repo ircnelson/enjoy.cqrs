@@ -46,5 +46,7 @@ namespace EnjoyCQRS.EventSource
         /// <param name="converter"></param>
         /// <returns></returns>
         T GetValue<T>(string key, Func<object, T> converter);
+
+        IMetadata Merge(IMetadata metadata);
     }
 }

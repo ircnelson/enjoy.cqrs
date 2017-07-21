@@ -1,6 +1,6 @@
-// The MIT License (MIT)
+ï»¿// The MIT License (MIT)
 // 
-// Copyright (c) 2016 Nelson Corrêa V. Júnior
+// Copyright (c) 2016 Nelson CorrÃªa V. JÃºnior
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,18 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using EnjoyCQRS.Events;
+using System;
 
-namespace EnjoyCQRS.Collections
+namespace EnjoyCQRS.EventSource.Snapshots
 {
-    /// <summary>
-    /// Represents collection of commited events.
-    /// </summary>
-    public class CommitedDomainEventCollection : HashSet<IDomainEvent>
+    public interface IUncommitedSnapshot
     {
-        public CommitedDomainEventCollection(IEnumerable<IDomainEvent> events) : base(events)
-        {
-        }
+        Guid AggregateId { get; }
+        int AggregateVersion { get; }
+        ISnapshot Data { get; }
+        IMetadata Metadata { get; }
     }
 }

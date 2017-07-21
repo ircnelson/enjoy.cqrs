@@ -17,9 +17,6 @@ namespace EnjoyCQRS.UnitTests.Shared.Helpers
             ILoggerFactory loggerFactory = null,
             IEventPublisher eventPublisher = null,
             IEventRouter eventRouter = null,
-            IEventSerializer eventSerializer = null,
-            ISnapshotSerializer snapshotSerializer = null,
-            IProjectionSerializer projectionSerializer = null,
             IProjectionProviderScanner projectionProviderScanner = null,
             IEventUpdateManager eventUpdateManager = null,
             IEnumerable<IMetadataProvider> metadataProviders = null,
@@ -44,28 +41,10 @@ namespace EnjoyCQRS.UnitTests.Shared.Helpers
             {
                 eventPublisher = new EventPublisher(eventRouter);
             }
-
-            if (eventSerializer == null)
-            {
-                eventSerializer = new EventSerializer(new JsonTextSerializer());
-            }
-
-            if (snapshotSerializer == null)
-            {
-                snapshotSerializer = new SnapshotSerializer(new JsonTextSerializer());
-            }
-
-            if (projectionSerializer == null)
-            {
-                projectionSerializer = new ProjectionSerializer(new JsonTextSerializer());
-            }
-
+            
             var session = new Session(loggerFactory: loggerFactory,
                 eventStore: eventStore,
                 eventPublisher: eventPublisher,
-                eventSerializer: eventSerializer,
-                snapshotSerializer: snapshotSerializer,
-                projectionSerializer: projectionSerializer,
                 projectionProviderScanner: projectionProviderScanner,
                 eventUpdateManager: eventUpdateManager,
                 metadataProviders: metadataProviders,

@@ -64,22 +64,7 @@ namespace EnjoyCQRS.UnitTests.Core.Stubs
         {
             return this;
         }
-
-        public override IEnjoyDependenciesBuilder<IServiceProvider> WithEventSerializer(Type type)
-        {
-            return this;
-        }
-
-        public override IEnjoyDependenciesBuilder<IServiceProvider> WithEventSerializer<TImplementation>()
-        {
-            return this;
-        }
-
-        public override IEnjoyDependenciesBuilder<IServiceProvider> WithEventSerializer<TImplementation>(Func<IServiceProvider, TImplementation> instanceFactory)
-        {
-            return this;
-        }
-
+        
         public override IEnjoyDependenciesBuilder<IServiceProvider> WithEventsMetadataService(Type type)
         {
             return this;
@@ -139,22 +124,7 @@ namespace EnjoyCQRS.UnitTests.Core.Stubs
         {
             return this;
         }
-
-        public override IEnjoyDependenciesBuilder<IServiceProvider> WithProjectionSerializer(Type type)
-        {
-            return this;
-        }
-
-        public override IEnjoyDependenciesBuilder<IServiceProvider> WithProjectionSerializer<TImplementation>()
-        {
-            return this;
-        }
-
-        public override IEnjoyDependenciesBuilder<IServiceProvider> WithProjectionSerializer<TImplementation>(Func<IServiceProvider, TImplementation> instanceFactory)
-        {
-            return this;
-        }
-
+        
         public override IEnjoyDependenciesBuilder<IServiceProvider> WithRepository(Type type)
         {
             return this;
@@ -184,22 +154,7 @@ namespace EnjoyCQRS.UnitTests.Core.Stubs
         {
             return this;
         }
-
-        public override IEnjoyDependenciesBuilder<IServiceProvider> WithSnapshotSerializer(Type type)
-        {
-            return this;
-        }
-
-        public override IEnjoyDependenciesBuilder<IServiceProvider> WithSnapshotSerializer<TImplementation>()
-        {
-            return this;
-        }
-
-        public override IEnjoyDependenciesBuilder<IServiceProvider> WithSnapshotSerializer<TImplementation>(Func<IServiceProvider, TImplementation> instanceFactory)
-        {
-            return this;
-        }
-
+        
         public override IEnjoyDependenciesBuilder<IServiceProvider> WithSnapshotStrategy(Type type)
         {
             return this;
@@ -214,22 +169,7 @@ namespace EnjoyCQRS.UnitTests.Core.Stubs
         {
             return this;
         }
-
-        public override IEnjoyDependenciesBuilder<IServiceProvider> WithTextSerializer(Type type)
-        {
-            return this;
-        }
-
-        public override IEnjoyDependenciesBuilder<IServiceProvider> WithTextSerializer<TImplementation>()
-        {
-            return this;
-        }
-
-        public override IEnjoyDependenciesBuilder<IServiceProvider> WithTextSerializer<TImplementation>(Func<IServiceProvider, TImplementation> instanceFactory)
-        {
-            return this;
-        }
-
+        
         public override IEnjoyDependenciesBuilder<IServiceProvider> WithUnitOfWork(Type type)
         {
             return this;

@@ -21,18 +21,16 @@
 // SOFTWARE.
 
 using System.IO;
-using EnjoyCQRS.Core;
 using EnjoyCQRS.Projections;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson;
 using System;
+using MongoDB.Bson.IO;
 
 namespace EnjoyCQRS.EventStore.MongoDB.Projection
 {
     public class MongoProjectionStrategy : IProjectionStrategy
-    {
-        private static ITextSerializer Serializer = new BsonTextSerializer();
-        
+    {   
         public string GetEntityBucket<TView>()
         {
             return typeof(TView).Name;  // cache it
@@ -51,11 +49,14 @@ namespace EnjoyCQRS.EventStore.MongoDB.Projection
 
         public void Serialize<TView>(TView entity, Stream stream)
         {
-            var ser = Serializer.Serialize(entity);
+            var json = BsonDocumentWrapper.Create((object)entity).ToJson(new JsonWriterSettings
+            {
+                OutputMode = JsonOutputMode.Strict
+            });
             
             using (var sw = new StreamWriter(stream))
             {
-                sw.WriteLine(ser);
+                sw.Write(json);
             }
         }
 

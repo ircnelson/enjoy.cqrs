@@ -21,18 +21,11 @@ namespace EnjoyCQRS.EventStore.MongoDB
         {
         }
 
-        public async Task<TProjection> GetAsync(string name)
-        {
-            return (TProjection)await GetAsync(typeof(TProjection), name);
-        }
-
         public async Task<TProjection> GetAsync(Guid id)
         {
-            var category = ExtractCategoryOfType<TProjection>();
-
-            return (TProjection)await GetAsync(typeof(TProjection), category, id);
+            return (TProjection)await GetAsync(typeof(TProjection), id);
         }
-
+        
         public Task<IEnumerable<TProjection>> FindAsync(Expression<Func<TProjection, bool>> expr)
         {
             var category = ExtractCategoryOfType<TProjection>();
@@ -43,9 +36,9 @@ namespace EnjoyCQRS.EventStore.MongoDB
         public async Task<IEnumerable<TProjection>> FindAsync(string category, Expression<Func<TProjection, bool>> expr)
         {
             var db = Client.GetDatabase(Database);
-            var collection = db.GetCollection<MongoProjection>(Setttings.ProjectionsCollectionName).AsQueryable();
+            var collection = db.GetCollection<BsonDocument>(Setttings.ProjectionsCollectionName).AsQueryable();
 
-            var query = collection.Where(e => e.Category == category).Select(e => e.Projection).OfType<TProjection>().Where(expr);
+            var query = collection.OfType<TProjection>().Where(expr);
 
             return await query.ToListAsync();
         }

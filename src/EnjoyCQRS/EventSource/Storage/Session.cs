@@ -34,24 +34,20 @@ using EnjoyCQRS.Extensions;
 using EnjoyCQRS.Logger;
 using EnjoyCQRS.MessageBus;
 using EnjoyCQRS.MetadataProviders;
-using System.Collections.ObjectModel;
 
 namespace EnjoyCQRS.EventSource.Storage
 {
     public class Session : ISession
     {
-        private readonly IEventsMetadataService _eventsMetadataService;
         private readonly AggregateTracker _aggregateTracker = new AggregateTracker();
         private readonly List<Aggregate> _aggregates = new List<Aggregate>();
         private readonly IEventStore _eventStore;
         private readonly IEventPublisher _eventPublisher;
-        private readonly IEventSerializer _eventSerializer;
-        private readonly ISnapshotSerializer _snapshotSerializer;
-        private readonly IProjectionSerializer _projectionSerializer;
         private readonly IProjectionProviderScanner _projectionProviderScanner;
         private readonly IEventUpdateManager _eventUpdateManager;
         private readonly ISnapshotStrategy _snapshotStrategy;
         private readonly IEnumerable<IMetadataProvider> _metadataProviders;
+        private readonly IEventsMetadataService _eventsMetadataService;
         private readonly ILogger _logger;
 
         private bool _externalTransaction;
@@ -62,9 +58,6 @@ namespace EnjoyCQRS.EventSource.Storage
             ILoggerFactory loggerFactory,
             IEventStore eventStore,
             IEventPublisher eventPublisher,
-            IEventSerializer eventSerializer,
-            ISnapshotSerializer snapshotSerializer,
-            IProjectionSerializer projectionSerializer,
             IProjectionProviderScanner projectionProviderScanner = null,
             IEventUpdateManager eventUpdateManager = null,
             IEnumerable<IMetadataProvider> metadataProviders = null,
@@ -72,12 +65,6 @@ namespace EnjoyCQRS.EventSource.Storage
             IEventsMetadataService eventsMetadataService = null)
         {
             if (loggerFactory == null) throw new ArgumentNullException(nameof(loggerFactory));
-            if (eventStore == null) throw new ArgumentNullException(nameof(eventStore));
-            if (eventPublisher == null) throw new ArgumentNullException(nameof(eventPublisher));
-            if (eventSerializer == null) throw new ArgumentNullException(nameof(eventSerializer));
-            if (snapshotSerializer == null) throw new ArgumentNullException(nameof(snapshotSerializer));
-            if (projectionSerializer == null) throw new ArgumentNullException(nameof(projectionSerializer));
-
             if (metadataProviders == null) metadataProviders = Enumerable.Empty<IMetadataProvider>();
 
             metadataProviders = metadataProviders.Concat(new IMetadataProvider[]
@@ -104,15 +91,12 @@ namespace EnjoyCQRS.EventSource.Storage
 
             _logger = loggerFactory.Create(nameof(Session));
 
+            _eventStore = eventStore ?? throw new ArgumentNullException(nameof(eventStore));
+            _eventPublisher = eventPublisher ?? throw new ArgumentNullException(nameof(eventPublisher));
             _snapshotStrategy = snapshotStrategy;
-            _eventStore = eventStore;
-            _eventSerializer = eventSerializer;
-            _snapshotSerializer = snapshotSerializer;
-            _projectionSerializer = projectionSerializer;
             _eventUpdateManager = eventUpdateManager;
             _projectionProviderScanner = projectionProviderScanner;
             _metadataProviders = metadataProviders;
-            _eventPublisher = eventPublisher;
             _eventsMetadataService = eventsMetadataService;
         }
 
@@ -158,7 +142,7 @@ namespace EnjoyCQRS.EventSource.Storage
 
                         _logger.LogDebug("Restoring snapshot.");
 
-                        var snapshotRestore = _snapshotSerializer.Deserialize(snapshot);
+                        var snapshotRestore = new SnapshotRestore(snapshot.AggregateId, snapshot.AggregateVersion, snapshot.Data, snapshot.Metadata);
 
                         snapshotAggregate.Restore(snapshotRestore);
 
@@ -260,33 +244,17 @@ namespace EnjoyCQRS.EventSource.Storage
                     _aggregates.SelectMany(e => e.UncommitedEvents)
                     .OrderBy(o => o.CreatedAt)
                     .Cast<UncommitedEvent>()
+                    .Select(GenerateMetadata)
                     .ToList();
-
-                var serializedEvents = new Collection<ISerializedEvent>();
-
+                
                 foreach (var uncommitedEvent in uncommitedEvents)
                 {
-                    var metadatas = _metadataProviders.SelectMany(md => md.Provide(uncommitedEvent.Aggregate,
-                        uncommitedEvent.OriginalEvent,
-                        Metadata.Empty)).Concat(new[]
-                        {
-                            new KeyValuePair<string, object>(MetadataKeys.EventId, Guid.NewGuid()),
-                            new KeyValuePair<string, object>(MetadataKeys.EventVersion, uncommitedEvent.Version),
-                            new KeyValuePair<string, object>(MetadataKeys.Timestamp, DateTime.UtcNow),
-                        });
-
-                    var metadata = new Metadata(metadatas);
-
-                    var serializeEvent = _eventSerializer.Serialize(uncommitedEvent.Aggregate, uncommitedEvent.OriginalEvent, metadata);
-
-                    serializedEvents.Add(serializeEvent);
-
-                    _eventsMetadataService.Add(uncommitedEvent.OriginalEvent, metadata);
+                    _eventsMetadataService.Add(uncommitedEvent.Data, uncommitedEvent.Metadata);
                 }
-                
+
                 _logger.LogInformation("Saving events on Event Store.");
 
-                await _eventStore.SaveAsync(serializedEvents).ConfigureAwait(false);
+                await _eventStore.SaveAsync(uncommitedEvents).ConfigureAwait(false);
 
                 _logger.LogInformation("Begin iterate in collection of aggregate.");
 
@@ -298,7 +266,7 @@ namespace EnjoyCQRS.EventSource.Storage
                     {
                         _logger.LogInformation("Taking aggregate's snapshot.");
 
-                        await aggregate.TakeSnapshot(_eventStore, _snapshotSerializer).ConfigureAwait(false);
+                        await aggregate.TakeSnapshot(_eventStore).ConfigureAwait(false);
                     }
 
                     _logger.LogInformation($"Update aggregate's version from {aggregate.Version} to {aggregate.Sequence}.");
@@ -316,10 +284,8 @@ namespace EnjoyCQRS.EventSource.Storage
                     foreach (var provider in scanResult.Providers)
                     {
                         var projection = provider.CreateProjection(aggregate);
-
-                        var projectionSerialized = _projectionSerializer.Serialize(aggregate.Id, projection);
-
-                        await _eventStore.SaveProjectionAsync(projectionSerialized).ConfigureAwait(false);
+                        
+                        await _eventStore.SaveProjectionAsync(projection).ConfigureAwait(false);
                     }
 
                 }
@@ -328,7 +294,7 @@ namespace EnjoyCQRS.EventSource.Storage
 
                 _logger.LogInformation($"Publishing events. [Qty: {uncommitedEvents.Count}]");
 
-                await _eventPublisher.PublishAsync(uncommitedEvents.Select(e => e.OriginalEvent)).ConfigureAwait(false);
+                await _eventPublisher.PublishAsync(uncommitedEvents.Select(e => e.Data)).ConfigureAwait(false);
 
                 _logger.LogInformation("Published events.");
 
@@ -352,6 +318,24 @@ namespace EnjoyCQRS.EventSource.Storage
             {
                 await CommitAsync().ConfigureAwait(false);
             }
+        }
+
+        private UncommitedEvent GenerateMetadata(UncommitedEvent uncommitedEvent)
+        {
+            var metadatas = _metadataProviders.SelectMany(md => md.Provide(uncommitedEvent.Aggregate,
+                        uncommitedEvent.Data,
+                        MetadataCollection.Empty)).Concat(new[]
+                        {
+                            new KeyValuePair<string, object>(MetadataKeys.EventId, Guid.NewGuid()),
+                            new KeyValuePair<string, object>(MetadataKeys.EventVersion, uncommitedEvent.Version),
+                            new KeyValuePair<string, object>(MetadataKeys.Timestamp, DateTime.UtcNow),
+                        });
+
+            var metadata = new MetadataCollection(metadatas);
+
+            uncommitedEvent.Metadata = uncommitedEvent.Metadata.Merge(metadata);
+
+            return uncommitedEvent;
         }
 
         /// <summary>
@@ -404,7 +388,7 @@ namespace EnjoyCQRS.EventSource.Storage
                 throw new ExpectedVersionException<TAggregate>(aggregateRoot, trackedAggregate.Version);
             }
         }
-
+        
         private void LoadAggregate<TAggregate>(TAggregate aggregate, IEnumerable<ICommitedEvent> commitedEvents) where TAggregate : Aggregate
         {
             var flatten = commitedEvents as ICommitedEvent[] ?? commitedEvents.ToArray();
@@ -412,7 +396,7 @@ namespace EnjoyCQRS.EventSource.Storage
 
             if (flatten.Any())
             {
-                var events = flatten.Select(_eventSerializer.Deserialize);
+                var events = flatten.Select(e => e.Data).Cast<IDomainEvent>();
 
                 if (_eventUpdateManager != null)
                 {
@@ -421,7 +405,7 @@ namespace EnjoyCQRS.EventSource.Storage
                     events = _eventUpdateManager.Update(events);
                 }
 
-                aggregate.LoadFromHistory(new CommitedDomainEventCollection(events));
+                aggregate.LoadFromHistory(new CommitedEventsCollection(events));
 
                 aggregate.UpdateVersion(flatten.Select(e => e.Version).Max());
             }

@@ -32,9 +32,7 @@ namespace EnjoyCQRS.Extensions
 {
     internal static class AggregateExtensions
     {
-        public static async Task TakeSnapshot(this Aggregate aggregate,
-            IEventStore eventStore,
-            ISnapshotSerializer snapshotSerializer)
+        public static async Task TakeSnapshot(this Aggregate aggregate, IEventStore eventStore)
         {
             var snapshot = ((ISnapshotAggregate)aggregate).CreateSnapshot();
 
@@ -47,9 +45,11 @@ namespace EnjoyCQRS.Extensions
                 new KeyValuePair<string, object>(MetadataKeys.SnapshotName, snapshot.GetType().Name),
             };
 
-            var serializedSnapshot = snapshotSerializer.Serialize(aggregate, snapshot, metadatas);
+            var metadata = new MetadataCollection(metadatas);
 
-            await eventStore.SaveSnapshotAsync(serializedSnapshot).ConfigureAwait(false);
+            var uncommitedSnapshot = new UncommitedSnapshot(aggregate.Id, aggregate.Sequence, snapshot, metadata);
+            
+            await eventStore.SaveSnapshotAsync(uncommitedSnapshot).ConfigureAwait(false);
         }
     }
 }

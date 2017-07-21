@@ -36,9 +36,9 @@ namespace EnjoyCQRS.EventSource.Storage
         /// <summary>
         /// Save the aggregate's snapshot.
         /// </summary>
-        /// <param name="snapshot"></param>
+        /// <param name="uncommitedSnapshot"></param>
         /// <returns></returns>
-        Task SaveSnapshotAsync(ISerializedSnapshot snapshot);
+        Task SaveSnapshotAsync(IUncommitedSnapshot uncommitedSnapshot);
 
         /// <summary>
         /// Retrieves the latest aggregate's snapshot.

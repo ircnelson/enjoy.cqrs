@@ -20,14 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using EnjoyCQRS.EventSource;
 using System;
 
 namespace EnjoyCQRS.Events
 {
     public interface IUncommitedEvent
     {
+        Guid AggregateId { get; }
         DateTime CreatedAt { get; }
         int Version { get; }
-        IDomainEvent OriginalEvent { get; }
+        IDomainEvent Data { get; }
+        IMetadata Metadata { get; }
     }
 }

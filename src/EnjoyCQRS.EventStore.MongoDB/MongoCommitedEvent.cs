@@ -22,26 +22,23 @@
 
 using System;
 using EnjoyCQRS.Events;
-using MongoDB.Bson;
+using EnjoyCQRS.EventSource;
 
 namespace EnjoyCQRS.EventStore.MongoDB
 {
     internal class MongoCommitedEvent : ICommitedEvent
     {
-        public Guid AggregateId { get; private set; }
-        public int Version { get; private set; }
-        public string SerializedData { get; private set; }
-        public string SerializedMetadata { get; private set; }
+        public Guid AggregateId { get; set; }
+        public int Version { get; set; }
+        public object Data { get; set; }
+        public IMetadata Metadata { get; set; }
 
-        public static MongoCommitedEvent Create(Event e)
+        public MongoCommitedEvent(Guid aggregateId, int version, object data, IMetadata metadata)
         {
-            return new MongoCommitedEvent
-            {
-                AggregateId = e.AggregateId,
-                Version = e.Version,
-                SerializedData = e.EventData.ToJson(),
-                SerializedMetadata = e.Metadata.ToJson(),
-            };
+            AggregateId = aggregateId;
+            Version = version;
+            Data = data;
+            Metadata = metadata;
         }
     }
 }

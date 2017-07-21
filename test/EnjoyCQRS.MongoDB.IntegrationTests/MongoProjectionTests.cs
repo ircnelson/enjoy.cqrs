@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Xunit;
 using EnjoyCQRS.EventStore.MongoDB;
 using EnjoyCQRS.UnitTests.Shared.Helpers;
-using EnjoyCQRS.UnitTests.Shared;
 using EnjoyCQRS.EventStore.MongoDB.Projection;
 
 namespace EnjoyCQRS.MongoDB.IntegrationTests
@@ -48,7 +47,7 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests
 
             await session.SaveChangesAsync().ConfigureAwait(false);
 
-            var eventStreamReader = new MongoEventStreamReader(_fixture.Database, new JsonTextSerializer());
+            var eventStreamReader = new MongoEventStreamReader(_fixture.Database);
             
             var strategy = new MongoProjectionStrategy();
             

@@ -58,7 +58,7 @@ namespace EnjoyCQRS.TestFramework
             _mocks = new Dictionary<Type, object>();
             CaughtException = new ThereWasNoExceptionButOneWasExpectedException();
             AggregateRoot = new TAggregateRoot();
-            AggregateRoot.LoadFromHistory(new CommitedDomainEventCollection(Given()));
+            AggregateRoot.LoadFromHistory(new CommitedEventsCollection(Given()));
 
             CommandHandler = BuildHandler();
 
@@ -67,7 +67,7 @@ namespace EnjoyCQRS.TestFramework
             try
             {
                 CommandHandler.ExecuteAsync(When()).GetAwaiter().GetResult();
-                PublishedEvents = AggregateRoot.UncommitedEvents.Select(e => e.OriginalEvent);
+                PublishedEvents = AggregateRoot.UncommitedEvents.Select(e => e.Data);
             }
             catch (Exception exception)
             {

@@ -20,7 +20,7 @@ namespace EnjoyCQRS.UnitTests.Metadata
 
             var metadataProvider = new EventTypeMetadataProvider();
 
-            var metadata = stubAggregate.UncommitedEvents.SelectMany(e => metadataProvider.Provide(stubAggregate, e.OriginalEvent, EventSource.Metadata.Empty));
+            var metadata = stubAggregate.UncommitedEvents.SelectMany(e => metadataProvider.Provide(stubAggregate, e.Data, EventSource.MetadataCollection.Empty));
 
             metadata.Count().Should().Be(2);
         }
@@ -33,7 +33,7 @@ namespace EnjoyCQRS.UnitTests.Metadata
 
             var metadataProvider = new AggregateTypeMetadataProvider();
 
-            var metadata = stubAggregate.UncommitedEvents.SelectMany(e => metadataProvider.Provide(stubAggregate, e.OriginalEvent, EventSource.Metadata.Empty));
+            var metadata = stubAggregate.UncommitedEvents.SelectMany(e => metadataProvider.Provide(stubAggregate, e.Data, EventSource.MetadataCollection.Empty));
 
             metadata.Count().Should().Be(3);
         }
@@ -48,7 +48,7 @@ namespace EnjoyCQRS.UnitTests.Metadata
 
             var metadataProvider = new CorrelationIdMetadataProvider();
 
-            var metadatas = stubAggregate.UncommitedEvents.SelectMany(e => metadataProvider.Provide(stubAggregate, e.OriginalEvent, EventSource.Metadata.Empty));
+            var metadatas = stubAggregate.UncommitedEvents.SelectMany(e => metadataProvider.Provide(stubAggregate, e.Data, EventSource.MetadataCollection.Empty));
 
             metadatas.Select(e => e.Value).Distinct().Count().Should().Be(1);
         }
@@ -59,9 +59,9 @@ namespace EnjoyCQRS.UnitTests.Metadata
         {
             var stubAggregate = StubAggregate.Create("Test");
             var metadataProvider = new EventTypeMetadataProvider();
-            var metadatas = stubAggregate.UncommitedEvents.SelectMany(e => metadataProvider.Provide(stubAggregate, e.OriginalEvent, EventSource.Metadata.Empty));
+            var metadatas = stubAggregate.UncommitedEvents.SelectMany(e => metadataProvider.Provide(stubAggregate, e.Data, EventSource.MetadataCollection.Empty));
 
-            var metadata = new EventSource.Metadata(metadatas);
+            var metadata = new EventSource.MetadataCollection(metadatas);
 
             metadata.GetValue(MetadataKeys.EventName).Should().Be("StubCreated");
         }

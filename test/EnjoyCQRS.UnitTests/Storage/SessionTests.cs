@@ -19,18 +19,12 @@ using Xunit;
 
 namespace EnjoyCQRS.UnitTests.Storage
 {
+    [Trait("Unit", "Session")]
     public class SessionTests
     {
-        private const string CategoryName = "Unit";
-        private const string CategoryValue = "Session";
-
         private readonly Func<IEventStore, IEventPublisher, ISnapshotStrategy, EventsMetadataService, Session> _sessionFactory = (eventStore, eventPublisher, snapshotStrategy, eventsMetadataService) =>
         {
-            var eventSerializer = CreateEventSerializer();
-            var snapshotSerializer = CreateSnapshotSerializer();
-            var projectionSerializer = CreateProjectionSerializer();
-
-            var session = new Session(MockHelper.CreateLoggerFactory(MockHelper.GetMockLogger().Object), eventStore, eventPublisher, eventSerializer, snapshotSerializer, projectionSerializer, null, null, null, snapshotStrategy, eventsMetadataService);
+            var session = new Session(MockHelper.CreateLoggerFactory(MockHelper.GetMockLogger().Object), eventStore, eventPublisher, null, null, null, snapshotStrategy, eventsMetadataService);
 
             return session;
         };
@@ -45,59 +39,47 @@ namespace EnjoyCQRS.UnitTests.Storage
             _textSerializer = new JsonTextSerializer();
         }
 
-        [Trait(CategoryName, CategoryValue)]
+        
         [Fact]
         public void Cannot_pass_null_instance_of_LoggerFactory()
         {
             var eventPublisher = Mock.Of<IEventPublisher>();
             var eventStore = Mock.Of<IEventStore>();
-            var eventSerializer = Mock.Of<IEventSerializer>();
-            var snapshotSerializer = Mock.Of<ISnapshotSerializer>();
-            var projectionSerializer = Mock.Of<IProjectionSerializer>();
             var projectionProviderScanner = Mock.Of<IProjectionProviderScanner>();
             var eventUpdateManager = Mock.Of<IEventUpdateManager>();
             var metadataProviders = Mock.Of<IEnumerable<IMetadataProvider>>();
 
-            Action act = () => new Session(null, eventStore, eventPublisher, eventSerializer, snapshotSerializer, projectionSerializer, projectionProviderScanner, eventUpdateManager, metadataProviders);
+            Action act = () => new Session(null, eventStore, eventPublisher, projectionProviderScanner, eventUpdateManager, metadataProviders);
 
             act.ShouldThrowExactly<ArgumentNullException>();
         }
-
-        [Trait(CategoryName, CategoryValue)]
+        
         [Fact]
         public void Cannot_pass_null_instance_of_EventStore()
         {
-            var eventSerializer = Mock.Of<IEventSerializer>();
-            var snapshotSerializer = Mock.Of<ISnapshotSerializer>();
-            var projectionSerializer = Mock.Of<IProjectionSerializer>();
             var projectionProviderScanner = Mock.Of<IProjectionProviderScanner>();
             var eventPublisher = Mock.Of<IEventPublisher>();
             var eventUpdateManager = Mock.Of<IEventUpdateManager>();
             var metadataProviders = Mock.Of<IEnumerable<IMetadataProvider>>();
 
-            Action act = () => new Session(MockHelper.CreateLoggerFactory(MockHelper.GetMockLogger().Object), null, eventPublisher, eventSerializer, snapshotSerializer, projectionSerializer, projectionProviderScanner, eventUpdateManager, metadataProviders);
+            Action act = () => new Session(MockHelper.CreateLoggerFactory(MockHelper.GetMockLogger().Object), null, eventPublisher, projectionProviderScanner, eventUpdateManager, metadataProviders);
 
             act.ShouldThrowExactly<ArgumentNullException>();
         }
-
-        [Trait(CategoryName, CategoryValue)]
+        
         [Fact]
         public void Cannot_pass_null_instance_of_EventPublisher()
         {
             var eventStore = Mock.Of<IEventStore>();
-            var eventSerializer = Mock.Of<IEventSerializer>();
-            var snapshotSerializer = Mock.Of<ISnapshotSerializer>();
-            var projectionSerializer = Mock.Of<IProjectionSerializer>();
             var projectionProviderScanner = Mock.Of<IProjectionProviderScanner>();
             var eventUpdateManager = Mock.Of<IEventUpdateManager>();
             var metadataProviders = Mock.Of<IEnumerable<IMetadataProvider>>();
 
-            Action act = () => new Session(MockHelper.CreateLoggerFactory(MockHelper.GetMockLogger().Object), eventStore, null, eventSerializer, snapshotSerializer, projectionSerializer, projectionProviderScanner, eventUpdateManager, metadataProviders);
+            Action act = () => new Session(MockHelper.CreateLoggerFactory(MockHelper.GetMockLogger().Object), eventStore, null, projectionProviderScanner, eventUpdateManager, metadataProviders);
 
             act.ShouldThrowExactly<ArgumentNullException>();
         }
-
-        [Trait(CategoryName, CategoryValue)]
+        
         [Fact]
         public async Task Should_throws_exception_When_aggregate_version_is_wrong()
         {
@@ -128,8 +110,7 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             wrongVersion.ShouldThrowExactly<ExpectedVersionException<StubAggregate>>().And.Aggregate.Should().Be(stubAggregate1);
         }
-
-        [Trait(CategoryName, CategoryValue)]
+        
         [Fact]
         public async Task Should_retrieve_the_aggregate_from_tracking()
         {
@@ -151,8 +132,7 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             stubAggregate1.Should().BeSameAs(stubAggregate2);
         }
-
-        [Trait(CategoryName, CategoryValue)]
+        
         [Fact]
         public async Task Should_publish_in_correct_order()
         {
@@ -195,8 +175,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             events[4].Should().BeOfType<NameChangedEvent>().Which.AggregateId.Should().Be(stubAggregate1.Id);
             events[4].Should().BeOfType<NameChangedEvent>().Which.Name.Should().Be("Jesse Pinkman");
         }
-
-        [Trait(CategoryName, CategoryValue)]
+        
         [Fact]
         public async Task When_call_SaveChanges_Should_store_the_snapshot()
         {
@@ -225,20 +204,17 @@ namespace EnjoyCQRS.UnitTests.Storage
             var commitedSnapshot = eventStore.Snapshots.First(e => e.AggregateId == stubAggregate.Id);
 
             commitedSnapshot.Should().NotBeNull();
-
-            var metadata = (IMetadata)_textSerializer.Deserialize<EventSource.Metadata>(commitedSnapshot.SerializedMetadata);
-
-            var snapshotClrType = metadata.GetValue(MetadataKeys.SnapshotClrType, value => value.ToString());
+            
+            var snapshotClrType = commitedSnapshot.Metadata.GetValue(MetadataKeys.SnapshotClrType, value => value.ToString());
 
             Type.GetType(snapshotClrType).Name.Should().Be(typeof(StubSnapshotAggregateSnapshot).Name);
 
-            var snapshot = _textSerializer.Deserialize<StubSnapshotAggregateSnapshot>(commitedSnapshot.SerializedData);
+            var snapshot = (StubSnapshotAggregateSnapshot) commitedSnapshot.Data;
 
             snapshot.Name.Should().Be(stubAggregate.Name);
             snapshot.SimpleEntities.Count.Should().Be(stubAggregate.Entities.Count);
         }
-
-        [Trait(CategoryName, CategoryValue)]
+        
         [Fact]
         public async Task Should_restore_aggregate_using_snapshot()
         {
@@ -266,7 +242,6 @@ namespace EnjoyCQRS.UnitTests.Storage
             aggregate.Id.Should().Be(stubAggregate.Id);
         }
 
-        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public async Task When_not_exists_snapshot_yet_Then_aggregate_should_be_constructed_using_your_events()
         {
@@ -292,7 +267,6 @@ namespace EnjoyCQRS.UnitTests.Storage
             aggregate.Entities.Count.Should().Be(stubAggregate.Entities.Count);
         }
 
-        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public async Task Getting_snapshot_and_forward_events()
         {
@@ -323,7 +297,6 @@ namespace EnjoyCQRS.UnitTests.Storage
             stubAggregateFromSnapshot.Version.Should().Be(3);
         }
 
-        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public Task Should_throws_exception_When_aggregate_was_not_found()
         {
@@ -348,14 +321,13 @@ namespace EnjoyCQRS.UnitTests.Storage
             return Task.CompletedTask;
         }
 
-        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public async Task Should_internal_rollback_When_exception_was_throw_on_saving()
         {
             var snapshotStrategy = CreateSnapshotStrategy(false);
 
             var eventStoreMock = new Mock<IEventStore>();
-            eventStoreMock.Setup(e => e.SaveAsync(It.IsAny<IEnumerable<ISerializedEvent>>()))
+            eventStoreMock.Setup(e => e.SaveAsync(It.IsAny<IEnumerable<IUncommitedEvent>>()))
                 .Callback(DoThrowExcetion)
                 .Returns(Task.CompletedTask);
 
@@ -376,14 +348,13 @@ namespace EnjoyCQRS.UnitTests.Storage
             }
         }
 
-        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public async Task Should_manual_rollback_When_exception_was_throw_on_saving()
         {
             var snapshotStrategy = CreateSnapshotStrategy(false);
 
             var eventStoreMock = new Mock<IEventStore>();
-            eventStoreMock.Setup(e => e.SaveAsync(It.IsAny<IEnumerable<ISerializedEvent>>()))
+            eventStoreMock.Setup(e => e.SaveAsync(It.IsAny<IEnumerable<IUncommitedEvent>>()))
                 .Callback(DoThrowExcetion)
                 .Returns(Task.CompletedTask);
 
@@ -414,7 +385,6 @@ namespace EnjoyCQRS.UnitTests.Storage
             _eventPublisherMock.Verify(e => e.Rollback(), Times.Once);
         }
 
-        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public void Cannot_BeginTransaction_twice()
         {
@@ -432,7 +402,6 @@ namespace EnjoyCQRS.UnitTests.Storage
             act.ShouldThrowExactly<InvalidOperationException>();
         }
 
-        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public async Task When_occur_error_on_publishing_Then_rollback_should_be_called()
         {
@@ -464,7 +433,6 @@ namespace EnjoyCQRS.UnitTests.Storage
             }
         }
 
-        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public async Task When_occur_error_on_Save_in_EventStore_Then_rollback_should_be_called()
         {
@@ -472,7 +440,7 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             var eventStoreMock = new Mock<IEventStore>();
             eventStoreMock.SetupAllProperties();
-            eventStoreMock.Setup(e => e.SaveAsync(It.IsAny<IEnumerable<ISerializedEvent>>()))
+            eventStoreMock.Setup(e => e.SaveAsync(It.IsAny<IEnumerable<IUncommitedEvent>>()))
                 .Callback(DoThrowExcetion)
                 .Returns(Task.CompletedTask);
 
@@ -491,7 +459,6 @@ namespace EnjoyCQRS.UnitTests.Storage
             }
         }
 
-        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public async Task When_Save_events_Then_aggregate_projection_should_be_created()
         {
@@ -514,13 +481,12 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             eventStore.Projections.ContainsKey(projectionKey).Should().BeTrue();
 
-            var projection = _textSerializer.Deserialize<StubAggregateProjection>(eventStore.Projections[projectionKey].ToString());
+            var projection = (StubAggregateProjection) eventStore.Projections[projectionKey];
 
             projection.Id.Should().Be(stubAggregate1.Id);
             projection.Name.Should().Be(stubAggregate1.Name);
         }
 
-        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public async Task When_Save_events_Then_aggregate_projection_should_be_updated()
         {
@@ -546,13 +512,12 @@ namespace EnjoyCQRS.UnitTests.Storage
             var projectionKey = new InMemoryEventStore.ProjectionKey(stubAggregate1.Id, typeof(StubAggregateProjection).Name);
             eventStore.Projections.ContainsKey(projectionKey).Should().BeTrue();
 
-            var projection = _textSerializer.Deserialize<StubAggregateProjection>(eventStore.Projections[projectionKey].ToString());
+            var projection = (StubAggregateProjection) eventStore.Projections[projectionKey];
 
             projection.Id.Should().Be(stubAggregate1.Id);
             projection.Name.Should().Be(stubAggregate1.Name);
         }
 
-        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public async Task Access_metadata_from_all_emitted_events()
         {
@@ -595,22 +560,7 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             return snapshotStrategyMock.Object;
         }
-
-        private static IEventSerializer CreateEventSerializer()
-        {
-            return new EventSerializer(new JsonTextSerializer());
-        }
-
-        private static ISnapshotSerializer CreateSnapshotSerializer()
-        {
-            return new SnapshotSerializer(new JsonTextSerializer());
-        }
-
-        private static IProjectionSerializer CreateProjectionSerializer()
-        {
-            return new ProjectionSerializer(new JsonTextSerializer());
-        }
-
+        
         private static void DoThrowExcetion()
         {
             throw new Exception("Sorry, this is my fault.");

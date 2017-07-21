@@ -20,30 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
+using System.Collections.Generic;
+using EnjoyCQRS.Events;
 
-namespace EnjoyCQRS.EventStore.MongoDB
+namespace EnjoyCQRS.Collections
 {
-    public class SnapshotData
+    /// <summary>
+    /// Represents collection of commited events.
+    /// </summary>
+    public class CommitedEventsCollection : HashSet<IDomainEvent>
     {
-        [BsonElement("id")]
-        public Guid Id { get; set; }
-
-        [BsonElement("timestamp")]
-        public DateTime Timestamp { get; set; }
-
-        [BsonElement("aggregateId")]
-        public Guid AggregateId { get; set; }
-
-        [BsonElement("version")]
-        public int Version { get; set; }
-
-        [BsonElement("data")]
-        public BsonDocument Data { get; set; }
-
-        [BsonElement("metadata")]
-        public BsonDocument Metadata { get; set; }
+        public CommitedEventsCollection(IEnumerable<IDomainEvent> events) : base(events)
+        {
+        }
     }
 }

@@ -29,17 +29,25 @@ namespace EnjoyCQRS.Events
     {
         private readonly long _ticks;
         public DateTime CreatedAt => new DateTime(_ticks);
-        public IDomainEvent OriginalEvent { get; }
         public Aggregate Aggregate { get; }
+        public Guid AggregateId => Aggregate.Id;
+        public IDomainEvent Data { get; }
         public int Version { get; }
+        public IMetadata Metadata { get; internal set; } = MetadataCollection.Empty;
+        
+        public UncommitedEvent(Aggregate aggregate, IDomainEvent @event, int version) : 
+            this (aggregate, @event, version, DateTime.Now.Ticks, MetadataCollection.Empty)
+        {
+        }
 
-        public UncommitedEvent(Aggregate aggregate, IDomainEvent @event, int version)
+        [System.Diagnostics.DebuggerNonUserCode]
+        private UncommitedEvent(Aggregate aggregate, IDomainEvent @event, int version, long ticks, IMetadata metadata)
         {
             Aggregate = aggregate;
-            OriginalEvent = @event;
+            Data = @event;
             Version = version;
-
-            _ticks = DateTime.Now.Ticks;
+            Metadata = Metadata.Merge(metadata);
+            _ticks = ticks;
         }
     }
 }

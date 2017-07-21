@@ -26,15 +26,15 @@ using System.Linq;
 
 namespace EnjoyCQRS.EventSource
 {
-    public class Metadata : Dictionary<string, object>, IMetadata
+    public class MetadataCollection : Dictionary<string, object>, IMetadata
     {
-        public static Metadata Empty => new Metadata();
+        public static MetadataCollection Empty => new MetadataCollection();
 
-        public Metadata(IEnumerable<KeyValuePair<string, object>> keyValuePairs) : base(keyValuePairs.ToDictionary(e => e.Key, e => e.Value))
+        public MetadataCollection(IEnumerable<KeyValuePair<string, object>> keyValuePairs) : base(keyValuePairs.ToDictionary(e => e.Key, e => e.Value))
         {
         }
 
-        private Metadata()
+        private MetadataCollection()
         {   
         }
 
@@ -44,6 +44,12 @@ namespace EnjoyCQRS.EventSource
         {
             var value = this[key];
             return converter(value);
+        }
+
+        public IMetadata Merge(IMetadata metadata)
+        {
+            var dict = this.ToDictionary(e => e.Key, e => e.Value);
+            return new MetadataCollection(metadata.Union(dict));
         }
     }
 

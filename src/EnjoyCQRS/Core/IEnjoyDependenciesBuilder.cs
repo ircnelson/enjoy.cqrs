@@ -51,23 +51,7 @@ namespace EnjoyCQRS.Core
         IEnjoyDependenciesBuilder<TResolver> WithEventPublisher<TImplementation>() where TImplementation : class, IEventPublisher;
         IEnjoyDependenciesBuilder<TResolver> WithEventPublisher<TImplementation>(Func<TResolver, TImplementation> instanceFactory) where TImplementation : class, IEventPublisher;
         IEnjoyDependenciesBuilder<TResolver> WithEventPublisher(Type type);
-
-        IEnjoyDependenciesBuilder<TResolver> WithTextSerializer<TImplementation>() where TImplementation : class, ITextSerializer;
-        IEnjoyDependenciesBuilder<TResolver> WithTextSerializer<TImplementation>(Func<TResolver, TImplementation> instanceFactory) where TImplementation : class, ITextSerializer;
-        IEnjoyDependenciesBuilder<TResolver> WithTextSerializer(Type type);
-
-        IEnjoyDependenciesBuilder<TResolver> WithEventSerializer<TImplementation>() where TImplementation : class, IEventSerializer;
-        IEnjoyDependenciesBuilder<TResolver> WithEventSerializer<TImplementation>(Func<TResolver, TImplementation> instanceFactory) where TImplementation : class, IEventSerializer;
-        IEnjoyDependenciesBuilder<TResolver> WithEventSerializer(Type type);
-
-        IEnjoyDependenciesBuilder<TResolver> WithSnapshotSerializer<TImplementation>() where TImplementation : class, ISnapshotSerializer;
-        IEnjoyDependenciesBuilder<TResolver> WithSnapshotSerializer<TImplementation>(Func<TResolver, TImplementation> instanceFactory) where TImplementation : class, ISnapshotSerializer;
-        IEnjoyDependenciesBuilder<TResolver> WithSnapshotSerializer(Type type);
-
-        IEnjoyDependenciesBuilder<TResolver> WithProjectionSerializer<TImplementation>() where TImplementation : class, IProjectionSerializer;
-        IEnjoyDependenciesBuilder<TResolver> WithProjectionSerializer<TImplementation>(Func<TResolver, TImplementation> instanceFactory) where TImplementation : class, IProjectionSerializer;
-        IEnjoyDependenciesBuilder<TResolver> WithProjectionSerializer(Type type);
-
+        
         IEnjoyDependenciesBuilder<TResolver> WithSnapshotStrategy<TImplementation>() where TImplementation : class, ISnapshotStrategy;
         IEnjoyDependenciesBuilder<TResolver> WithSnapshotStrategy<TImplementation>(Func<TResolver, TImplementation> instanceFactory) where TImplementation : class, ISnapshotStrategy;
         IEnjoyDependenciesBuilder<TResolver> WithSnapshotStrategy(Type type);

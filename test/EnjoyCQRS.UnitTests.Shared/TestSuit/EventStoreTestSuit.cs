@@ -1,11 +1,7 @@
 using System;
 using System.Threading.Tasks;
-using EnjoyCQRS.EventSource;
-using EnjoyCQRS.EventSource.Projections;
 using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;
-using EnjoyCQRS.Logger;
-using EnjoyCQRS.MessageBus.InProcess;
 using EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.BarAggregate;
 using EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.FooAggregate;
 using FluentAssertions;
@@ -15,13 +11,10 @@ namespace EnjoyCQRS.UnitTests.Shared.TestSuit
 {
     public class EventStoreTestSuit
     {
-        private readonly IProjectionSerializer _projectionSerializer = new ProjectionSerializer(new JsonTextSerializer());
         private readonly EventStoreWrapper _eventStore;
         
-        public EventStoreTestSuit(IEventStore eventStore, IProjectionSerializer projectionSerializer = null)
+        public EventStoreTestSuit(IEventStore eventStore)
         {
-            _projectionSerializer = projectionSerializer;
-
             _eventStore = new EventStoreWrapper(eventStore);
         }
 
@@ -102,8 +95,7 @@ namespace EnjoyCQRS.UnitTests.Shared.TestSuit
 
         private ISession CreateSession()
         {
-            var session = SessionHelper.Create(_eventStore, 
-                projectionSerializer: _projectionSerializer, 
+            var session = SessionHelper.Create(_eventStore,
                 snapshotStrategy: new IntervalSnapshotStrategy(10));
 
             return session;
@@ -112,7 +104,6 @@ namespace EnjoyCQRS.UnitTests.Shared.TestSuit
         private ISession CreateFaultSession()
         {
             var session = SessionHelper.Create(_eventStore, 
-                projectionSerializer: _projectionSerializer, 
                 eventRouter: StubEventRouter.Fault(),
                 snapshotStrategy: new IntervalSnapshotStrategy(10));
             

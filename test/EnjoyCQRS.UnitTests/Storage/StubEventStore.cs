@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;
+using EnjoyCQRS.Events;
 
 namespace EnjoyCQRS.UnitTests.Storage
 {
@@ -12,7 +12,7 @@ namespace EnjoyCQRS.UnitTests.Storage
         public bool SaveSnapshotMethodCalled { get; private set; }
         public bool GetSnapshotMethodCalled { get; private set; }
         
-        public override Task SaveAsync(IEnumerable<ISerializedEvent> collection)
+        public override Task SaveAsync(IEnumerable<IUncommitedEvent> collection)
         {
             SaveSnapshotMethodCalled = true;
 

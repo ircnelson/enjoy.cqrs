@@ -22,9 +22,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using EnjoyCQRS.Collections;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource.Projections;
 
@@ -61,6 +59,6 @@ namespace EnjoyCQRS.EventSource.Storage
         /// Save the events in Event Store.
         /// </summary>
         /// <param name="collection"></param>
-        Task SaveAsync(IEnumerable<ISerializedEvent> collection);
+        Task SaveAsync(IEnumerable<IUncommitedEvent> collection);
     }
 }

@@ -27,7 +27,7 @@ namespace EnjoyCQRS.UnitTests.Snapshoting
             };
             
             _stubAggregate = new StubSnapshotAggregate();
-            ((ISnapshotAggregate)_stubAggregate).Restore(new SnapshotRestore(aggregateId, version, _snapshot, EventSource.Metadata.Empty));
+            ((ISnapshotAggregate)_stubAggregate).Restore(new SnapshotRestore(aggregateId, version, _snapshot, EventSource.MetadataCollection.Empty));
         }
 
         [Trait(CategoryName, CategoryValue)]

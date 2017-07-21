@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using EnjoyCQRS.Events;
-using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Projections;
 using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;
@@ -22,9 +21,9 @@ namespace EnjoyCQRS.UnitTests.Shared.TestSuit
             CalledMethods &= EventStoreMethods.Ctor;
         }
 
-        public async Task SaveSnapshotAsync(ISerializedSnapshot snapshot)
+        public async Task SaveSnapshotAsync(IUncommitedSnapshot uncommitedSnapshot)
         {
-            await _eventStore.SaveSnapshotAsync(snapshot).ConfigureAwait(false);
+            await _eventStore.SaveSnapshotAsync(uncommitedSnapshot).ConfigureAwait(false);
 
             CalledMethods |= EventStoreMethods.SaveSnapshotAsync;
         }
@@ -84,14 +83,14 @@ namespace EnjoyCQRS.UnitTests.Shared.TestSuit
             return result;
         }
 
-        public async Task SaveAsync(IEnumerable<ISerializedEvent> collection)
+        public async Task SaveAsync(IEnumerable<IUncommitedEvent> collection)
         {
             await _eventStore.SaveAsync(collection).ConfigureAwait(false);
 
             CalledMethods |= EventStoreMethods.SaveAsync;
         }
 
-        public async Task SaveProjectionAsync(ISerializedProjection projection)
+        public async Task SaveProjectionAsync(IProjection projection)
         {
             await _eventStore.SaveProjectionAsync(projection);
 

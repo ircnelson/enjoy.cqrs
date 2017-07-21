@@ -2,9 +2,8 @@ using EnjoyCQRS.EventSource.Projections;
 using MongoDB.Driver;
 using System;
 using System.Threading.Tasks;
-using EnjoyCQRS.Core;
 using MongoDB.Bson;
-using Newtonsoft.Json;
+using MongoDB.Bson.Serialization;
 
 namespace EnjoyCQRS.EventStore.MongoDB
 {
@@ -13,9 +12,7 @@ namespace EnjoyCQRS.EventStore.MongoDB
         public MongoClient Client { get; }
         public string Database { get; }
         public MongoEventStoreSetttings Setttings { get; }
-
-        private readonly BsonTextSerializer _bsonTextSerializer = new BsonTextSerializer();
-        
+                
         public MongoProjectionRepository(MongoClient client, string database) : this(client, database, new MongoEventStoreSetttings())
         {
         }
@@ -35,28 +32,27 @@ namespace EnjoyCQRS.EventStore.MongoDB
 
         public async Task<object> GetAsync(Type projectionType, string category, Guid id)
         {
-            var builderFilter = Builders<MongoProjection>.Filter;
-            var filter = builderFilter.Eq(x => x.Category, category)
-                         & builderFilter.Eq(x => x.ProjectionId, id);
+            var builderFilter = Builders<BsonDocument>.Filter;
+            var filter = builderFilter.Eq(x => x["_id"], id) & builderFilter.Eq(x => x["_t"], category);
 
             var projection = await QuerySingleResult(projectionType, filter);
 
             return projection;
         }
 
-        public async Task<object> GetAsync(Type projectionType, string name)
+        public async Task<object> GetAsync(Type projectionType, Guid id)
         {
-            var builderFilter = Builders<MongoProjection>.Filter;
-            var filter = builderFilter.Eq(x => x.Id, name);
+            var builderFilter = Builders<BsonDocument>.Filter;
+            var filter = builderFilter.Eq(x => x["_id"], id) & builderFilter.Eq(x => x["_t"], projectionType.Name);
 
             var projection = await QuerySingleResult(projectionType, filter);
 
             return projection;
         }
 
-        public async Task<TProjection> GetAsync<TProjection>(string name)
+        public async Task<TProjection> GetAsync<TProjection>(Guid id)
         {
-            return (TProjection)(await GetAsync(typeof(TProjection), name));
+            return (TProjection)(await GetAsync(typeof(TProjection), id));
         }
         
         public async Task<TProjection> GetAsync<TProjection>(string category, Guid id)
@@ -64,17 +60,17 @@ namespace EnjoyCQRS.EventStore.MongoDB
             return (TProjection)(await GetAsync(typeof(TProjection), category, id));
         }
 
-        private async Task<object> QuerySingleResult(Type projectionType, FilterDefinition<MongoProjection> filter)
+        private async Task<object> QuerySingleResult(Type projectionType, FilterDefinition<BsonDocument> filter)
         {
             var db = Client.GetDatabase(Database);
-            var collection = db.GetCollection<MongoProjection>(Setttings.ProjectionsCollectionName);
+            var collection = db.GetCollection<BsonDocument>(Setttings.ProjectionsCollectionName);
             
             var record = await collection
                 .Find(filter)
                 .Limit(1)
                 .FirstAsync();
 
-            var projection = _bsonTextSerializer.Deserialize(record.Projection.ToJson(), projectionType.AssemblyQualifiedName);
+            var projection = BsonSerializer.Deserialize(record, projectionType);
             
             return projection;
         }
