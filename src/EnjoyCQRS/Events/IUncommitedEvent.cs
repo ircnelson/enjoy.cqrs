@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using EnjoyCQRS.EventSource;
+using EnjoyCQRS.Collections;
 using System;
 
 namespace EnjoyCQRS.Events
@@ -31,6 +31,6 @@ namespace EnjoyCQRS.Events
         DateTime CreatedAt { get; }
         int Version { get; }
         IDomainEvent Data { get; }
-        IMetadata Metadata { get; }
+        IMetadataCollection Metadata { get; }
     }
 }

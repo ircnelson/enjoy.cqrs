@@ -22,6 +22,7 @@
 
 using System.Collections.Generic;
 using EnjoyCQRS.Events;
+using EnjoyCQRS.Collections;
 
 namespace EnjoyCQRS.EventSource
 {
@@ -29,7 +30,7 @@ namespace EnjoyCQRS.EventSource
     {
         IReadOnlyCollection<EventMetadataItem> GetEvents();
 
-        void Add<TEvent>(TEvent @event, IMetadata metadata)
+        void Add<TEvent>(TEvent @event, IMetadataCollection metadata)
             where TEvent : IDomainEvent;
     }
 }

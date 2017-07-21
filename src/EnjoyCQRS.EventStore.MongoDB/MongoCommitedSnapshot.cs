@@ -22,7 +22,7 @@
 
 using System;
 using EnjoyCQRS.EventSource.Snapshots;
-using EnjoyCQRS.EventSource;
+using EnjoyCQRS.Collections;
 
 namespace EnjoyCQRS.EventStore.MongoDB
 {
@@ -31,9 +31,9 @@ namespace EnjoyCQRS.EventStore.MongoDB
         public Guid AggregateId { get; }
         public int AggregateVersion { get; }
         public ISnapshot Data { get; }
-        public IMetadata Metadata { get; }
+        public IMetadataCollection Metadata { get; }
 
-        public MongoCommitedSnapshot(Guid aggregateId, int version, ISnapshot data, IMetadata metadata)
+        public MongoCommitedSnapshot(Guid aggregateId, int version, ISnapshot data, IMetadataCollection metadata)
         {
             AggregateId = aggregateId;
             AggregateVersion = version;

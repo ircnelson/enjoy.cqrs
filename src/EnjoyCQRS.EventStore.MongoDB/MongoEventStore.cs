@@ -34,6 +34,7 @@ using MongoDB.Driver;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using MongoDB.Bson.Serialization;
+using EnjoyCQRS.Collections;
 
 namespace EnjoyCQRS.EventStore.MongoDB
 {

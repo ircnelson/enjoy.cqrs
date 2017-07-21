@@ -23,12 +23,13 @@
 using System.Collections.Generic;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource;
+using EnjoyCQRS.Collections;
 
 namespace EnjoyCQRS.MetadataProviders
 {
     public class AggregateTypeMetadataProvider : IMetadataProvider
     {
-        public IEnumerable<KeyValuePair<string, object>> Provide<TAggregate>(TAggregate aggregate, IDomainEvent @event, IMetadata metadata) where TAggregate : IAggregate
+        public IEnumerable<KeyValuePair<string, object>> Provide<TAggregate>(TAggregate aggregate, IDomainEvent @event, IMetadataCollection metadata) where TAggregate : IAggregate
         {
             yield return new KeyValuePair<string, object>(MetadataKeys.AggregateId, aggregate.Id);
             yield return new KeyValuePair<string, object>(MetadataKeys.AggregateSequenceNumber, aggregate.Sequence);

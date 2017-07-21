@@ -1,6 +1,7 @@
 ﻿using EnjoyCQRS.EventSource;
 using System.Collections.Generic;
 using EnjoyCQRS.Events;
+using EnjoyCQRS.Collections;
 
 namespace EnjoyCQRS.IntegrationTests
 {
@@ -8,7 +9,7 @@ namespace EnjoyCQRS.IntegrationTests
     {
         public const string MetadataKey = "user";
 
-        public IEnumerable<KeyValuePair<string, object>> Provide<TAggregate>(TAggregate aggregate, IDomainEvent @event, IMetadata metadata) where TAggregate : IAggregate
+        public IEnumerable<KeyValuePair<string, object>> Provide<TAggregate>(TAggregate aggregate, IDomainEvent @event, IMetadataCollection metadata) where TAggregate : IAggregate
         {
             var user = new User
             {

@@ -24,9 +24,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace EnjoyCQRS.EventSource
+namespace EnjoyCQRS.Collections
 {
-    public class MetadataCollection : Dictionary<string, object>, IMetadata
+    public class MetadataCollection : Dictionary<string, object>, IMetadataCollection
     {
         public static MetadataCollection Empty => new MetadataCollection();
 
@@ -46,30 +46,10 @@ namespace EnjoyCQRS.EventSource
             return converter(value);
         }
 
-        public IMetadata Merge(IMetadata metadata)
+        public IMetadataCollection Merge(IMetadataCollection metadata)
         {
             var dict = this.ToDictionary(e => e.Key, e => e.Value);
             return new MetadataCollection(metadata.Union(dict));
         }
-    }
-
-    public struct MetadataKeys
-    {
-        public const string AggregateTypeFullname = "aggregateTypeFullname";
-        public const string AggregateId = "aggregateId";
-        public const string AggregateSequenceNumber = "aggregateSequenceNumber";
-
-        public const string EventId = "eventId";
-        public const string EventClrType = "eventClrType";
-        public const string EventName = "eventName";
-        public const string EventVersion = "eventVersion";
-        public const string EventIgnore = "ignore";
-
-        public const string CorrelationId = "correlationId";
-        public const string Timestamp = "timestamp";
-
-        public const string SnapshotClrType = "snapshotClrType";
-        public const string SnapshotId = "snapshotId";
-        public const string SnapshotName = "snapshotName";
     }
 }

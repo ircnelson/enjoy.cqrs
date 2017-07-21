@@ -7,7 +7,6 @@ using EnjoyCQRS.Core;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Exceptions;
-using EnjoyCQRS.EventSource.Projections;
 using EnjoyCQRS.EventSource.Storage;
 using EnjoyCQRS.Logger;
 using EnjoyCQRS.MessageBus.InProcess;
@@ -17,6 +16,7 @@ using EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.FooAggregate;
 using FluentAssertions;
 using Moq;
 using Xunit;
+using EnjoyCQRS.Collections;
 
 namespace EnjoyCQRS.UnitTests.EventUpgrader
 {
@@ -194,7 +194,7 @@ namespace EnjoyCQRS.UnitTests.EventUpgrader
 
                 var eventVersion = aggregate.Version + index;
 
-                var metadata = metadataProviders.SelectMany(md => md.Provide(aggregate, e, EventSource.MetadataCollection.Empty)).Concat(new[]
+                var metadata = metadataProviders.SelectMany(md => md.Provide(aggregate, e, MetadataCollection.Empty)).Concat(new[]
                     {
                         new KeyValuePair<string, object>(MetadataKeys.EventId, Guid.NewGuid()),
                         new KeyValuePair<string, object>(MetadataKeys.EventVersion, eventVersion)

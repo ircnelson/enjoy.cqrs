@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using EnjoyCQRS.Collections;
 using System;
 
 namespace EnjoyCQRS.EventSource.Snapshots
@@ -29,6 +30,6 @@ namespace EnjoyCQRS.EventSource.Snapshots
         Guid AggregateId { get; }
         int AggregateVersion { get; }
         ISnapshot Data { get; }
-        IMetadata Metadata { get; }
+        IMetadataCollection Metadata { get; }
     }
 }

@@ -20,26 +20,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using EnjoyCQRS.Collections;
-using EnjoyCQRS.Events;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace EnjoyCQRS.EventSource
 {
-    public class EventsMetadataService : IEventsMetadataService
+    public struct MetadataKeys
     {
-        private readonly IDictionary<IDomainEvent, EventMetadataItem> _items = new Dictionary<IDomainEvent, EventMetadataItem>();
+        public const string AggregateTypeFullname = "aggregateTypeFullname";
+        public const string AggregateId = "aggregateId";
+        public const string AggregateSequenceNumber = "aggregateSequenceNumber";
 
-        public IReadOnlyCollection<EventMetadataItem> GetEvents()
-        {
-            return _items.Values.ToList().AsReadOnly();
-        }
+        public const string EventId = "eventId";
+        public const string EventClrType = "eventClrType";
+        public const string EventName = "eventName";
+        public const string EventVersion = "eventVersion";
+        public const string EventIgnore = "ignore";
 
-        public void Add<TEvent>(TEvent @event, IMetadataCollection metadata)
-            where TEvent : IDomainEvent
-        {
-            _items.Add(@event, EventMetadataItem.Create(@event, metadata));
-        }
+        public const string CorrelationId = "correlationId";
+        public const string Timestamp = "timestamp";
+
+        public const string SnapshotClrType = "snapshotClrType";
+        public const string SnapshotId = "snapshotId";
+        public const string SnapshotName = "snapshotName";
     }
 }

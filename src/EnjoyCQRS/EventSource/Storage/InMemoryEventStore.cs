@@ -28,6 +28,7 @@ using System.Threading.Tasks;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource.Projections;
 using EnjoyCQRS.EventSource.Snapshots;
+using EnjoyCQRS.Collections;
 
 namespace EnjoyCQRS.EventSource.Storage
 {
@@ -163,9 +164,9 @@ namespace EnjoyCQRS.EventSource.Storage
             public Guid AggregateId { get; }
             public int Version { get; }
             public object Data { get; }
-            public IMetadata Metadata { get; }
+            public IMetadataCollection Metadata { get; }
 
-            public InMemoryCommitedEvent(Guid aggregateId, int aggregateVersion, object data, IMetadata metadata)
+            public InMemoryCommitedEvent(Guid aggregateId, int aggregateVersion, object data, IMetadataCollection metadata)
             {
                 AggregateId = aggregateId;
                 Version = aggregateVersion;
@@ -177,7 +178,7 @@ namespace EnjoyCQRS.EventSource.Storage
 
         internal class InMemoryCommitedSnapshot : ICommitedSnapshot
         {
-            public InMemoryCommitedSnapshot(Guid aggregateId, int aggregateVersion, ISnapshot serializedData, IMetadata serializedMetadata)
+            public InMemoryCommitedSnapshot(Guid aggregateId, int aggregateVersion, ISnapshot serializedData, IMetadataCollection serializedMetadata)
             {
                 AggregateId = aggregateId;
                 AggregateVersion = aggregateVersion;
@@ -188,7 +189,7 @@ namespace EnjoyCQRS.EventSource.Storage
             public Guid AggregateId { get; }
             public int AggregateVersion { get; }
             public ISnapshot Data { get; }
-            public IMetadata Metadata { get; }
+            public IMetadataCollection Metadata { get; }
         }
 
         public struct ProjectionKey

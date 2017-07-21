@@ -22,6 +22,7 @@
 
 using System;
 using EnjoyCQRS.EventSource;
+using EnjoyCQRS.Collections;
 
 namespace EnjoyCQRS.Events
 {
@@ -33,7 +34,7 @@ namespace EnjoyCQRS.Events
         public Guid AggregateId => Aggregate.Id;
         public IDomainEvent Data { get; }
         public int Version { get; }
-        public IMetadata Metadata { get; internal set; } = MetadataCollection.Empty;
+        public IMetadataCollection Metadata { get; internal set; } = MetadataCollection.Empty;
         
         public UncommitedEvent(Aggregate aggregate, IDomainEvent @event, int version) : 
             this (aggregate, @event, version, DateTime.Now.Ticks, MetadataCollection.Empty)
@@ -41,7 +42,7 @@ namespace EnjoyCQRS.Events
         }
 
         [System.Diagnostics.DebuggerNonUserCode]
-        private UncommitedEvent(Aggregate aggregate, IDomainEvent @event, int version, long ticks, IMetadata metadata)
+        private UncommitedEvent(Aggregate aggregate, IDomainEvent @event, int version, long ticks, IMetadataCollection metadata)
         {
             Aggregate = aggregate;
             Data = @event;

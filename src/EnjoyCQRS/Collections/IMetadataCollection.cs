@@ -23,13 +23,13 @@
 using System;
 using System.Collections.Generic;
 
-namespace EnjoyCQRS.EventSource
+namespace EnjoyCQRS.Collections
 {
     /// <summary>
     /// Store the event metadatas.
     /// Some avaliable keys: <see cref="MetadataKeys"/>.
     /// </summary>
-    public interface IMetadata : IReadOnlyDictionary<string, object>
+    public interface IMetadataCollection : IReadOnlyDictionary<string, object>
     {
         /// <summary>
         /// Get the stored value.
@@ -47,6 +47,6 @@ namespace EnjoyCQRS.EventSource
         /// <returns></returns>
         T GetValue<T>(string key, Func<object, T> converter);
 
-        IMetadata Merge(IMetadata metadata);
+        IMetadataCollection Merge(IMetadataCollection metadata);
     }
 }
