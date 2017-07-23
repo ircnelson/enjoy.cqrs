@@ -47,9 +47,9 @@ namespace EnjoyCQRS.Extensions
 
             var metadata = new MetadataCollection(metadatas);
 
-            var uncommitedSnapshot = new UncommitedSnapshot(aggregate.Id, aggregate.Sequence, snapshot, metadata);
+            var uncommittedSnapshot = new UncommittedSnapshot(aggregate.Id, aggregate.Sequence, snapshot, metadata);
             
-            await eventStore.SaveSnapshotAsync(uncommitedSnapshot).ConfigureAwait(false);
+            await eventStore.SaveSnapshotAsync(uncommittedSnapshot).ConfigureAwait(false);
         }
     }
 }

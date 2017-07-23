@@ -1,6 +1,6 @@
-ï»¿// The MIT License (MIT)
+// The MIT License (MIT)
 // 
-// Copyright (c) 2016 Nelson CorrÃªa V. JÃºnior
+// Copyright (c) 2016 Nelson Corrêa V. Júnior
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,23 +20,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using EnjoyCQRS.Collections;
 using System;
+using EnjoyCQRS.Events;
+using EnjoyCQRS.Collections;
 
-namespace EnjoyCQRS.EventSource.Snapshots
+namespace EnjoyCQRS.EventStore.MongoDB
 {
-    public class UncommitedSnapshot : IUncommitedSnapshot
+    internal class MongoCommittedEvent : ICommittedEvent
     {
-        public Guid AggregateId { get; }
-        public int AggregateVersion { get; }
-        public ISnapshot Data { get; }
-        public IMetadataCollection Metadata { get; }
+        public Guid AggregateId { get; set; }
+        public int Version { get; set; }
+        public object Data { get; set; }
+        public IMetadataCollection Metadata { get; set; }
 
-        public UncommitedSnapshot(Guid aggregateId, int aggregateVersion, ISnapshot snapshot, IMetadataCollection metadata)
+        public MongoCommittedEvent(Guid aggregateId, int version, object data, IMetadataCollection metadata)
         {
             AggregateId = aggregateId;
-            AggregateVersion = aggregateVersion;
-            Data = snapshot;
+            Version = version;
+            Data = data;
             Metadata = metadata;
         }
     }

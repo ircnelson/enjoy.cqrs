@@ -20,25 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
+using System.Collections.Generic;
 using EnjoyCQRS.Events;
-using EnjoyCQRS.Collections;
 
-namespace EnjoyCQRS.EventStore.MongoDB
+namespace EnjoyCQRS.Collections
 {
-    internal class MongoCommitedEvent : ICommitedEvent
+    /// <summary>
+    /// Represents collection of committed events.
+    /// </summary>
+    public class CommittedEventsCollection : HashSet<IDomainEvent>
     {
-        public Guid AggregateId { get; set; }
-        public int Version { get; set; }
-        public object Data { get; set; }
-        public IMetadataCollection Metadata { get; set; }
-
-        public MongoCommitedEvent(Guid aggregateId, int version, object data, IMetadataCollection metadata)
+        public CommittedEventsCollection(IEnumerable<IDomainEvent> events) : base(events)
         {
-            AggregateId = aggregateId;
-            Version = version;
-            Data = data;
-            Metadata = metadata;
         }
     }
 }

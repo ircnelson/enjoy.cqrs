@@ -21,14 +21,14 @@ namespace EnjoyCQRS.UnitTests.Shared.TestSuit
             CalledMethods &= EventStoreMethods.Ctor;
         }
 
-        public async Task SaveSnapshotAsync(IUncommitedSnapshot uncommitedSnapshot)
+        public async Task SaveSnapshotAsync(IUncommittedSnapshot uncommittedSnapshot)
         {
-            await _eventStore.SaveSnapshotAsync(uncommitedSnapshot).ConfigureAwait(false);
+            await _eventStore.SaveSnapshotAsync(uncommittedSnapshot).ConfigureAwait(false);
 
             CalledMethods |= EventStoreMethods.SaveSnapshotAsync;
         }
 
-        public async Task<ICommitedSnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
+        public async Task<ICommittedSnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
         {
             var result = await _eventStore.GetLatestSnapshotByIdAsync(aggregateId).ConfigureAwait(false);
 
@@ -37,7 +37,7 @@ namespace EnjoyCQRS.UnitTests.Shared.TestSuit
             return result;
         }
 
-        public async Task<IEnumerable<ICommitedEvent>> GetEventsForwardAsync(Guid aggregateId, int version)
+        public async Task<IEnumerable<ICommittedEvent>> GetEventsForwardAsync(Guid aggregateId, int version)
         {
             var result = await _eventStore.GetEventsForwardAsync(aggregateId, version).ConfigureAwait(false);
 
@@ -74,7 +74,7 @@ namespace EnjoyCQRS.UnitTests.Shared.TestSuit
             CalledMethods |= EventStoreMethods.Rollback;
         }
 
-        public async Task<IEnumerable<ICommitedEvent>> GetAllEventsAsync(Guid id)
+        public async Task<IEnumerable<ICommittedEvent>> GetAllEventsAsync(Guid id)
         {
             var result = await _eventStore.GetAllEventsAsync(id).ConfigureAwait(false);
 
@@ -83,7 +83,7 @@ namespace EnjoyCQRS.UnitTests.Shared.TestSuit
             return result;
         }
 
-        public async Task SaveAsync(IEnumerable<IUncommitedEvent> collection)
+        public async Task SaveAsync(IEnumerable<IUncommittedEvent> collection)
         {
             await _eventStore.SaveAsync(collection).ConfigureAwait(false);
 

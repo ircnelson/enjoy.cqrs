@@ -23,14 +23,21 @@
 using EnjoyCQRS.Collections;
 using System;
 
-namespace EnjoyCQRS.Events
+namespace EnjoyCQRS.EventSource.Snapshots
 {
-    public interface IUncommitedEvent
+    public class UncommittedSnapshot : IUncommittedSnapshot
     {
-        Guid AggregateId { get; }
-        DateTime CreatedAt { get; }
-        int Version { get; }
-        IDomainEvent Data { get; }
-        IMetadataCollection Metadata { get; }
+        public Guid AggregateId { get; }
+        public int AggregateVersion { get; }
+        public ISnapshot Data { get; }
+        public IMetadataCollection Metadata { get; }
+
+        public UncommittedSnapshot(Guid aggregateId, int aggregateVersion, ISnapshot snapshot, IMetadataCollection metadata)
+        {
+            AggregateId = aggregateId;
+            AggregateVersion = aggregateVersion;
+            Data = snapshot;
+            Metadata = metadata;
+        }
     }
 }

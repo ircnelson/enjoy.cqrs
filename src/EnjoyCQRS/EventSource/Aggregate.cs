@@ -30,14 +30,14 @@ namespace EnjoyCQRS.EventSource
 {
     public abstract class Aggregate : IAggregate
     {
-        private readonly List<UncommitedEvent> _uncommitedEvents = new List<UncommitedEvent>();
+        private readonly List<UncommittedEvent> _uncommittedEvents = new List<UncommittedEvent>();
         private readonly Route<IDomainEvent> _routeEvents = new Route<IDomainEvent>();
         
         /// <summary>
-        /// Collection of <see cref="IDomainEvent"/> that contains uncommited events.
+        /// Collection of <see cref="IDomainEvent"/> that contains uncommitted events.
         /// All events that not persisted yet should be here.
         /// </summary>
-        public IReadOnlyCollection<IUncommitedEvent> UncommitedEvents => _uncommitedEvents.AsReadOnly();
+        public IReadOnlyCollection<IUncommittedEvent> UncommittedEvents => _uncommittedEvents.AsReadOnly();
         
         /// <summary>
         /// Unique identifier.
@@ -50,9 +50,9 @@ namespace EnjoyCQRS.EventSource
         public int Version { get; protected set; }
 
         /// <summary>
-        /// This version is calculated based on Version + Uncommited events count.
+        /// This version is calculated based on Version + Uncommitted events count.
         /// </summary>
-        public int Sequence => Version + _uncommitedEvents.Count;
+        public int Sequence => Version + _uncommittedEvents.Count;
 
         /// <summary>
         /// Aggregate default constructor.
@@ -83,7 +83,7 @@ namespace EnjoyCQRS.EventSource
         }
 
         /// <summary>
-        /// Apply the event in Aggregate and store the event in Uncommited list.
+        /// Apply the event in Aggregate and store the event in Uncommitted list.
         /// The last event applied is the current state of the Aggregate.
         /// </summary>
         /// <param name="event"></param>
@@ -95,7 +95,7 @@ namespace EnjoyCQRS.EventSource
             {
                 Task.WaitAll(Task.Delay(1));
 
-                _uncommitedEvents.Add(new UncommitedEvent(this, @event, Sequence + 1));
+                _uncommittedEvents.Add(new UncommittedEvent(this, @event, Sequence + 1));
             }
         }
 
@@ -110,18 +110,18 @@ namespace EnjoyCQRS.EventSource
         }
 
         /// <summary>
-        /// Clear the collection of events that uncommited.
+        /// Clear the collection of events that uncommitted.
         /// </summary>
-        public void ClearUncommitedEvents()
+        public void ClearUncommittedEvents()
         {
-            _uncommitedEvents.Clear();
+            _uncommittedEvents.Clear();
         }
 
         /// <summary>
         /// Load the events in the Aggregate.
         /// </summary>
         /// <param name="domainEvents"></param>
-        public void LoadFromHistory(CommitedEventsCollection domainEvents)
+        public void LoadFromHistory(CommittedEventsCollection domainEvents)
         {
             foreach (var @event in domainEvents)
             {

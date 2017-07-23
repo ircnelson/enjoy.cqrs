@@ -126,7 +126,7 @@ namespace EnjoyCQRS.EventSource.Storage
 
             aggregate = new TAggregate();
 
-            IEnumerable<ICommitedEvent> events;
+            IEnumerable<ICommittedEvent> events;
 
             _logger.LogDebug("Checking if aggregate has snapshot support.");
 
@@ -241,21 +241,21 @@ namespace EnjoyCQRS.EventSource.Storage
             {
                 _logger.LogInformation("Serializing events.");
 
-                var uncommitedEvents =
-                    _aggregates.SelectMany(e => e.UncommitedEvents)
+                var uncommittedEvents =
+                    _aggregates.SelectMany(e => e.UncommittedEvents)
                     .OrderBy(o => o.CreatedAt)
-                    .Cast<UncommitedEvent>()
+                    .Cast<UncommittedEvent>()
                     .Select(GenerateMetadata)
                     .ToList();
                 
-                foreach (var uncommitedEvent in uncommitedEvents)
+                foreach (var uncommittedEvent in uncommittedEvents)
                 {
-                    _eventsMetadataService.Add(uncommitedEvent.Data, uncommitedEvent.Metadata);
+                    _eventsMetadataService.Add(uncommittedEvent.Data, uncommittedEvent.Metadata);
                 }
 
                 _logger.LogInformation("Saving events on Event Store.");
 
-                await _eventStore.SaveAsync(uncommitedEvents).ConfigureAwait(false);
+                await _eventStore.SaveAsync(uncommittedEvents).ConfigureAwait(false);
 
                 _logger.LogInformation("Begin iterate in collection of aggregate.");
 
@@ -274,7 +274,7 @@ namespace EnjoyCQRS.EventSource.Storage
 
                     aggregate.UpdateVersion(aggregate.Sequence);
 
-                    aggregate.ClearUncommitedEvents();
+                    aggregate.ClearUncommittedEvents();
 
                     _logger.LogInformation($"Scanning projection providers for {aggregate.GetType().Name}.");
 
@@ -293,9 +293,9 @@ namespace EnjoyCQRS.EventSource.Storage
 
                 _logger.Log(LogLevel.Information, "End iterate.");
 
-                _logger.LogInformation($"Publishing events. [Qty: {uncommitedEvents.Count}]");
+                _logger.LogInformation($"Publishing events. [Qty: {uncommittedEvents.Count}]");
 
-                await _eventPublisher.PublishAsync(uncommitedEvents.Select(e => e.Data)).ConfigureAwait(false);
+                await _eventPublisher.PublishAsync(uncommittedEvents.Select(e => e.Data)).ConfigureAwait(false);
 
                 _logger.LogInformation("Published events.");
 
@@ -321,22 +321,22 @@ namespace EnjoyCQRS.EventSource.Storage
             }
         }
 
-        private UncommitedEvent GenerateMetadata(UncommitedEvent uncommitedEvent)
+        private UncommittedEvent GenerateMetadata(UncommittedEvent uncommittedEvent)
         {
-            var metadatas = _metadataProviders.SelectMany(md => md.Provide(uncommitedEvent.Aggregate,
-                        uncommitedEvent.Data,
+            var metadatas = _metadataProviders.SelectMany(md => md.Provide(uncommittedEvent.Aggregate,
+                        uncommittedEvent.Data,
                         MetadataCollection.Empty)).Concat(new[]
                         {
                             new KeyValuePair<string, object>(MetadataKeys.EventId, Guid.NewGuid()),
-                            new KeyValuePair<string, object>(MetadataKeys.EventVersion, uncommitedEvent.Version),
+                            new KeyValuePair<string, object>(MetadataKeys.EventVersion, uncommittedEvent.Version),
                             new KeyValuePair<string, object>(MetadataKeys.Timestamp, DateTime.UtcNow),
                         });
 
             var metadata = new MetadataCollection(metadatas);
 
-            uncommitedEvent.Metadata = uncommitedEvent.Metadata.Merge(metadata);
+            uncommittedEvent.Metadata = uncommittedEvent.Metadata.Merge(metadata);
 
-            return uncommitedEvent;
+            return uncommittedEvent;
         }
 
         /// <summary>
@@ -390,9 +390,9 @@ namespace EnjoyCQRS.EventSource.Storage
             }
         }
         
-        private void LoadAggregate<TAggregate>(TAggregate aggregate, IEnumerable<ICommitedEvent> commitedEvents) where TAggregate : Aggregate
+        private void LoadAggregate<TAggregate>(TAggregate aggregate, IEnumerable<ICommittedEvent> committedEvents) where TAggregate : Aggregate
         {
-            var flatten = commitedEvents as ICommitedEvent[] ?? commitedEvents.ToArray();
+            var flatten = committedEvents as ICommittedEvent[] ?? committedEvents.ToArray();
 
 
             if (flatten.Any())
@@ -406,7 +406,7 @@ namespace EnjoyCQRS.EventSource.Storage
                     events = _eventUpdateManager.Update(events);
                 }
 
-                aggregate.LoadFromHistory(new CommitedEventsCollection(events));
+                aggregate.LoadFromHistory(new CommittedEventsCollection(events));
 
                 aggregate.UpdateVersion(flatten.Select(e => e.Version).Max());
             }

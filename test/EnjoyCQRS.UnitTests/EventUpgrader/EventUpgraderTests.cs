@@ -200,7 +200,7 @@ namespace EnjoyCQRS.UnitTests.EventUpgrader
                         new KeyValuePair<string, object>(MetadataKeys.EventVersion, eventVersion)
                     });
                 
-                return new UncommitedEvent(aggregate, e, eventVersion) {
+                return new UncommittedEvent(aggregate, e, eventVersion) {
                     Metadata = new MetadataCollection(metadata)
                 };
             });

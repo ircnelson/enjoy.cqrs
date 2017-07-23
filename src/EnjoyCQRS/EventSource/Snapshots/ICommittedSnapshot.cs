@@ -25,7 +25,7 @@ using System;
 
 namespace EnjoyCQRS.EventSource.Snapshots
 {
-    public interface IUncommitedSnapshot
+    public interface ICommittedSnapshot
     {
         Guid AggregateId { get; }
         int AggregateVersion { get; }

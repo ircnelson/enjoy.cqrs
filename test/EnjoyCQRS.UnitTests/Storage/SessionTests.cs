@@ -198,15 +198,15 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             eventStore.SaveSnapshotMethodCalled.Should().BeTrue();
 
-            var commitedSnapshot = eventStore.Snapshots.First(e => e.AggregateId == stubAggregate.Id);
+            var committedSnapshot = eventStore.Snapshots.First(e => e.AggregateId == stubAggregate.Id);
 
-            commitedSnapshot.Should().NotBeNull();
+            committedSnapshot.Should().NotBeNull();
             
-            var snapshotClrType = commitedSnapshot.Metadata.GetValue(MetadataKeys.SnapshotClrType, value => value.ToString());
+            var snapshotClrType = committedSnapshot.Metadata.GetValue(MetadataKeys.SnapshotClrType, value => value.ToString());
 
             Type.GetType(snapshotClrType).Name.Should().Be(typeof(StubSnapshotAggregateSnapshot).Name);
 
-            var snapshot = (StubSnapshotAggregateSnapshot) commitedSnapshot.Data;
+            var snapshot = (StubSnapshotAggregateSnapshot) committedSnapshot.Data;
 
             snapshot.Name.Should().Be(stubAggregate.Name);
             snapshot.SimpleEntities.Count.Should().Be(stubAggregate.Entities.Count);
@@ -324,7 +324,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             var snapshotStrategy = CreateSnapshotStrategy(false);
 
             var eventStoreMock = new Mock<IEventStore>();
-            eventStoreMock.Setup(e => e.SaveAsync(It.IsAny<IEnumerable<IUncommitedEvent>>()))
+            eventStoreMock.Setup(e => e.SaveAsync(It.IsAny<IEnumerable<IUncommittedEvent>>()))
                 .Callback(DoThrowExcetion)
                 .Returns(Task.CompletedTask);
 
@@ -351,7 +351,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             var snapshotStrategy = CreateSnapshotStrategy(false);
 
             var eventStoreMock = new Mock<IEventStore>();
-            eventStoreMock.Setup(e => e.SaveAsync(It.IsAny<IEnumerable<IUncommitedEvent>>()))
+            eventStoreMock.Setup(e => e.SaveAsync(It.IsAny<IEnumerable<IUncommittedEvent>>()))
                 .Callback(DoThrowExcetion)
                 .Returns(Task.CompletedTask);
 
@@ -437,7 +437,7 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             var eventStoreMock = new Mock<IEventStore>();
             eventStoreMock.SetupAllProperties();
-            eventStoreMock.Setup(e => e.SaveAsync(It.IsAny<IEnumerable<IUncommitedEvent>>()))
+            eventStoreMock.Setup(e => e.SaveAsync(It.IsAny<IEnumerable<IUncommittedEvent>>()))
                 .Callback(DoThrowExcetion)
                 .Returns(Task.CompletedTask);
 

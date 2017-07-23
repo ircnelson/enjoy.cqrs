@@ -20,35 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using EnjoyCQRS.EventSource;
 using EnjoyCQRS.Collections;
+using System;
 
-namespace EnjoyCQRS.Events
+namespace EnjoyCQRS.EventSource.Snapshots
 {
-    internal class UncommitedEvent : IUncommitedEvent
+    public interface IUncommittedSnapshot
     {
-        private readonly long _ticks;
-        public DateTime CreatedAt => new DateTime(_ticks);
-        public Aggregate Aggregate { get; }
-        public Guid AggregateId => Aggregate.Id;
-        public IDomainEvent Data { get; }
-        public int Version { get; }
-        public IMetadataCollection Metadata { get; internal set; } = MetadataCollection.Empty;
-        
-        public UncommitedEvent(Aggregate aggregate, IDomainEvent @event, int version) : 
-            this (aggregate, @event, version, DateTime.Now.Ticks, MetadataCollection.Empty)
-        {
-        }
-
-        [System.Diagnostics.DebuggerNonUserCode]
-        private UncommitedEvent(Aggregate aggregate, IDomainEvent @event, int version, long ticks, IMetadataCollection metadata)
-        {
-            Aggregate = aggregate;
-            Data = @event;
-            Version = version;
-            Metadata = Metadata.Merge(metadata);
-            _ticks = ticks;
-        }
+        Guid AggregateId { get; }
+        int AggregateVersion { get; }
+        ISnapshot Data { get; }
+        IMetadataCollection Metadata { get; }
     }
 }

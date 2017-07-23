@@ -34,42 +34,42 @@ namespace EnjoyCQRS.EventSource.Storage
 {
     public class InMemoryEventStore : IEventStore
     {
-        public IReadOnlyList<ICommitedEvent> Events => _events.AsReadOnly();
-        public IReadOnlyList<ICommitedSnapshot> Snapshots => _snapshots.AsReadOnly();
+        public IReadOnlyList<ICommittedEvent> Events => _events.AsReadOnly();
+        public IReadOnlyList<ICommittedSnapshot> Snapshots => _snapshots.AsReadOnly();
         public IReadOnlyDictionary<ProjectionKey, object> Projections => new ReadOnlyDictionary<ProjectionKey, object>(_projections);
 
-        private readonly List<ICommitedEvent> _events = new List<ICommitedEvent>();
-        private readonly List<ICommitedSnapshot> _snapshots = new List<ICommitedSnapshot>();
+        private readonly List<ICommittedEvent> _events = new List<ICommittedEvent>();
+        private readonly List<ICommittedSnapshot> _snapshots = new List<ICommittedSnapshot>();
         private readonly Dictionary<ProjectionKey, object> _projections = new Dictionary<ProjectionKey, object>();
 
-        private readonly List<IUncommitedEvent> _uncommitedEvents = new List<IUncommitedEvent>();
-        private readonly List<IUncommitedSnapshot> _uncommitedSnapshots = new List<IUncommitedSnapshot>();
-        private readonly Dictionary<ProjectionKey, object> _uncommitedProjections = new Dictionary<ProjectionKey, object>();
+        private readonly List<IUncommittedEvent> _uncommittedEvents = new List<IUncommittedEvent>();
+        private readonly List<IUncommittedSnapshot> _uncommittedSnapshots = new List<IUncommittedSnapshot>();
+        private readonly Dictionary<ProjectionKey, object> _uncommittedProjections = new Dictionary<ProjectionKey, object>();
         
         public bool InTransaction { get; private set; }
         
-        public virtual Task SaveSnapshotAsync(IUncommitedSnapshot snapshot)
+        public virtual Task SaveSnapshotAsync(IUncommittedSnapshot snapshot)
         {
-            _uncommitedSnapshots.Add(snapshot);
+            _uncommittedSnapshots.Add(snapshot);
 
             return Task.CompletedTask;
         }
 
-        public virtual Task<ICommitedSnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
+        public virtual Task<ICommittedSnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
         {
             var snapshot = Snapshots.Where(e => e.AggregateId == aggregateId).OrderByDescending(e => e.AggregateVersion).Take(1).FirstOrDefault();
 
             return Task.FromResult(snapshot);
         }
 
-        public virtual Task<IEnumerable<ICommitedEvent>> GetEventsForwardAsync(Guid aggregateId, int version)
+        public virtual Task<IEnumerable<ICommittedEvent>> GetEventsForwardAsync(Guid aggregateId, int version)
         {
             var events = Events
             .Where(e => e.AggregateId == aggregateId && e.Version > version)
             .OrderBy(e => e.Version)
             .ToList();
 
-            return Task.FromResult<IEnumerable<ICommitedEvent>>(events);
+            return Task.FromResult<IEnumerable<ICommittedEvent>>(events);
         }
 
         public void Dispose()
@@ -85,29 +85,29 @@ namespace EnjoyCQRS.EventSource.Storage
         {
             if (!InTransaction) throw new InvalidOperationException("You are not in transaction.");
             
-            _events.AddRange(_uncommitedEvents.Select(InstantiateCommitedEvent));
+            _events.AddRange(_uncommittedEvents.Select(InstantiateCommittedEvent));
             
-            _uncommitedEvents.Clear();
+            _uncommittedEvents.Clear();
 
-            var commitedSnapshots = _uncommitedSnapshots.Select(e => new InMemoryCommitedSnapshot(e.AggregateId, e.AggregateVersion, e.Data, e.Metadata));
+            var committedSnapshots = _uncommittedSnapshots.Select(e => new InMemoryCommittedSnapshot(e.AggregateId, e.AggregateVersion, e.Data, e.Metadata));
             
-            _snapshots.AddRange(commitedSnapshots);
+            _snapshots.AddRange(committedSnapshots);
             
-            _uncommitedSnapshots.Clear();
+            _uncommittedSnapshots.Clear();
 
-            foreach (var uncommitedProjection in _uncommitedProjections.ToList())
+            foreach (var uncommittedProjection in _uncommittedProjections.ToList())
             {
-                if (!_projections.ContainsKey(uncommitedProjection.Key))
+                if (!_projections.ContainsKey(uncommittedProjection.Key))
                 {
-                    _projections.Add(uncommitedProjection.Key, uncommitedProjection.Value);
+                    _projections.Add(uncommittedProjection.Key, uncommittedProjection.Value);
                 }
                 else
                 {
-                    _projections[uncommitedProjection.Key] = uncommitedProjection.Value;
+                    _projections[uncommittedProjection.Key] = uncommittedProjection.Value;
                 }
             }
 
-            _uncommitedProjections.Clear();
+            _uncommittedProjections.Clear();
 
             InTransaction = false;
 
@@ -116,26 +116,26 @@ namespace EnjoyCQRS.EventSource.Storage
 
         public virtual void Rollback()
         {
-            _uncommitedEvents.Clear();
-            _uncommitedSnapshots.Clear();
-            _uncommitedProjections.Clear();
+            _uncommittedEvents.Clear();
+            _uncommittedSnapshots.Clear();
+            _uncommittedProjections.Clear();
 
             InTransaction = false;
         }
 
-        public virtual Task<IEnumerable<ICommitedEvent>> GetAllEventsAsync(Guid id)
+        public virtual Task<IEnumerable<ICommittedEvent>> GetAllEventsAsync(Guid id)
         {
             var events = Events
             .Where(e => e.AggregateId == id)
             .OrderBy(e => e.Version)
             .ToList();
 
-            return Task.FromResult<IEnumerable<ICommitedEvent>>(events);
+            return Task.FromResult<IEnumerable<ICommittedEvent>>(events);
         }
 
-        public virtual Task SaveAsync(IEnumerable<IUncommitedEvent> collection)
+        public virtual Task SaveAsync(IEnumerable<IUncommittedEvent> collection)
         {
-            _uncommitedEvents.AddRange(collection);
+            _uncommittedEvents.AddRange(collection);
 
             return Task.CompletedTask;
         }
@@ -144,29 +144,29 @@ namespace EnjoyCQRS.EventSource.Storage
         {
             var key = new ProjectionKey(projection.Id, projection.GetType().Name);
 
-            if (!_uncommitedProjections.ContainsKey(key))
+            if (!_uncommittedProjections.ContainsKey(key))
             {
-                _uncommitedProjections.Add(key, null);
+                _uncommittedProjections.Add(key, null);
             }
 
-            _uncommitedProjections[key] = projection;
+            _uncommittedProjections[key] = projection;
 
             return Task.CompletedTask;
         }
 
-        private static ICommitedEvent InstantiateCommitedEvent(IUncommitedEvent serializedEvent)
+        private static ICommittedEvent InstantiateCommittedEvent(IUncommittedEvent serializedEvent)
         {
-            return new InMemoryCommitedEvent(serializedEvent.AggregateId, serializedEvent.Version, serializedEvent.Data, serializedEvent.Metadata);
+            return new InMemoryCommittedEvent(serializedEvent.AggregateId, serializedEvent.Version, serializedEvent.Data, serializedEvent.Metadata);
         }
 
-        internal class InMemoryCommitedEvent : ICommitedEvent
+        internal class InMemoryCommittedEvent : ICommittedEvent
         {
             public Guid AggregateId { get; }
             public int Version { get; }
             public object Data { get; }
             public IMetadataCollection Metadata { get; }
 
-            public InMemoryCommitedEvent(Guid aggregateId, int aggregateVersion, object data, IMetadataCollection metadata)
+            public InMemoryCommittedEvent(Guid aggregateId, int aggregateVersion, object data, IMetadataCollection metadata)
             {
                 AggregateId = aggregateId;
                 Version = aggregateVersion;
@@ -176,9 +176,9 @@ namespace EnjoyCQRS.EventSource.Storage
 
         }
 
-        internal class InMemoryCommitedSnapshot : ICommitedSnapshot
+        internal class InMemoryCommittedSnapshot : ICommittedSnapshot
         {
-            public InMemoryCommitedSnapshot(Guid aggregateId, int aggregateVersion, ISnapshot serializedData, IMetadataCollection serializedMetadata)
+            public InMemoryCommittedSnapshot(Guid aggregateId, int aggregateVersion, ISnapshot serializedData, IMetadataCollection serializedMetadata)
             {
                 AggregateId = aggregateId;
                 AggregateVersion = aggregateVersion;

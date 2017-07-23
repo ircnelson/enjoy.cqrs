@@ -12,14 +12,14 @@ namespace EnjoyCQRS.UnitTests.Storage
         public bool SaveSnapshotMethodCalled { get; private set; }
         public bool GetSnapshotMethodCalled { get; private set; }
         
-        public override Task SaveAsync(IEnumerable<IUncommitedEvent> collection)
+        public override Task SaveAsync(IEnumerable<IUncommittedEvent> collection)
         {
             SaveSnapshotMethodCalled = true;
 
             return base.SaveAsync(collection);
         }
 
-        public override Task<ICommitedSnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
+        public override Task<ICommittedSnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
         {
             GetSnapshotMethodCalled = true;
 

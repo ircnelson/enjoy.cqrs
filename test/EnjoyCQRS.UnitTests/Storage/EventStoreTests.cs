@@ -72,7 +72,7 @@ namespace EnjoyCQRS.UnitTests.Storage
 
         [Trait(CategoryName, CategoryValue)]
         [Then]
-        public async Task When_Save_Then_the_uncommited_events_should_be_published()
+        public async Task When_Save_Then_the_uncommitted_events_should_be_published()
         {
             var testAggregate = StubAggregate.Create("Walter White");
             testAggregate.ChangeName("Heinsenberg");

@@ -21,7 +21,7 @@ namespace EnjoyCQRS.UnitTests.Metadata
 
             var metadataProvider = new EventTypeMetadataProvider();
 
-            var metadata = stubAggregate.UncommitedEvents.SelectMany(e => metadataProvider.Provide(stubAggregate, e.Data, MetadataCollection.Empty));
+            var metadata = stubAggregate.UncommittedEvents.SelectMany(e => metadataProvider.Provide(stubAggregate, e.Data, MetadataCollection.Empty));
 
             metadata.Count().Should().Be(2);
         }
@@ -34,7 +34,7 @@ namespace EnjoyCQRS.UnitTests.Metadata
 
             var metadataProvider = new AggregateTypeMetadataProvider();
 
-            var metadata = stubAggregate.UncommitedEvents.SelectMany(e => metadataProvider.Provide(stubAggregate, e.Data, MetadataCollection.Empty));
+            var metadata = stubAggregate.UncommittedEvents.SelectMany(e => metadataProvider.Provide(stubAggregate, e.Data, MetadataCollection.Empty));
 
             metadata.Count().Should().Be(3);
         }
@@ -49,7 +49,7 @@ namespace EnjoyCQRS.UnitTests.Metadata
 
             var metadataProvider = new CorrelationIdMetadataProvider();
 
-            var metadatas = stubAggregate.UncommitedEvents.SelectMany(e => metadataProvider.Provide(stubAggregate, e.Data, MetadataCollection.Empty));
+            var metadatas = stubAggregate.UncommittedEvents.SelectMany(e => metadataProvider.Provide(stubAggregate, e.Data, MetadataCollection.Empty));
 
             metadatas.Select(e => e.Value).Distinct().Count().Should().Be(1);
         }
@@ -60,7 +60,7 @@ namespace EnjoyCQRS.UnitTests.Metadata
         {
             var stubAggregate = StubAggregate.Create("Test");
             var metadataProvider = new EventTypeMetadataProvider();
-            var metadatas = stubAggregate.UncommitedEvents.SelectMany(e => metadataProvider.Provide(stubAggregate, e.Data, MetadataCollection.Empty));
+            var metadatas = stubAggregate.UncommittedEvents.SelectMany(e => metadataProvider.Provide(stubAggregate, e.Data, MetadataCollection.Empty));
 
             var metadata = new MetadataCollection(metadatas);
 

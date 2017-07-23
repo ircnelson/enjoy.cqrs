@@ -26,14 +26,14 @@ using EnjoyCQRS.Collections;
 
 namespace EnjoyCQRS.EventStore.MongoDB
 {
-    internal class MongoCommitedSnapshot : ICommitedSnapshot
+    internal class MongoCommittedSnapshot : ICommittedSnapshot
     {
         public Guid AggregateId { get; }
         public int AggregateVersion { get; }
         public ISnapshot Data { get; }
         public IMetadataCollection Metadata { get; }
 
-        public MongoCommitedSnapshot(Guid aggregateId, int version, ISnapshot data, IMetadataCollection metadata)
+        public MongoCommittedSnapshot(Guid aggregateId, int version, ISnapshot data, IMetadataCollection metadata)
         {
             AggregateId = aggregateId;
             AggregateVersion = version;

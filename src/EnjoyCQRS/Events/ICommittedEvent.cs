@@ -23,13 +23,13 @@
 using EnjoyCQRS.Collections;
 using System;
 
-namespace EnjoyCQRS.EventSource.Snapshots
+namespace EnjoyCQRS.Events
 {
-    public interface ICommitedSnapshot
+    public interface ICommittedEvent
     {
         Guid AggregateId { get; }
-        int AggregateVersion { get; }
-        ISnapshot Data { get; }
+        int Version { get; }
+        object Data { get; }
         IMetadataCollection Metadata { get; }
     }
 }
