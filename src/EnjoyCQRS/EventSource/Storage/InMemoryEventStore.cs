@@ -45,8 +45,8 @@ namespace EnjoyCQRS.EventSource.Storage
         private readonly List<IUncommitedEvent> _uncommitedEvents = new List<IUncommitedEvent>();
         private readonly List<IUncommitedSnapshot> _uncommitedSnapshots = new List<IUncommitedSnapshot>();
         private readonly Dictionary<ProjectionKey, object> _uncommitedProjections = new Dictionary<ProjectionKey, object>();
-
-        public bool InTransaction;
+        
+        public bool InTransaction { get; private set; }
         
         public virtual Task SaveSnapshotAsync(IUncommitedSnapshot snapshot)
         {
@@ -84,11 +84,9 @@ namespace EnjoyCQRS.EventSource.Storage
         public virtual Task CommitAsync()
         {
             if (!InTransaction) throw new InvalidOperationException("You are not in transaction.");
-
-            InTransaction = false;
-
+            
             _events.AddRange(_uncommitedEvents.Select(InstantiateCommitedEvent));
-
+            
             _uncommitedEvents.Clear();
 
             var commitedSnapshots = _uncommitedSnapshots.Select(e => new InMemoryCommitedSnapshot(e.AggregateId, e.AggregateVersion, e.Data, e.Metadata));
@@ -110,6 +108,8 @@ namespace EnjoyCQRS.EventSource.Storage
             }
 
             _uncommitedProjections.Clear();
+
+            InTransaction = false;
 
             return Task.CompletedTask;
         }

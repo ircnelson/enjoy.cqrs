@@ -1,7 +1,7 @@
 ﻿using EnjoyCQRS.Events;
 using System;
 
-namespace EnjoyCQRS.UnitTests.Shared.Projection
+namespace EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.UserAggregate
 {
     public class UserLastNameChanged : DomainEvent
     {

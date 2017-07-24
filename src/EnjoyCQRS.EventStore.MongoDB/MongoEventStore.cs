@@ -45,8 +45,8 @@ namespace EnjoyCQRS.EventStore.MongoDB
             ContractResolver = new CamelCasePropertyNamesContractResolver()
         };
 
-        protected readonly List<EventDocument> UncommitedEvents = new List<EventDocument>();
-        protected readonly List<SnapshotDocument> UncommitedSnapshots = new List<SnapshotDocument>();
+        protected readonly List<IUncommitedEvent> UncommitedEvents = new List<IUncommitedEvent>();
+        protected readonly List<IUncommitedSnapshot> UncommitedSnapshots = new List<IUncommitedSnapshot>();
         protected readonly List<IProjection> UncommitedProjections = new List<IProjection>();
 
         public IMongoClient Client { get; }
@@ -86,8 +86,7 @@ namespace EnjoyCQRS.EventStore.MongoDB
 
         public Task SaveSnapshotAsync(IUncommitedSnapshot snapshot)
         {
-            var snapshotData = Serialize(snapshot);
-            UncommitedSnapshots.Add(snapshotData);
+            UncommitedSnapshots.Add(snapshot);
 
             return Task.CompletedTask;
         }
@@ -146,13 +145,19 @@ namespace EnjoyCQRS.EventStore.MongoDB
             if (UncommitedSnapshots.Count > 0)
             {
                 var snapshotCollection = db.GetCollection<SnapshotDocument>(Setttings.SnapshotsCollectionName);
-                await snapshotCollection.InsertManyAsync(UncommitedSnapshots);
+
+                var serializedSnapshots = UncommitedSnapshots.Select(Serialize);
+
+                await snapshotCollection.InsertManyAsync(serializedSnapshots);
             }
 
             if (UncommitedEvents.Count > 0)
             {
                 var eventCollection = db.GetCollection<EventDocument>(Setttings.EventsCollectionName);
-                await eventCollection.InsertManyAsync(UncommitedEvents);
+
+                var serializedEvents = UncommitedEvents.Select(Serialize);
+
+                await eventCollection.InsertManyAsync(serializedEvents);
             }
 
             if (UncommitedProjections.Count > 0)
@@ -190,8 +195,7 @@ namespace EnjoyCQRS.EventStore.MongoDB
 
         public Task SaveAsync(IEnumerable<IUncommitedEvent> collection)
         {
-            var eventList = collection.Select(Serialize);
-            UncommitedEvents.AddRange(eventList);
+            UncommitedEvents.AddRange(collection);
 
             return Task.CompletedTask;
         }

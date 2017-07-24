@@ -1,7 +1,9 @@
 ﻿using EnjoyCQRS.Events;
 using EnjoyCQRS.Projections;
 using EnjoyCQRS.Projections.InMemory;
-using EnjoyCQRS.UnitTests.Shared.Projection;
+using EnjoyCQRS.UnitTests.Shared;
+using EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.UserAggregate;
+using EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.UserAggregate.Projections;
 using FluentAssertions;
 using Newtonsoft.Json;
 using System;
@@ -44,7 +46,7 @@ namespace EnjoyCQRS.UnitTests.Projections
 
             var eventStreamReader = new StubEventStreamReader(source);
             
-            var strategy = new StubProjectionStrategy();
+            var strategy = new NewtonsoftJsonProjectionStrategy();
             var store = new ConcurrentDictionary<string, ConcurrentDictionary<string, byte[]>>();
             var documentStore = new MemoryProjectionStore(strategy, store);
 
@@ -99,7 +101,7 @@ namespace EnjoyCQRS.UnitTests.Projections
 
             var eventStreamReader = new StubEventStreamReader(source);
 
-            var strategy = new StubProjectionStrategy();
+            var strategy = new NewtonsoftJsonProjectionStrategy();
             var store = new ConcurrentDictionary<string, ConcurrentDictionary<string, byte[]>>();
             var documentStore = new MemoryProjectionStore(strategy, store);
 

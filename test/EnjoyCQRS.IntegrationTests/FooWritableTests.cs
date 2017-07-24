@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Net;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using EnjoyCQRS.EventSource.Storage;
 using FluentAssertions;
@@ -10,6 +9,8 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using EnjoyCQRS.EventSource;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace EnjoyCQRS.IntegrationTests
 {
@@ -105,11 +106,11 @@ namespace EnjoyCQRS.IntegrationTests
         
         private Guid ExtractAggregateIdFromResponseContent(string content)
         {
-            var match = Regex.Match(content, "{\"AggregateId\":\"(.*)\"}", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+            var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(content);
 
-            var aggregateId = match.Groups[1].Value;
+            var aggregateId = Guid.Parse(dict["aggregateId"].ToString());
 
-            return Guid.Parse(aggregateId);
+            return aggregateId;
         }
     }
 }

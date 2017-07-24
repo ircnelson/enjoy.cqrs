@@ -1,5 +1,6 @@
 ﻿using EnjoyCQRS.Projections;
 using EnjoyCQRS.Projections.InMemory;
+using EnjoyCQRS.UnitTests.Shared;
 using FluentAssertions;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -18,7 +19,7 @@ namespace EnjoyCQRS.UnitTests.Projections
         public MemoryProjectionStoreTests()
         {
             _storeDictionary = new ConcurrentDictionary<string, ConcurrentDictionary<string, byte[]>>();
-            Store = new MemoryProjectionStore(new StubProjectionStrategy(), _storeDictionary);
+            Store = new MemoryProjectionStore(new NewtonsoftJsonProjectionStrategy(), _storeDictionary);
         }
 
         [Fact]

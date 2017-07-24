@@ -2,17 +2,20 @@
 using EnjoyCQRS.Projections;
 using EnjoyCQRS.Core;
 
-namespace EnjoyCQRS.UnitTests.Shared.Projection
+namespace EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.UserAggregate.Projections
 {
-    public class AllUserProjections : Projector<Guid, AllUserView>
+    public class AllUserProjections : IProjector
     {
-        public AllUserProjections(IProjectionWriter<Guid, AllUserView> store) : base(store)
+        private readonly IProjectionWriter<Guid, AllUserView> _store;
+
+        public AllUserProjections(IProjectionWriter<Guid, AllUserView> store)
         {
+            _store = store;
         }
 
         public void When(Metadata<UserCreated> e)
         {
-            Store.Add(e.Data.AggregateId, new AllUserView
+            _store.Add(e.Data.AggregateId, new AllUserView
             {
                 Id = e.Data.AggregateId,
                 Fullname = $"{e.Data.LastName}, {e.Data.FirstName}",
@@ -24,7 +27,7 @@ namespace EnjoyCQRS.UnitTests.Shared.Projection
 
         public void When(UserFirstNameChanged value)
         {
-            Store.UpdateOrThrow(value.AggregateId, (view) =>
+            _store.UpdateOrThrow(value.AggregateId, (view) =>
             {
                 var lname = view.Fullname.Split(',')[0].Trim();
 
@@ -34,7 +37,7 @@ namespace EnjoyCQRS.UnitTests.Shared.Projection
 
         public void When(UserLastNameChanged value)
         {
-            Store.UpdateOrThrow(value.AggregateId, (view) =>
+            _store.UpdateOrThrow(value.AggregateId, (view) =>
             {
                 var fname = view.Fullname.Split(',')[1].Trim();
 
@@ -44,7 +47,7 @@ namespace EnjoyCQRS.UnitTests.Shared.Projection
 
         public void When(UserDeactivated e)
         {
-            Store.UpdateOrThrow(e.AggregateId, (view) =>
+            _store.UpdateOrThrow(e.AggregateId, (view) =>
             {
                 view.DeactivatedAt = e.DeactivatedAt;
                 view.Lifetime = view.CreatedAt.Subtract(e.DeactivatedAt).Duration();

@@ -32,10 +32,10 @@ namespace EnjoyCQRS.Projections
 {
     public class ProjectorMethodMapper
     {
-        private static readonly Dictionary<Type, List<Wire>> _mappings = new Dictionary<Type, List<Wire>>();
+        private readonly Dictionary<Type, List<Wire>> _mappings = new Dictionary<Type, List<Wire>>();
         private static object _lock = new object();
-
-        public static void CreateMap(IEnumerable projectors, string methodName = "When")
+        
+        public void CreateMap(IEnumerable projectors, string methodName = "When")
         {
             foreach (var projector in projectors)
             {
@@ -72,14 +72,14 @@ namespace EnjoyCQRS.Projections
             }
         }
 
-        public static IEnumerable<Type> GetMappedEvents()
+        public IEnumerable<Type> GetMappedEvents()
         {
             if (_mappings == null) return null;
 
             return _mappings.Keys.ToList();
         }
         
-        public static List<Wire> GetWiresOf(Type @event)
+        public List<Wire> GetWiresOf(Type @event)
         {
             if (!_mappings.ContainsKey(@event)) return null;
 

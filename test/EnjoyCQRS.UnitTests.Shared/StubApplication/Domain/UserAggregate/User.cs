@@ -1,9 +1,9 @@
 ﻿using EnjoyCQRS.EventSource;
 using System;
 
-namespace EnjoyCQRS.UnitTests.Shared.Projection
+namespace EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.UserAggregate
 {
-    public class UserAggregate : Aggregate
+    public class User : Aggregate
     {
         public DateTime CreatedAt { get; private set; }
         public string FirstName { get; private set; }
@@ -11,7 +11,7 @@ namespace EnjoyCQRS.UnitTests.Shared.Projection
         public DateTime BornDate { get; private set; }
         public DateTime? DeactivatedAt { get; private set; }
 
-        public UserAggregate(Guid id, string firstName, string lastName, DateTime bornDate)
+        public User(Guid id, string firstName, string lastName, DateTime bornDate)
         {
             Emit(new UserCreated(id, DateTime.Now, firstName, lastName, bornDate));
         }

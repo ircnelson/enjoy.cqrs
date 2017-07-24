@@ -1,5 +1,4 @@
 ﻿using EnjoyCQRS.Projections;
-using EnjoyCQRS.UnitTests.Shared.Projection;
 using FluentAssertions;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -9,6 +8,8 @@ using Xunit;
 using EnjoyCQRS.EventStore.MongoDB;
 using EnjoyCQRS.UnitTests.Shared.Helpers;
 using EnjoyCQRS.EventStore.MongoDB.Projection;
+using EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.UserAggregate;
+using EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.UserAggregate.Projections;
 
 namespace EnjoyCQRS.MongoDB.IntegrationTests
 {
@@ -28,13 +29,13 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests
         {
             // Arrange
 
-            var activeUser = new UserAggregate(Guid.NewGuid(), "Bryan", "Cranston", new DateTime(1956, 3, 7));
+            var activeUser = new User(Guid.NewGuid(), "Bryan", "Cranston", new DateTime(1956, 3, 7));
             activeUser.ChangeFirstName("Walter");
             activeUser.ChangeLastName("White");
             activeUser.ChangeFirstName("Walt");
             activeUser.ChangeLastName("Heisenberg");
 
-            var inactiveUser = new UserAggregate(Guid.NewGuid(), "Aaron Paul", "Sturtevant", new DateTime(1979, 8, 27));
+            var inactiveUser = new User(Guid.NewGuid(), "Aaron Paul", "Sturtevant", new DateTime(1979, 8, 27));
             inactiveUser.ChangeLastName("Bruce Pinkman");
             inactiveUser.ChangeFirstName("Jesse");
             inactiveUser.Deactivate();

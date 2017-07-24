@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EnjoyCQRS.UnitTests.Shared.Projection
+namespace EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.UserAggregate.Projections
 {
     public class AllUserView
     {

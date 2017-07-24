@@ -1,10 +1,10 @@
-﻿using System.IO;
-using EnjoyCQRS.Projections;
+﻿using EnjoyCQRS.Projections;
 using Newtonsoft.Json;
+using System.IO;
 
-namespace EnjoyCQRS.UnitTests.Projections
+namespace EnjoyCQRS.UnitTests.Shared
 {
-    public class StubProjectionStrategy : IProjectionStrategy
+    public class NewtonsoftJsonProjectionStrategy : IProjectionStrategy
     {
         public TEntity Deserialize<TEntity>(Stream stream)
         {
@@ -30,8 +30,16 @@ namespace EnjoyCQRS.UnitTests.Projections
             {
                 var serialize = JsonConvert.SerializeObject(entity, JsonSettings.Default);
 
-                writer.WriteLine(serialize);
+                writer.Write(serialize);
             }
         }
+    }
+
+    public static class JsonSettings
+    {
+        public static JsonSerializerSettings Default = new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.Objects
+        };
     }
 }

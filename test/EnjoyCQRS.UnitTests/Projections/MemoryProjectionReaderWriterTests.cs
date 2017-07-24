@@ -1,4 +1,5 @@
 ﻿using EnjoyCQRS.Projections.InMemory;
+using EnjoyCQRS.UnitTests.Shared;
 using System;
 using System.Collections.Concurrent;
 using Xunit;
@@ -10,7 +11,7 @@ namespace EnjoyCQRS.UnitTests.Projections
     {
         public MemoryProjectionReaderWriterTests()
         {
-            var documentStrategy = new StubProjectionStrategy();
+            var documentStrategy = new NewtonsoftJsonProjectionStrategy();
             var concurrentDictionary = new ConcurrentDictionary<string, byte[]>();
 
             _reader = new MemoryProjectionReaderWriter<Guid, int>(documentStrategy, concurrentDictionary);

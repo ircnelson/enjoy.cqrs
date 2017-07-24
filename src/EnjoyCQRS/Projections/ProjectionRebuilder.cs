@@ -30,6 +30,7 @@ namespace EnjoyCQRS.Projections
 {
     public class ProjectionRebuilder
     {
+        private readonly ProjectorMethodMapper _projectorMethodMapper = new ProjectorMethodMapper();
         private readonly IProjectionStore _documentStore;
         private readonly IEnumerable _projectors;
         private readonly EventStreamReader _eventStreamReader;
@@ -43,7 +44,7 @@ namespace EnjoyCQRS.Projections
             _documentStore = documentStore ?? throw new ArgumentNullException(nameof(documentStore));
             _projectors = projectors ?? throw new ArgumentNullException(nameof(documentStore));
 
-            ProjectorMethodMapper.CreateMap(projectors);
+            _projectorMethodMapper.CreateMap(projectors);
         }
 
         public async Task ProcessAsync(CancellationToken cancellationToken = default(CancellationToken))
@@ -86,7 +87,7 @@ namespace EnjoyCQRS.Projections
 
         public void WireEvent(object @event, object metadata)
         {
-            var wires = ProjectorMethodMapper.GetWiresOf(@event.GetType());
+            var wires = _projectorMethodMapper.GetWiresOf(@event.GetType());
 
             if (wires != null)
             {
