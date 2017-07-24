@@ -50,15 +50,14 @@ namespace EnjoyCQRS.UnitTests.Projections
             var store = new ConcurrentDictionary<string, ConcurrentDictionary<string, byte[]>>();
             var documentStore = new MemoryProjectionStore(strategy, store);
 
-            var writer = documentStore.GetWriter<Guid, AllUserView>();
             var reader = documentStore.GetReader<Guid, AllUserView>();
-            var allUserProjection = new AllUserProjections(writer);
+            var allUserProjection = new AllUserProjections(documentStore);
 
             // Act
             
-            var projectionProcessor = new ProjectionRebuilder(eventStreamReader, documentStore, new object[] { allUserProjection });
+            var projectionProcessor = new ProjectionRebuilder(documentStore, new object[] { allUserProjection });
 
-            await projectionProcessor.ProcessAsync().ConfigureAwait(false);
+            await projectionProcessor.RebuildAsync(eventStreamReader).ConfigureAwait(false);
                         
             // Assert
 
@@ -105,17 +104,15 @@ namespace EnjoyCQRS.UnitTests.Projections
             var store = new ConcurrentDictionary<string, ConcurrentDictionary<string, byte[]>>();
             var documentStore = new MemoryProjectionStore(strategy, store);
 
-            var writer1 = documentStore.GetWriter<Guid, AllUserView>();
-            var allUserProjection = new AllUserProjections(writer1);
-
-            var writer2 = documentStore.GetWriter<Guid, ActiveUserView>();
-            var onlyActiveUserProjection = new OnlyActiveUserProjections(writer2);
+            var allUserProjection = new AllUserProjections(documentStore);
+            
+            var onlyActiveUserProjection = new OnlyActiveUserProjections(documentStore);
 
             // Act
             
-            var projectionProcessor = new ProjectionRebuilder(eventStreamReader, documentStore, new object[] { allUserProjection, onlyActiveUserProjection });
+            var projectionProcessor = new ProjectionRebuilder(documentStore, new object[] { allUserProjection, onlyActiveUserProjection });
 
-            await projectionProcessor.ProcessAsync().ConfigureAwait(false);
+            await projectionProcessor.RebuildAsync(eventStreamReader).ConfigureAwait(false);
 
             // Assert
 
@@ -163,6 +160,8 @@ namespace EnjoyCQRS.UnitTests.Projections
     class StubEventStreamReader : EventStreamReader
     {
         private readonly Stream _source;
+
+        public override bool DeleteAllRecords => true;
 
         public StubEventStreamReader(params IDomainEvent[] events)
         {

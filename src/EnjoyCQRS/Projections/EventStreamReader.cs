@@ -28,6 +28,8 @@ namespace EnjoyCQRS.Projections
     public abstract class EventStreamReader
     {
         public delegate void OnDeserializeEventDelegate(object @event, object metadata);
+        
+        public abstract bool DeleteAllRecords { get; }
 
         public abstract Task ReadAsync(CancellationToken cancellationToken, OnDeserializeEventDelegate onDeserializeEvent);
     }

@@ -41,6 +41,8 @@ namespace EnjoyCQRS.EventStore.MongoDB.Projection
 
         public Func<FilterDefinitionBuilder<BsonDocument>, FilterDefinition<BsonDocument>> Match { get; set; }
 
+        public override bool DeleteAllRecords => true;
+
         public MongoEventStreamReader(
             IMongoDatabase database,
             MongoEventStoreSetttings settings = null)

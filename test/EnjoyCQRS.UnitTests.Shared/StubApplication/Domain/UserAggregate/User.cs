@@ -11,6 +11,10 @@ namespace EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.UserAggregate
         public DateTime BornDate { get; private set; }
         public DateTime? DeactivatedAt { get; private set; }
 
+        public User()
+        {
+        }
+
         public User(Guid id, string firstName, string lastName, DateTime bornDate)
         {
             Emit(new UserCreated(id, DateTime.Now, firstName, lastName, bornDate));

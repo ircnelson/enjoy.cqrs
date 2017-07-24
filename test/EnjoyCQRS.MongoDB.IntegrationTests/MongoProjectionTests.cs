@@ -53,18 +53,15 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests
             var strategy = new MongoProjectionStrategy();
             
             var documentStore = new MongoProjectionStore(strategy, _fixture.Database);
-
-            var writer1 = documentStore.GetWriter<Guid, AllUserView>();
-            var allUserProjection = new AllUserProjections(writer1);
-
-            var writer2 = documentStore.GetWriter<Guid, ActiveUserView>();
-            var onlyActiveUserProjection = new OnlyActiveUserProjections(writer2);
+            
+            var allUserProjection = new AllUserProjections(documentStore);
+            var onlyActiveUserProjection = new OnlyActiveUserProjections(documentStore);
 
             // Act
 
-            var projectionProcessor = new ProjectionRebuilder(eventStreamReader, documentStore, new object[] { allUserProjection, onlyActiveUserProjection });
+            var projectionProcessor = new ProjectionRebuilder(documentStore, new object[] { allUserProjection, onlyActiveUserProjection });
 
-            await projectionProcessor.ProcessAsync().ConfigureAwait(false);
+            await projectionProcessor.RebuildAsync(eventStreamReader).ConfigureAwait(false);
 
             // Assert
 
@@ -113,6 +110,57 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests
             }
 
             reader2.TryGet(inactiveUser.Id, out view2).Should().BeFalse();
+        }
+
+        [Fact]
+        public async Task Should_update_specific_projections()
+        {
+            // Arrange
+
+            var activeUser = new User(Guid.NewGuid(), "Bryan", "Cranston", new DateTime(1956, 3, 7));
+            activeUser.ChangeFirstName("Walter");
+            activeUser.ChangeLastName("White");
+            activeUser.ChangeFirstName("Walt");
+            activeUser.ChangeLastName("Heisenberg");
+            
+            var strategy = new MongoProjectionStrategy();
+
+            var documentStore = new MongoProjectionStore(strategy, _fixture.Database);
+
+            var allUserProjection = new AllUserProjections(documentStore);
+            var onlyActiveUserProjection = new OnlyActiveUserProjections(documentStore);
+            
+            var projectionProcessor = new ProjectionRebuilder(documentStore, new object[] { allUserProjection, onlyActiveUserProjection });
+            var eventStreamReader = new MongoEventStreamReader(_fixture.Database);
+            var eventStore = new MongoEventStore(_fixture.Database, projectionProcessor, eventStreamReader);
+
+            var session = SessionHelper.Create(eventStore);
+
+            await session.AddAsync(activeUser).ConfigureAwait(false);
+            await session.SaveChangesAsync().ConfigureAwait(false);
+
+            var reader1 = documentStore.GetReader<Guid, AllUserView>();
+
+            reader1.TryGet(activeUser.Id, out AllUserView view1).Should().BeTrue();
+
+            if (view1 != null)
+            {
+                view1.Id.Should().Be(activeUser.Id);
+                view1.BirthMonth.Should().Be(3);
+                view1.BirthYear.Should().Be(1956);
+                view1.Fullname.Should().Be("Heisenberg, Walt");
+                view1.DeactivatedAt.Should().BeNull();
+                view1.Lifetime.Should().BeNull();
+            }
+
+            var reader2 = documentStore.GetReader<Guid, ActiveUserView>();
+
+            reader2.TryGet(activeUser.Id, out ActiveUserView view2).Should().BeTrue();
+
+            if (view2 != null)
+            {
+                view2.Id.Should().Be(activeUser.Id);
+            }
         }
     }
 }

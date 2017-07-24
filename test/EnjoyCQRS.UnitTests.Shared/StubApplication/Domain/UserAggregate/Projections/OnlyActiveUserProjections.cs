@@ -7,9 +7,9 @@ namespace EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.UserAggregate.Projec
     {
         private readonly IProjectionWriter<Guid, ActiveUserView> _store;
 
-        public OnlyActiveUserProjections(IProjectionWriter<Guid, ActiveUserView> store)
+        public OnlyActiveUserProjections(IProjectionStore store)
         {
-            _store = store;
+            _store = store.GetWriter<Guid, ActiveUserView>();
         }
 
         public void When(UserCreated e)

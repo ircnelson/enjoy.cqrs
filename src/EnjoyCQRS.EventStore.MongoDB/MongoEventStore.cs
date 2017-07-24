@@ -35,38 +35,55 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using MongoDB.Bson.Serialization;
 using EnjoyCQRS.Collections;
+using EnjoyCQRS.Projections;
+using EnjoyCQRS.EventStore.MongoDB.Projection;
 
 namespace EnjoyCQRS.EventStore.MongoDB
 {
     public class MongoEventStore : IEventStore
     {
-        public JsonSerializerSettings JsonSettings = new JsonSerializerSettings
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver()
-        };
+        private readonly IProjectionRebuilder _projectionRebuilder;
+        private readonly MongoEventStreamReader _eventStreamReader;
 
         protected readonly List<IUncommittedEvent> UncommittedEvents = new List<IUncommittedEvent>();
         protected readonly List<IUncommittedSnapshot> UncommittedSnapshots = new List<IUncommittedSnapshot>();
         protected readonly List<IProjection> UncommittedProjections = new List<IProjection>();
 
+        public JsonSerializerSettings JsonSettings = new JsonSerializerSettings
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
+        };
+
         public IMongoClient Client { get; }
-        public string Database { get; }
+        public string DatabaseName { get; }
         public MongoEventStoreSetttings Setttings { get; }
 
-        public MongoEventStore(IMongoDatabase database) : this (database, new MongoEventStoreSetttings())
+        public MongoEventStore(IMongoDatabase database) : this(database, new MongoEventStoreSetttings())
         {
+        }
+
+        public MongoEventStore(IMongoDatabase database, 
+                               IProjectionRebuilder projectionRebuilder, 
+                               MongoEventStreamReader eventStreamReader,
+                               MongoEventStoreSetttings setttings = null) : this (database, setttings)
+        {
+            _projectionRebuilder = projectionRebuilder ?? throw new ArgumentNullException(nameof(projectionRebuilder));
+            _eventStreamReader = eventStreamReader ?? throw new ArgumentNullException(nameof(eventStreamReader));
         }
 
         public MongoEventStore(IMongoDatabase database, MongoEventStoreSetttings setttings)
         {
             if (database == null) throw new ArgumentNullException(nameof(database));
-            if (setttings == null) throw new ArgumentNullException(nameof(setttings));
+            if (setttings == null)
+            {
+                setttings = new MongoEventStoreSetttings();
+            }
 
             setttings.Validate();
-
-            Database = database.DatabaseNamespace.DatabaseName;
-            Setttings = setttings;
+            
             Client = database.Client;
+            DatabaseName = database.DatabaseNamespace.DatabaseName;
+            Setttings = setttings;
         }
 
         public MongoEventStore(MongoClient client, string database) : this(client, database, new MongoEventStoreSetttings())
@@ -75,12 +92,13 @@ namespace EnjoyCQRS.EventStore.MongoDB
 
         public MongoEventStore(MongoClient client, string database, MongoEventStoreSetttings setttings = null)
         {
+            Client = client ?? throw new ArgumentNullException(nameof(client));
+            DatabaseName = database ?? throw new ArgumentNullException(nameof(database));
+
             if (setttings == null) throw new ArgumentNullException(nameof(setttings));
 
             setttings.Validate();
 
-            Database = database ?? throw new ArgumentNullException(nameof(database));
-            Client = client ?? throw new ArgumentNullException(nameof(client));
             Setttings = setttings;
         }
 
@@ -93,7 +111,7 @@ namespace EnjoyCQRS.EventStore.MongoDB
 
         public async Task<ICommittedSnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
         {
-            var db = Client.GetDatabase(Database);
+            var db = Client.GetDatabase(DatabaseName);
             var snapshotCollection = db.GetCollection<SnapshotDocument>(Setttings.SnapshotsCollectionName);
 
             var filter = Builders<SnapshotDocument>.Filter;
@@ -110,7 +128,7 @@ namespace EnjoyCQRS.EventStore.MongoDB
 
         public Task<IEnumerable<ICommittedEvent>> GetEventsForwardAsync(Guid aggregateId, int version)
         {
-            var db = Client.GetDatabase(Database);
+            var db = Client.GetDatabase(DatabaseName);
             var collection = db.GetCollection<EventDocument>(Setttings.EventsCollectionName);
 
             var sort = Builders<EventDocument>.Sort;
@@ -140,7 +158,7 @@ namespace EnjoyCQRS.EventStore.MongoDB
 
         public async Task CommitAsync()
         {
-            var db = Client.GetDatabase(Database);
+            var db = Client.GetDatabase(DatabaseName);
             
             if (UncommittedSnapshots.Count > 0)
             {
@@ -158,6 +176,15 @@ namespace EnjoyCQRS.EventStore.MongoDB
                 var serializedEvents = UncommittedEvents.Select(Serialize);
 
                 await eventCollection.InsertManyAsync(serializedEvents);
+
+                var eventIds = serializedEvents.Select(e => e.Id).ToList();
+
+                if (_eventStreamReader != null)
+                {
+                    _eventStreamReader.Match = builder => builder.In(e => e["_id"].AsGuid, eventIds);
+
+                    await _projectionRebuilder.RebuildAsync(_eventStreamReader).ConfigureAwait(false);
+                }
             }
 
             if (UncommittedProjections.Count > 0)
@@ -175,7 +202,7 @@ namespace EnjoyCQRS.EventStore.MongoDB
 
         public async Task<IEnumerable<ICommittedEvent>> GetAllEventsAsync(Guid id)
         {
-            var db = Client.GetDatabase(Database);
+            var db = Client.GetDatabase(DatabaseName);
             var collection = db.GetCollection<EventDocument>(Setttings.EventsCollectionName);
 
             var sort = Builders<EventDocument>.Sort;
@@ -278,7 +305,7 @@ namespace EnjoyCQRS.EventStore.MongoDB
 
         protected virtual async Task AddOrUpdateProjectionsAsync(IEnumerable<IProjection> uncommittedProjections)
         {
-            var db = Client.GetDatabase(Database);
+            var db = Client.GetDatabase(DatabaseName);
             var collection = db.GetCollection<BsonDocument>(Setttings.ProjectionsCollectionName);
 
             var filterBuilder = Builders<BsonDocument>.Filter;

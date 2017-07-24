@@ -16,46 +16,89 @@ using Scrutor;
 using EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.UserAggregate.Projections;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Text;
 
 namespace EnjoyCQRS.IntegrationTests
 {
     [Trait("Integration", "WebApi")]
     public class UserTests
     {
-        private ProjectorMethodMapper _projectorMethodMapper = new ProjectorMethodMapper();
-        private ConcurrentDictionary<string, byte[]> _projectionStore = new ConcurrentDictionary<string, byte[]>();
         private ConcurrentDictionary<string, ConcurrentDictionary<string, byte[]>> _projections = new ConcurrentDictionary<string, ConcurrentDictionary<string, byte[]>>();
-
+        
         [Fact]
         public async Task Should_create_user()
         {
+            InMemoryEventStore eventStore = null;
+
             // Arrange
-            var eventStore = new InMemoryEventStore();
+            Func<IServiceProvider, IEventStore> eventStoreFactory = (c) => {
+                eventStore = new InMemoryEventStore(c.GetService<ProjectionRebuilder>());
 
-            var server = TestServerFactory(eventStore);
+                return eventStore;
+            };
 
-            var response = await server.CreateRequest("/command/user").PostAsync();
+            var client = TestServerFactory(eventStoreFactory);
+
+            var response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Post, "/command/user"));
 
             var result = await response.Content.ReadAsStringAsync();
 
             var aggregateId = ExtractAggregateIdFromResponseContent(result);
 
-            eventStore.Events.Count(e => e.AggregateId == aggregateId).Should().Be(1);
+            eventStore?.Events.Count(e => e.AggregateId == aggregateId).Should().Be(1);
 
             _projections.Count().Should().Be(2);
 
         }
 
-        private TestServer TestServerFactory(IEventStore eventStore)
+        [Fact]
+        public async Task Should_update_user()
+        {
+            // Arrange
+
+            InMemoryEventStore eventStore = null;
+
+            Func<IServiceProvider, IEventStore> eventStoreFactory = (c) => {
+                eventStore = new InMemoryEventStore(c.GetService<ProjectionRebuilder>());
+                
+                return eventStore;
+            };
+
+            var client = TestServerFactory(eventStoreFactory);
+
+            var response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Post, "/command/user"));
+            var result = await response.Content.ReadAsStringAsync();
+            var aggregateId = ExtractAggregateIdFromResponseContent(result);
+
+            // Act
+
+            var json = JsonConvert.SerializeObject(new { Name = "N" });
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            
+            response = await client.PutAsync($"/command/user/{aggregateId}", content);
+
+            result = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            eventStore?.Events.Count(e => e.AggregateId == aggregateId).Should().Be(2);
+
+            _projections.Count().Should().Be(2);
+
+            _projections.Values.SelectMany(e => e.Keys).Count(e => e.EndsWith(aggregateId.ToString())).Should().Be(2);
+        }
+
+        private HttpClient TestServerFactory(Func<IServiceProvider, IEventStore> eventStoreFactory)
         {
             var builder = new WebHostBuilder()
                 .UseStartup<Startup>()
                 .ConfigureServices(services => {
 
                     services.AddScoped<IEventsMetadataService, EventsMetadataService>();
-                    services.AddScoped(provider => eventStore);
+                    services.AddSingleton(provider => eventStoreFactory(provider));
                     
-                    services.AddSingleton(_projectionStore);
+                    services.AddScoped(c => new ProjectionRebuilder(c.GetService<IProjectionStore>(), c.GetServices<IProjector>()));
+
                     services.AddTransient<IProjectionStrategy, NewtonsoftJsonProjectionStrategy>();
                     services.AddTransient<IProjectionStore>(c => new MemoryProjectionStore(c.GetRequiredService<IProjectionStrategy>(), _projections));
                     services.AddTransient(typeof(IProjectionWriter<,>), typeof(MemoryProjectionReaderWriter<,>));
@@ -65,13 +108,11 @@ namespace EnjoyCQRS.IntegrationTests
                         e.FromAssemblyOf<FooAssembler>()
                             .AddClasses(c => c.AssignableTo<IProjector>())
                             .AsImplementedInterfaces());
-
-                    services.AddSingleton(c => _projectorMethodMapper);
                 });
 
             var testServer = new TestServer(builder);
 
-            return testServer;
+            return testServer.CreateClient();
         }
 
         private Guid ExtractAggregateIdFromResponseContent(string content)

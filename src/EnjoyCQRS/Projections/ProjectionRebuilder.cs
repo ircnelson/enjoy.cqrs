@@ -28,52 +28,58 @@ using System.Threading.Tasks;
 
 namespace EnjoyCQRS.Projections
 {
-    public class ProjectionRebuilder
+    public class ProjectionRebuilder : IProjectionRebuilder
     {
-        private readonly ProjectorMethodMapper _projectorMethodMapper = new ProjectorMethodMapper();
-        private readonly IProjectionStore _documentStore;
-        private readonly IEnumerable _projectors;
-        private readonly EventStreamReader _eventStreamReader;
+        protected readonly ProjectorMethodMapper ProjectorMethodMapper = new ProjectorMethodMapper();
+
+        protected readonly IProjectionStore DocumentStore;
+        protected readonly IEnumerable Projectors;
 
         public Action OnStartProcess;
         public Action OnCompleteProcess;
 
-        public ProjectionRebuilder(EventStreamReader eventStreamReader, IProjectionStore documentStore, IEnumerable projectors)
+        public ProjectionRebuilder(IProjectionStore documentStore, IEnumerable projectors)
         {
-            _eventStreamReader = eventStreamReader ?? throw new ArgumentNullException(nameof(eventStreamReader));
-            _documentStore = documentStore ?? throw new ArgumentNullException(nameof(documentStore));
-            _projectors = projectors ?? throw new ArgumentNullException(nameof(documentStore));
+            DocumentStore = documentStore ?? throw new ArgumentNullException(nameof(documentStore));
+            Projectors = projectors ?? throw new ArgumentNullException(nameof(documentStore));
 
-            _projectorMethodMapper.CreateMap(projectors);
+            ProjectorMethodMapper.CreateMap(projectors);
         }
 
-        public async Task ProcessAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public async Task RebuildAsync<T>(T eventStreamReader, CancellationToken cancellationToken = default(CancellationToken))
+            where T : EventStreamReader
         {
+            if (eventStreamReader == null) throw new ArgumentNullException(nameof(eventStreamReader));
+            
+            OnStartProcess?.Invoke();
+
             try
             {
-                OnStartProcess?.Invoke();
-                
-                await _eventStreamReader.ReadAsync(cancellationToken, WireEvent).ConfigureAwait(false);
-                
+                await eventStreamReader.ReadAsync(cancellationToken, WireEvent).ConfigureAwait(false);
+
                 var tasks = new List<Task>();
 
-                foreach (var bucket in _documentStore.GetBuckets())
+                foreach (var bucket in DocumentStore.GetBuckets())
                 {
                     var task = Task.Run(async () =>
                     {
-                        var contents = await _documentStore.EnumerateContentsAsync(bucket).ConfigureAwait(false);
+                        var contents = await DocumentStore.EnumerateContentsAsync(bucket).ConfigureAwait(false);
 
-                        _documentStore.Cleanup(bucket);
+                        if (eventStreamReader.DeleteAllRecords)
+                        {
+                            DocumentStore.Cleanup(bucket);
+                        }
 
-                        await _documentStore.ApplyAsync(bucket, contents).ConfigureAwait(false);
+                        await DocumentStore.ApplyAsync(bucket, contents).ConfigureAwait(false);
                     });
 
                     tasks.Add(task);
                 }
-                
+
                 Task.WaitAll(tasks.ToArray());
 
                 OnCompleteProcess?.Invoke();
+
             }
             catch (OperationCanceledException)
             {
@@ -84,10 +90,10 @@ namespace EnjoyCQRS.Projections
                 // TODO: logging
             }
         }
-
-        public void WireEvent(object @event, object metadata)
+        
+        protected void WireEvent(object @event, object metadata)
         {
-            var wires = _projectorMethodMapper.GetWiresOf(@event.GetType());
+            var wires = ProjectorMethodMapper.GetWiresOf(@event.GetType());
 
             if (wires != null)
             {

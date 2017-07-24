@@ -34,7 +34,6 @@ using EnjoyCQRS.Extensions;
 using EnjoyCQRS.Logger;
 using EnjoyCQRS.MessageBus;
 using EnjoyCQRS.MetadataProviders;
-using EnjoyCQRS.Projections;
 
 namespace EnjoyCQRS.EventSource.Storage
 {
@@ -50,7 +49,6 @@ namespace EnjoyCQRS.EventSource.Storage
         private readonly IEnumerable<IMetadataProvider> _metadataProviders;
         private readonly IEventsMetadataService _eventsMetadataService;
         private readonly ILogger _logger;
-        private readonly ProjectorMethodMapper _projectorMethodMapper;
 
         private bool _externalTransaction;
 

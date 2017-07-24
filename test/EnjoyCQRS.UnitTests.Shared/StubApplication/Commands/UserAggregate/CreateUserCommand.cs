@@ -17,6 +17,5 @@ namespace EnjoyCQRS.UnitTests.Shared.StubApplication.Commands.UserAggregate
             LastName = lastName;
             BornDate = bornDate;
         }
-
     }
 }

@@ -29,15 +29,16 @@ using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource.Projections;
 using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.Collections;
+using EnjoyCQRS.Projections;
+using System.Threading;
 
 namespace EnjoyCQRS.EventSource.Storage
 {
     public class InMemoryEventStore : IEventStore
     {
-        public IReadOnlyList<ICommittedEvent> Events => _events.AsReadOnly();
-        public IReadOnlyList<ICommittedSnapshot> Snapshots => _snapshots.AsReadOnly();
-        public IReadOnlyDictionary<ProjectionKey, object> Projections => new ReadOnlyDictionary<ProjectionKey, object>(_projections);
-
+        private readonly EnjoyCQRS.Projections.IProjectionStore _projectionStore;
+        private readonly ProjectionRebuilder _projectionRebuilder;
+        
         private readonly List<ICommittedEvent> _events = new List<ICommittedEvent>();
         private readonly List<ICommittedSnapshot> _snapshots = new List<ICommittedSnapshot>();
         private readonly Dictionary<ProjectionKey, object> _projections = new Dictionary<ProjectionKey, object>();
@@ -45,6 +46,15 @@ namespace EnjoyCQRS.EventSource.Storage
         private readonly List<IUncommittedEvent> _uncommittedEvents = new List<IUncommittedEvent>();
         private readonly List<IUncommittedSnapshot> _uncommittedSnapshots = new List<IUncommittedSnapshot>();
         private readonly Dictionary<ProjectionKey, object> _uncommittedProjections = new Dictionary<ProjectionKey, object>();
+
+        public IReadOnlyList<ICommittedEvent> Events => _events.AsReadOnly();
+        public IReadOnlyList<ICommittedSnapshot> Snapshots => _snapshots.AsReadOnly();
+        public IReadOnlyDictionary<ProjectionKey, object> Projections => new ReadOnlyDictionary<ProjectionKey, object>(_projections);
+
+        public InMemoryEventStore(ProjectionRebuilder projectionRebuilder = null)
+        {
+            _projectionRebuilder = projectionRebuilder;
+        }
         
         public bool InTransaction { get; private set; }
         
@@ -81,12 +91,17 @@ namespace EnjoyCQRS.EventSource.Storage
             InTransaction = true;
         }
 
-        public virtual Task CommitAsync()
+        public virtual async Task CommitAsync()
         {
             if (!InTransaction) throw new InvalidOperationException("You are not in transaction.");
             
             _events.AddRange(_uncommittedEvents.Select(InstantiateCommittedEvent));
-            
+
+            if (_projectionRebuilder != null)
+            {
+                await _projectionRebuilder.RebuildAsync(new InMemoryEventStreamReader(_uncommittedEvents)).ConfigureAwait(false);
+            }
+
             _uncommittedEvents.Clear();
 
             var committedSnapshots = _uncommittedSnapshots.Select(e => new InMemoryCommittedSnapshot(e.AggregateId, e.AggregateVersion, e.Data, e.Metadata));
@@ -111,7 +126,7 @@ namespace EnjoyCQRS.EventSource.Storage
 
             InTransaction = false;
 
-            return Task.CompletedTask;
+            //return Task.CompletedTask;
         }
 
         public virtual void Rollback()
@@ -195,13 +210,35 @@ namespace EnjoyCQRS.EventSource.Storage
         public struct ProjectionKey
         {
             public Guid Id { get; }
-            public string Category { get;}
+            public string Category { get; }
 
             public ProjectionKey(Guid id, string category)
             {
                 Id = id;
                 Category = category;
             }
+        }
+    }    
+
+    public class InMemoryEventStreamReader : EventStreamReader
+    {
+        private readonly List<IUncommittedEvent> _uncommittedEvents;
+
+        public InMemoryEventStreamReader(List<IUncommittedEvent> uncommittedEvents)
+        {
+            _uncommittedEvents = uncommittedEvents;
+        }
+
+        public override bool DeleteAllRecords => false;
+
+        public override Task ReadAsync(CancellationToken cancellationToken, OnDeserializeEventDelegate onDeserializeEvent)
+        {
+            foreach (var uncommittedEvent in _uncommittedEvents)
+            {
+                onDeserializeEvent(uncommittedEvent.Data, uncommittedEvent.Metadata);
+            }
+
+            return Task.CompletedTask;
         }
     }
 }

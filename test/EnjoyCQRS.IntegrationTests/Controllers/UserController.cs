@@ -3,6 +3,7 @@ using EnjoyCQRS.MessageBus;
 using EnjoyCQRS.UnitTests.Shared.StubApplication.Commands.UserAggregate;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace EnjoyCQRS.IntegrationTests.Controllers
@@ -24,6 +25,18 @@ namespace EnjoyCQRS.IntegrationTests.Controllers
         {
             var cmd = new CreateUserCommand(Guid.NewGuid(), "Nelson", "Junior", new DateTime(1989, 6, 9));
 
+            await _dispatcher.DispatchAsync(cmd);
+
+            await _unitOfWork.CommitAsync();
+
+            return Ok(cmd);
+        }
+
+        [HttpPut("{id:Guid}")]
+        public async Task<IActionResult> Put(Guid id, [FromBody] Dictionary<string, object> name)
+        {
+            var cmd = new ChangeFirstNameCommand(id, name["Name"].ToString());
+            
             await _dispatcher.DispatchAsync(cmd);
 
             await _unitOfWork.CommitAsync();

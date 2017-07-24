@@ -92,11 +92,11 @@ namespace EnjoyCQRS.IntegrationTests
         {   
             var builder = new WebHostBuilder()
                 .UseStartup<Startup>()
-                .ConfigureServices(collection => {
+                .ConfigureServices(services => {
 
-                    collection.AddScoped<IEventsMetadataService>(e => eventsMetadataService);
-                    collection.AddScoped(provider => eventStore);
-                    collection.AddScoped<IMetadataProvider, FakeUserMetadataProvider>();
+                    services.AddScoped<IEventsMetadataService>(e => eventsMetadataService);
+                    services.AddScoped(provider => eventStore);
+                    services.AddScoped<IMetadataProvider, FakeUserMetadataProvider>();
                 });
 
             var testServer = new TestServer(builder);
