@@ -26,6 +26,7 @@ using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;
 using EnjoyCQRS.Logger;
 using EnjoyCQRS.MessageBus;
+using EnjoyCQRS.Stores;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;

@@ -17,6 +17,7 @@ using FluentAssertions;
 using Moq;
 using Xunit;
 using EnjoyCQRS.Collections;
+using EnjoyCQRS.Stores.InMemory;
 
 namespace EnjoyCQRS.UnitTests.EventUpgrader
 {
@@ -182,9 +183,9 @@ namespace EnjoyCQRS.UnitTests.EventUpgrader
             var loggerFactory = new NoopLoggerFactory();
             var eventPublisher = new EventPublisher(new StubEventRouter());
 
-            var eventStore = new InMemoryEventStore();
+            var stores = new InMemoryStores();
 
-            var session = new Session(loggerFactory, eventStore, eventPublisher, eventUpdateManager: eventUpdateManager);
+            var session = new Session(loggerFactory, stores, stores.EventStore, stores.SnapshotStore, stores.ProjectionStoreV1, eventPublisher, eventUpdateManager: eventUpdateManager);
             
             var aggregate = (TAggregate) Activator.CreateInstance(typeof(TAggregate), args: aggregateId);
             
@@ -205,10 +206,10 @@ namespace EnjoyCQRS.UnitTests.EventUpgrader
                 };
             });
 
-            eventStore.BeginTransaction();
+            stores.BeginTransaction();
 
-            await eventStore.SaveAsync(serializedEvents);
-            await eventStore.CommitAsync();
+            await stores.EventStore.SaveAsync(serializedEvents);
+            await stores.CommitAsync();
 
             return session;
         }

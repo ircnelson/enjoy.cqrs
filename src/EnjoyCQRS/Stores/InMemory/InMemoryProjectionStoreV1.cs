@@ -20,36 +20,47 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
+using EnjoyCQRS.EventSource.Projections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using EnjoyCQRS.EventSource;
-using EnjoyCQRS.EventSource.Snapshots;
-using EnjoyCQRS.Collections;
-using EnjoyCQRS.Stores;
 
-namespace EnjoyCQRS.Extensions
+namespace EnjoyCQRS.Stores.InMemory
 {
-    internal static class AggregateExtensions
+    public class InMemoryProjectionStoreV1 : IProjectionStore
     {
-        public static async Task TakeSnapshot(this Aggregate aggregate, ISnapshotStore snapshotStore)
+        private readonly Dictionary<ProjectionKey, object> _projections = new Dictionary<ProjectionKey, object>();
+        private readonly Dictionary<ProjectionKey, object> _uncommittedProjections = new Dictionary<ProjectionKey, object>();
+
+        public IReadOnlyDictionary<ProjectionKey, object> Uncommitted => new ReadOnlyDictionary<ProjectionKey, object>(_uncommittedProjections);
+
+        public InMemoryProjectionStoreV1(Dictionary<ProjectionKey, object> storage)
         {
-            var snapshot = ((ISnapshotAggregate)aggregate).CreateSnapshot();
+            _projections = storage;
+        }
 
-            var metadatas = new[]
+        public Task SaveProjectionAsync(IProjection projection)
+        {
+            var key = new ProjectionKey(projection.Id, projection.GetType().Name);
+
+            if (!_uncommittedProjections.ContainsKey(key))
             {
-                new KeyValuePair<string, object>(MetadataKeys.AggregateId, aggregate.Id),
-                new KeyValuePair<string, object>(MetadataKeys.AggregateSequenceNumber, aggregate.Sequence),
-                new KeyValuePair<string, object>(MetadataKeys.SnapshotId, Guid.NewGuid()),
-                new KeyValuePair<string, object>(MetadataKeys.SnapshotClrType, snapshot.GetType().AssemblyQualifiedName),
-                new KeyValuePair<string, object>(MetadataKeys.SnapshotName, snapshot.GetType().Name),
-            };
+                _uncommittedProjections.Add(key, null);
+            }
 
-            var metadata = new MetadataCollection(metadatas);
+            _uncommittedProjections[key] = projection;
 
-            var uncommittedSnapshot = new UncommittedSnapshot(aggregate.Id, aggregate.Sequence, snapshot, metadata);
-            
-            await snapshotStore.SaveSnapshotAsync(uncommittedSnapshot).ConfigureAwait(false);
+            return Task.CompletedTask;
+        }
+
+        internal void ClearUncommitted()
+        {
+            _uncommittedProjections.Clear();
+        }
+
+        public void Dispose()
+        {
+            ClearUncommitted();
         }
     }
 }

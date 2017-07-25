@@ -24,35 +24,25 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using EnjoyCQRS.Events;
-using EnjoyCQRS.EventSource.Snapshots;
 
-namespace EnjoyCQRS.EventSource.Storage
+namespace EnjoyCQRS.Stores
 {
     /// <summary>
-    /// Stores the snapshots.
+    /// Event Store repository abstraction.
     /// </summary>
-    public interface ISnapshotStore
+    public interface IEventStore : IDisposable
     {
         /// <summary>
-        /// Save the aggregate's snapshot.
+        /// Retrieve all events based on <param name="id"></param>.
         /// </summary>
-        /// <param name="uncommittedSnapshot"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
-        Task SaveSnapshotAsync(IUncommittedSnapshot uncommittedSnapshot);
+        Task<IEnumerable<ICommittedEvent>> GetAllEventsAsync(Guid id);
 
         /// <summary>
-        /// Retrieves the latest aggregate's snapshot.
+        /// Save the events in Event Store.
         /// </summary>
-        /// <param name="aggregateId"></param>
-        /// <returns></returns>
-        Task<ICommittedSnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId);
-
-        /// <summary>
-        /// Retrieves the forward events from <param name="version"></param>.
-        /// </summary>
-        /// <param name="aggregateId"></param>
-        /// <param name="version"></param>
-        /// <returns></returns>
-        Task<IEnumerable<ICommittedEvent>> GetEventsForwardAsync(Guid aggregateId, int version);
+        /// <param name="collection"></param>
+        Task SaveAsync(IEnumerable<IUncommittedEvent> collection);
     }
 }

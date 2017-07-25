@@ -34,6 +34,8 @@ using EnjoyCQRS.Extensions;
 using EnjoyCQRS.Logger;
 using EnjoyCQRS.MessageBus;
 using EnjoyCQRS.MetadataProviders;
+using IProjectionStoreV1 = EnjoyCQRS.EventSource.Projections.IProjectionStore;
+using EnjoyCQRS.Stores;
 
 namespace EnjoyCQRS.EventSource.Storage
 {
@@ -41,7 +43,10 @@ namespace EnjoyCQRS.EventSource.Storage
     {
         private readonly AggregateTracker _aggregateTracker = new AggregateTracker();
         private readonly List<Aggregate> _aggregates = new List<Aggregate>();
+        private readonly ITransaction _transaction;
         private readonly IEventStore _eventStore;
+        private readonly ISnapshotStore _snapshotStore;
+        private readonly IProjectionStoreV1 _projectionStoreV1;
         private readonly IEventPublisher _eventPublisher;
         private readonly IProjectionProviderScanner _projectionProviderScanner;
         private readonly IEventUpdateManager _eventUpdateManager;
@@ -56,7 +61,10 @@ namespace EnjoyCQRS.EventSource.Storage
         
         public Session(
             ILoggerFactory loggerFactory,
+            ITransaction transaction,
             IEventStore eventStore,
+            ISnapshotStore snapshotStore,
+            IProjectionStoreV1 projectionStoreV1,
             IEventPublisher eventPublisher,
             IProjectionProviderScanner projectionProviderScanner = null,
             IEventUpdateManager eventUpdateManager = null,
@@ -91,7 +99,10 @@ namespace EnjoyCQRS.EventSource.Storage
 
             _logger = loggerFactory.Create(nameof(Session));
 
+            _transaction = transaction ?? throw new ArgumentNullException(nameof(transaction));
             _eventStore = eventStore ?? throw new ArgumentNullException(nameof(eventStore));
+            _snapshotStore = snapshotStore ?? throw new ArgumentNullException(nameof(snapshotStore));
+            _projectionStoreV1 = projectionStoreV1 ?? throw new ArgumentNullException(nameof(projectionStoreV1));
             _eventPublisher = eventPublisher ?? throw new ArgumentNullException(nameof(eventPublisher));
             _snapshotStrategy = snapshotStrategy;
             _eventUpdateManager = eventUpdateManager;
@@ -133,7 +144,7 @@ namespace EnjoyCQRS.EventSource.Storage
                 if (aggregate is ISnapshotAggregate snapshotAggregate)
                 {
                     int version = 0;
-                    var snapshot = await _eventStore.GetLatestSnapshotByIdAsync(id).ConfigureAwait(false);
+                    var snapshot = await _snapshotStore.GetLatestSnapshotByIdAsync(id).ConfigureAwait(false);
 
                     if (snapshot != null)
                     {
@@ -148,7 +159,7 @@ namespace EnjoyCQRS.EventSource.Storage
                         _logger.LogDebug("Snapshot restored.");
                     }
 
-                    events = await _eventStore.GetEventsForwardAsync(id, version).ConfigureAwait(false);
+                    events = await _snapshotStore.GetEventsForwardAsync(id, version).ConfigureAwait(false);
 
                     LoadAggregate(aggregate, events);
                 }
@@ -201,7 +212,7 @@ namespace EnjoyCQRS.EventSource.Storage
             }
 
             _externalTransaction = true;
-            _eventStore.BeginTransaction();
+            _transaction.BeginTransaction();
         }
 
         /// <summary>
@@ -214,7 +225,7 @@ namespace EnjoyCQRS.EventSource.Storage
 
             _logger.LogInformation($"Calling method: {_eventStore.GetType().Name}.{nameof(CommitAsync)}.");
 
-            await _eventStore.CommitAsync().ConfigureAwait(false);
+            await _transaction.CommitAsync().ConfigureAwait(false);
 
             _externalTransaction = false;
 
@@ -230,7 +241,7 @@ namespace EnjoyCQRS.EventSource.Storage
 
             if (!_externalTransaction)
             {
-                _eventStore.BeginTransaction();
+                _transaction.BeginTransaction();
             }
 
             // If transaction called externally, the client should care with transaction.
@@ -265,7 +276,7 @@ namespace EnjoyCQRS.EventSource.Storage
                     {
                         _logger.LogInformation("Taking aggregate's snapshot.");
 
-                        await aggregate.TakeSnapshot(_eventStore).ConfigureAwait(false);
+                        await aggregate.TakeSnapshot(_snapshotStore).ConfigureAwait(false);
                     }
 
                     _logger.LogInformation($"Update aggregate's version from {aggregate.Version} to {aggregate.Sequence}.");
@@ -284,7 +295,7 @@ namespace EnjoyCQRS.EventSource.Storage
                     {
                         var projection = provider.CreateProjection(aggregate);
                         
-                        await _eventStore.SaveProjectionAsync(projection).ConfigureAwait(false);
+                        await _projectionStoreV1.SaveProjectionAsync(projection).ConfigureAwait(false);
                     }
 
                 }
@@ -348,7 +359,7 @@ namespace EnjoyCQRS.EventSource.Storage
 
             _logger.LogInformation("Calling Event Store Rollback.");
 
-            _eventStore.Rollback();
+            _transaction.Rollback();
 
             _logger.LogInformation("Cleaning tracker.");
 

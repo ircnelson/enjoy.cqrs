@@ -31,61 +31,42 @@ using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.Collections;
 using EnjoyCQRS.Projections;
 using System.Threading;
+using EnjoyCQRS.Stores;
+using EnjoyCQRS.Core;
+using IProjectionStoreV1 = EnjoyCQRS.EventSource.Projections.IProjectionStore;
 
-namespace EnjoyCQRS.EventSource.Storage
+namespace EnjoyCQRS.Stores.InMemory
 {
-    public class InMemoryEventStore : IEventStore
+    public class InMemoryStores :  ITransaction, ICompositeStores
     {
-        private readonly EnjoyCQRS.Projections.IProjectionStore _projectionStore;
+        private readonly IProjectionStoreV1 _projectionStore;
         private readonly ProjectionRebuilder _projectionRebuilder;
         
         private readonly List<ICommittedEvent> _events = new List<ICommittedEvent>();
         private readonly List<ICommittedSnapshot> _snapshots = new List<ICommittedSnapshot>();
         private readonly Dictionary<ProjectionKey, object> _projections = new Dictionary<ProjectionKey, object>();
 
-        private readonly List<IUncommittedEvent> _uncommittedEvents = new List<IUncommittedEvent>();
-        private readonly List<IUncommittedSnapshot> _uncommittedSnapshots = new List<IUncommittedSnapshot>();
-        private readonly Dictionary<ProjectionKey, object> _uncommittedProjections = new Dictionary<ProjectionKey, object>();
+        private readonly InMemoryEventStore _eventStore;
+        private readonly InMemorySnapshotStore _snapshotStore;
+        private readonly InMemoryProjectionStoreV1 _projectionStoreV1;
 
         public IReadOnlyList<ICommittedEvent> Events => _events.AsReadOnly();
         public IReadOnlyList<ICommittedSnapshot> Snapshots => _snapshots.AsReadOnly();
         public IReadOnlyDictionary<ProjectionKey, object> Projections => new ReadOnlyDictionary<ProjectionKey, object>(_projections);
+        public bool InTransaction { get; private set; }
+        public IEventStore EventStore => _eventStore;
+        public ISnapshotStore SnapshotStore => _snapshotStore;
+        public IProjectionStoreV1 ProjectionStoreV1 => _projectionStoreV1;
 
-        public InMemoryEventStore(ProjectionRebuilder projectionRebuilder = null)
+        public InMemoryStores(ProjectionRebuilder projectionRebuilder = null)
         {
+            _eventStore = new InMemoryEventStore(_events);
+            _snapshotStore = new InMemorySnapshotStore(_eventStore, _snapshots);
+            _projectionStoreV1 = new InMemoryProjectionStoreV1(_projections);
+            
             _projectionRebuilder = projectionRebuilder;
         }
         
-        public bool InTransaction { get; private set; }
-        
-        public virtual Task SaveSnapshotAsync(IUncommittedSnapshot snapshot)
-        {
-            _uncommittedSnapshots.Add(snapshot);
-
-            return Task.CompletedTask;
-        }
-
-        public virtual Task<ICommittedSnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
-        {
-            var snapshot = Snapshots.Where(e => e.AggregateId == aggregateId).OrderByDescending(e => e.AggregateVersion).Take(1).FirstOrDefault();
-
-            return Task.FromResult(snapshot);
-        }
-
-        public virtual Task<IEnumerable<ICommittedEvent>> GetEventsForwardAsync(Guid aggregateId, int version)
-        {
-            var events = Events
-            .Where(e => e.AggregateId == aggregateId && e.Version > version)
-            .OrderBy(e => e.Version)
-            .ToList();
-
-            return Task.FromResult<IEnumerable<ICommittedEvent>>(events);
-        }
-
-        public void Dispose()
-        {
-        }
-
         public void BeginTransaction()
         {
             InTransaction = true;
@@ -94,23 +75,29 @@ namespace EnjoyCQRS.EventSource.Storage
         public virtual async Task CommitAsync()
         {
             if (!InTransaction) throw new InvalidOperationException("You are not in transaction.");
-            
-            _events.AddRange(_uncommittedEvents.Select(InstantiateCommittedEvent));
+
+            var uncommittedEvents = _eventStore.Uncommitted.ToList();
+
+            _events.AddRange(uncommittedEvents.Select(InstantiateCommittedEvent));
 
             if (_projectionRebuilder != null)
             {
-                await _projectionRebuilder.RebuildAsync(new InMemoryEventStreamReader(_uncommittedEvents)).ConfigureAwait(false);
+                await _projectionRebuilder.RebuildAsync(new InMemoryEventStreamReader(uncommittedEvents)).ConfigureAwait(false);
             }
 
-            _uncommittedEvents.Clear();
+            _eventStore.ClearUncommitted();
 
-            var committedSnapshots = _uncommittedSnapshots.Select(e => new InMemoryCommittedSnapshot(e.AggregateId, e.AggregateVersion, e.Data, e.Metadata));
-            
+            var uncommittedSnapshots = _snapshotStore.Uncommitted.ToList();
+
+            var committedSnapshots = uncommittedSnapshots.Select(e => new InMemoryCommittedSnapshot(e.AggregateId, e.AggregateVersion, e.Data, e.Metadata));
+
             _snapshots.AddRange(committedSnapshots);
-            
-            _uncommittedSnapshots.Clear();
 
-            foreach (var uncommittedProjection in _uncommittedProjections.ToList())
+            _snapshotStore.ClearUncommitted();
+
+            var uncommittedProjections = _projectionStoreV1.Uncommitted.ToList();
+
+            foreach (var uncommittedProjection in uncommittedProjections)
             {
                 if (!_projections.ContainsKey(uncommittedProjection.Key))
                 {
@@ -122,7 +109,7 @@ namespace EnjoyCQRS.EventSource.Storage
                 }
             }
 
-            _uncommittedProjections.Clear();
+            _projectionStoreV1.ClearUncommitted();
 
             InTransaction = false;
 
@@ -131,44 +118,13 @@ namespace EnjoyCQRS.EventSource.Storage
 
         public virtual void Rollback()
         {
-            _uncommittedEvents.Clear();
-            _uncommittedSnapshots.Clear();
-            _uncommittedProjections.Clear();
+            _eventStore.ClearUncommitted();
+            _snapshotStore.ClearUncommitted();
+            _projectionStoreV1.ClearUncommitted();
 
             InTransaction = false;
         }
-
-        public virtual Task<IEnumerable<ICommittedEvent>> GetAllEventsAsync(Guid id)
-        {
-            var events = Events
-            .Where(e => e.AggregateId == id)
-            .OrderBy(e => e.Version)
-            .ToList();
-
-            return Task.FromResult<IEnumerable<ICommittedEvent>>(events);
-        }
-
-        public virtual Task SaveAsync(IEnumerable<IUncommittedEvent> collection)
-        {
-            _uncommittedEvents.AddRange(collection);
-
-            return Task.CompletedTask;
-        }
-
-        public Task SaveProjectionAsync(IProjection projection)
-        {
-            var key = new ProjectionKey(projection.Id, projection.GetType().Name);
-
-            if (!_uncommittedProjections.ContainsKey(key))
-            {
-                _uncommittedProjections.Add(key, null);
-            }
-
-            _uncommittedProjections[key] = projection;
-
-            return Task.CompletedTask;
-        }
-
+        
         private static ICommittedEvent InstantiateCommittedEvent(IUncommittedEvent serializedEvent)
         {
             return new InMemoryCommittedEvent(serializedEvent.AggregateId, serializedEvent.Version, serializedEvent.Data, serializedEvent.Metadata);
@@ -207,18 +163,22 @@ namespace EnjoyCQRS.EventSource.Storage
             public IMetadataCollection Metadata { get; }
         }
 
-        public struct ProjectionKey
+        public void Dispose()
         {
-            public Guid Id { get; }
-            public string Category { get; }
-
-            public ProjectionKey(Guid id, string category)
-            {
-                Id = id;
-                Category = category;
-            }
         }
     }    
+
+    public struct ProjectionKey
+    {
+        public Guid Id { get; }
+        public string Category { get; }
+
+        public ProjectionKey(Guid id, string category)
+        {
+            Id = id;
+            Category = category;
+        }
+    }
 
     public class InMemoryEventStreamReader : EventStreamReader
     {

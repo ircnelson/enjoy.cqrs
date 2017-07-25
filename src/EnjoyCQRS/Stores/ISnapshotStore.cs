@@ -24,41 +24,35 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using EnjoyCQRS.Events;
-using EnjoyCQRS.EventSource.Projections;
+using EnjoyCQRS.EventSource.Snapshots;
 
-namespace EnjoyCQRS.EventSource.Storage
+namespace EnjoyCQRS.Stores
 {
     /// <summary>
-    /// Event Store repository abstraction.
+    /// Stores the snapshots.
     /// </summary>
-    public interface IEventStore : ISnapshotStore, IProjectionStore, IDisposable
+    public interface ISnapshotStore : IDisposable
     {
-        /// <summary>∑
-        /// Start the transaction.
-        /// </summary>
-        void BeginTransaction();
-
         /// <summary>
-        /// Confirm modifications.
+        /// Save the aggregate's snapshot.
         /// </summary>
-        Task CommitAsync();
-
-        /// <summary>
-        /// Revert modifications.
-        /// </summary>
-        void Rollback();
-
-        /// <summary>
-        /// Retrieve all events based on <param name="id"></param>.
-        /// </summary>
-        /// <param name="id"></param>
+        /// <param name="uncommittedSnapshot"></param>
         /// <returns></returns>
-        Task<IEnumerable<ICommittedEvent>> GetAllEventsAsync(Guid id);
+        Task SaveSnapshotAsync(IUncommittedSnapshot uncommittedSnapshot);
 
         /// <summary>
-        /// Save the events in Event Store.
+        /// Retrieves the latest aggregate's snapshot.
         /// </summary>
-        /// <param name="collection"></param>
-        Task SaveAsync(IEnumerable<IUncommittedEvent> collection);
+        /// <param name="aggregateId"></param>
+        /// <returns></returns>
+        Task<ICommittedSnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId);
+
+        /// <summary>
+        /// Retrieves the forward events from <param name="version"></param>.
+        /// </summary>
+        /// <param name="aggregateId"></param>
+        /// <param name="version"></param>
+        /// <returns></returns>
+        Task<IEnumerable<ICommittedEvent>> GetEventsForwardAsync(Guid aggregateId, int version);
     }
 }

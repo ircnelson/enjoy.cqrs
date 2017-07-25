@@ -1,4 +1,5 @@
 ﻿using EnjoyCQRS.EventStore.MongoDB;
+using EnjoyCQRS.EventStore.MongoDB.Stores;
 using FluentAssertions;
 using MongoDB.Driver;
 using System;
@@ -20,7 +21,7 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests
                 SnapshotsCollectionName = snapshotCollectionName
             };
 
-            Action action = () => new MongoEventStore(new MongoClient(), "db", defaultSettings);
+            Action action = () => new MongoStores(new MongoClient(), "db", defaultSettings);
 
             action.ShouldThrowExactly<ArgumentNullException>();
         }
@@ -34,10 +35,10 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests
                 SnapshotsCollectionName = "MySnapshots"
             };
 
-            using (var eventStore = new MongoEventStore(new MongoClient(), "db", customSettings))
+            using (var eventStore = new MongoStores(new MongoClient(), "db", customSettings))
             {
-                eventStore.Setttings.EventsCollectionName.Should().Be(customSettings.EventsCollectionName);
-                eventStore.Setttings.SnapshotsCollectionName.Should().Be(customSettings.SnapshotsCollectionName);
+                eventStore.Settings.EventsCollectionName.Should().Be(customSettings.EventsCollectionName);
+                eventStore.Settings.SnapshotsCollectionName.Should().Be(customSettings.SnapshotsCollectionName);
             }
         }
 
@@ -46,10 +47,10 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests
         {
             var defaultSettings = new MongoEventStoreSetttings();
 
-            using (var eventStore = new MongoEventStore(new MongoClient(), "db"))
+            using (var eventStore = new MongoStores(new MongoClient(), "db"))
             {
-                eventStore.Setttings.EventsCollectionName.Should().Be(defaultSettings.EventsCollectionName);
-                eventStore.Setttings.SnapshotsCollectionName.Should().Be(defaultSettings.SnapshotsCollectionName);
+                eventStore.Settings.EventsCollectionName.Should().Be(defaultSettings.EventsCollectionName);
+                eventStore.Settings.SnapshotsCollectionName.Should().Be(defaultSettings.SnapshotsCollectionName);
             }
         }
     }

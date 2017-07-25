@@ -23,10 +23,10 @@
 using System;
 using EnjoyCQRS.MessageBus;
 using EnjoyCQRS.EventSource;
-using EnjoyCQRS.EventSource.Projections;
 using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;
 using EnjoyCQRS.Logger;
+using EnjoyCQRS.Stores;
 
 namespace EnjoyCQRS.Core
 {

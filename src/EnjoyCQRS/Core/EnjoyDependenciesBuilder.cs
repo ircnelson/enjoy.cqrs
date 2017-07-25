@@ -28,6 +28,7 @@ using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;
 using EnjoyCQRS.Logger;
 using System.Linq;
+using EnjoyCQRS.Stores;
 
 namespace EnjoyCQRS.Core
 {

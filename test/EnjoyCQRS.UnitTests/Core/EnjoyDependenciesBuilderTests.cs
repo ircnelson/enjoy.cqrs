@@ -3,7 +3,6 @@ using Xunit;
 using EnjoyCQRS.EventSource.Storage;
 using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Snapshots;
-using EnjoyCQRS.EventSource.Projections;
 using EnjoyCQRS.Logger;
 using EnjoyCQRS.MessageBus.InProcess;
 using System.Linq;
@@ -12,6 +11,8 @@ using EnjoyCQRS.UnitTests.Core.Stubs;
 using System;
 using EnjoyCQRS.MessageBus;
 using Moq;
+using EnjoyCQRS.Stores;
+using EnjoyCQRS.Stores.InMemory;
 
 namespace EnjoyCQRS.UnitTests.Core
 {
@@ -73,7 +74,7 @@ namespace EnjoyCQRS.UnitTests.Core
 
             // Act
 
-            enjoyDependenciesBuilder.WithEventStore(typeof(InMemoryEventStore));
+            enjoyDependenciesBuilder.WithEventStore(typeof(InMemoryStores));
             enjoyDependenciesBuilder.WithCommandDispatcher(typeof(DefaultCommandDispatcher));
             enjoyDependenciesBuilder.WithEventRouter(typeof(DefaultEventRouter));
             enjoyDependenciesBuilder.WithEventUpdateManager(typeof(DefaultEventUpdateManager));

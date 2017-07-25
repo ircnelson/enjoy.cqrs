@@ -16,15 +16,18 @@ using EnjoyCQRS.UnitTests.Domain.Stubs.Events;
 using FluentAssertions;
 using Moq;
 using Xunit;
+using IProjectionStoreV1 = EnjoyCQRS.EventSource.Projections.IProjectionStore;
+using EnjoyCQRS.Stores;
+using EnjoyCQRS.Stores.InMemory;
 
 namespace EnjoyCQRS.UnitTests.Storage
 {
     [Trait("Unit", "Session")]
     public class SessionTests
     {
-        private readonly Func<IEventStore, IEventPublisher, ISnapshotStrategy, EventsMetadataService, Session> _sessionFactory = (eventStore, eventPublisher, snapshotStrategy, eventsMetadataService) =>
+        private readonly Func<ITransaction, IEventStore, ISnapshotStore, IProjectionStoreV1, IEventPublisher, ISnapshotStrategy, EventsMetadataService, Session> _sessionFactory = (transaction, eventStore, snapshotStore, projectionStoreV1, eventPublisher, snapshotStrategy, eventsMetadataService) =>
         {
-            var session = new Session(MockHelper.CreateLoggerFactory(MockHelper.GetMockLogger().Object), eventStore, eventPublisher, null, null, null, snapshotStrategy, eventsMetadataService);
+            var session = new Session(MockHelper.CreateLoggerFactory(MockHelper.GetMockLogger().Object), transaction, eventStore, snapshotStore, projectionStoreV1, eventPublisher, null, null, null, snapshotStrategy, eventsMetadataService);
 
             return session;
         };
@@ -41,12 +44,15 @@ namespace EnjoyCQRS.UnitTests.Storage
         public void Cannot_pass_null_instance_of_LoggerFactory()
         {
             var eventPublisher = Mock.Of<IEventPublisher>();
+            var transaction = Mock.Of<ITransaction>();
             var eventStore = Mock.Of<IEventStore>();
+            var snapshotStore = Mock.Of<ISnapshotStore>();
+            var projectionStoreV1 = Mock.Of<IProjectionStoreV1>();
             var projectionProviderScanner = Mock.Of<IProjectionProviderScanner>();
             var eventUpdateManager = Mock.Of<IEventUpdateManager>();
             var metadataProviders = Mock.Of<IEnumerable<IMetadataProvider>>();
 
-            Action act = () => new Session(null, eventStore, eventPublisher, projectionProviderScanner, eventUpdateManager, metadataProviders);
+            Action act = () => new Session(null, transaction, eventStore, snapshotStore, projectionStoreV1, eventPublisher, projectionProviderScanner, eventUpdateManager, metadataProviders);
 
             act.ShouldThrowExactly<ArgumentNullException>();
         }
@@ -54,12 +60,15 @@ namespace EnjoyCQRS.UnitTests.Storage
         [Fact]
         public void Cannot_pass_null_instance_of_EventStore()
         {
+            var transaction = Mock.Of<ITransaction>();
+            var snapshotStore = Mock.Of<ISnapshotStore>();
+            var projectionStoreV1 = Mock.Of<IProjectionStoreV1>();
             var projectionProviderScanner = Mock.Of<IProjectionProviderScanner>();
             var eventPublisher = Mock.Of<IEventPublisher>();
             var eventUpdateManager = Mock.Of<IEventUpdateManager>();
             var metadataProviders = Mock.Of<IEnumerable<IMetadataProvider>>();
 
-            Action act = () => new Session(MockHelper.CreateLoggerFactory(MockHelper.GetMockLogger().Object), null, eventPublisher, projectionProviderScanner, eventUpdateManager, metadataProviders);
+            Action act = () => new Session(MockHelper.CreateLoggerFactory(MockHelper.GetMockLogger().Object), transaction, null, snapshotStore, projectionStoreV1, eventPublisher, projectionProviderScanner, eventUpdateManager, metadataProviders);
 
             act.ShouldThrowExactly<ArgumentNullException>();
         }
@@ -67,12 +76,15 @@ namespace EnjoyCQRS.UnitTests.Storage
         [Fact]
         public void Cannot_pass_null_instance_of_EventPublisher()
         {
+            var transaction = Mock.Of<ITransaction>();
             var eventStore = Mock.Of<IEventStore>();
+            var snapshotStore = Mock.Of<ISnapshotStore>();
+            var projectionStoreV1 = Mock.Of<IProjectionStoreV1>();
             var projectionProviderScanner = Mock.Of<IProjectionProviderScanner>();
             var eventUpdateManager = Mock.Of<IEventUpdateManager>();
             var metadataProviders = Mock.Of<IEnumerable<IMetadataProvider>>();
 
-            Action act = () => new Session(MockHelper.CreateLoggerFactory(MockHelper.GetMockLogger().Object), eventStore, null, projectionProviderScanner, eventUpdateManager, metadataProviders);
+            Action act = () => new Session(MockHelper.CreateLoggerFactory(MockHelper.GetMockLogger().Object), transaction, eventStore, snapshotStore, projectionStoreV1, null, projectionProviderScanner, eventUpdateManager, metadataProviders);
 
             act.ShouldThrowExactly<ArgumentNullException>();
         }
@@ -80,10 +92,10 @@ namespace EnjoyCQRS.UnitTests.Storage
         [Fact]
         public async Task Should_throws_exception_When_aggregate_version_is_wrong()
         {
-            var eventStore = new InMemoryEventStore();
+            var stores = new InMemoryStores();
 
             // create first session instance
-            var session = _sessionFactory(eventStore, _eventPublisherMock.Object, null, null);
+            var session = _sessionFactory(stores, stores.EventStore, stores.SnapshotStore, stores.ProjectionStoreV1, _eventPublisherMock.Object, null, null);
 
             var stubAggregate1 = StubAggregate.Create("Walter White");
 
@@ -94,7 +106,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             stubAggregate1.ChangeName("Going to Version 2. Expected Version 1.");
 
             // create second session instance to getting clear tracking
-            session = _sessionFactory(eventStore, _eventPublisherMock.Object, null, null);
+            session = _sessionFactory(stores, stores.EventStore, stores.SnapshotStore, stores.ProjectionStoreV1, _eventPublisherMock.Object, null, null);
 
             var stubAggregate2 = await session.GetByIdAsync<StubAggregate>(stubAggregate1.Id).ConfigureAwait(false);
 
@@ -111,9 +123,9 @@ namespace EnjoyCQRS.UnitTests.Storage
         [Fact]
         public async Task Should_retrieve_the_aggregate_from_tracking()
         {
-            var eventStore = new InMemoryEventStore();
+            var stores = new InMemoryStores();
 
-            var session = _sessionFactory(eventStore, _eventPublisherMock.Object, null, null);
+            var session = _sessionFactory(stores, stores.EventStore, stores.SnapshotStore, stores.ProjectionStoreV1, _eventPublisherMock.Object, null, null);
 
             var stubAggregate1 = StubAggregate.Create("Walter White");
 
@@ -135,13 +147,13 @@ namespace EnjoyCQRS.UnitTests.Storage
         {
             var events = new List<IDomainEvent>();
 
-            var eventStore = new InMemoryEventStore();
+            var stores = new InMemoryStores();
 
             _eventPublisherMock.Setup(e => e.PublishAsync(It.IsAny<IEnumerable<IDomainEvent>>())).Callback<IEnumerable<IDomainEvent>>(evts => events.AddRange(evts)).Returns(Task.CompletedTask);
 
             _eventPublisherMock.Setup(e => e.CommitAsync()).Returns(Task.CompletedTask);
 
-            var session = _sessionFactory(eventStore, _eventPublisherMock.Object, null, null);
+            var session = _sessionFactory(stores, stores.EventStore, stores.SnapshotStore, stores.ProjectionStoreV1, _eventPublisherMock.Object, null, null);
 
             var stubAggregate1 = StubAggregate.Create("Walter White");
             var stubAggregate2 = StubAggregate.Create("Heinsenberg");
@@ -180,8 +192,8 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             var snapshotStrategy = CreateSnapshotStrategy();
 
-            var eventStore = new StubEventStore();
-            var session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy, null);
+            var stores = new InMemoryStores();
+            var session = _sessionFactory(stores, stores.EventStore, stores.SnapshotStore, stores.ProjectionStoreV1, _eventPublisherMock.Object, snapshotStrategy, null);
 
             var stubAggregate = StubSnapshotAggregate.Create("Snap");
 
@@ -196,9 +208,7 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             // Assert
 
-            eventStore.SaveSnapshotMethodCalled.Should().BeTrue();
-
-            var committedSnapshot = eventStore.Snapshots.First(e => e.AggregateId == stubAggregate.Id);
+            var committedSnapshot = stores.Snapshots.First(e => e.AggregateId == stubAggregate.Id);
 
             committedSnapshot.Should().NotBeNull();
             
@@ -217,9 +227,9 @@ namespace EnjoyCQRS.UnitTests.Storage
         {
             var snapshotStrategy = CreateSnapshotStrategy();
 
-            var eventStore = new StubEventStore();
+            var stores = new InMemoryStores();
 
-            var session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy, null);
+            var session = _sessionFactory(stores, stores.EventStore, stores.SnapshotStore, stores.ProjectionStoreV1, _eventPublisherMock.Object, snapshotStrategy, null);
 
             var stubAggregate = StubSnapshotAggregate.Create("Snap");
 
@@ -229,12 +239,10 @@ namespace EnjoyCQRS.UnitTests.Storage
             await session.AddAsync(stubAggregate).ConfigureAwait(false);
             await session.SaveChangesAsync().ConfigureAwait(false);
 
-            session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy, null);
+            session = _sessionFactory(stores, stores.EventStore, stores.SnapshotStore, stores.ProjectionStoreV1, _eventPublisherMock.Object, snapshotStrategy, null);
 
             var aggregate = await session.GetByIdAsync<StubSnapshotAggregate>(stubAggregate.Id).ConfigureAwait(false);
-
-            eventStore.GetSnapshotMethodCalled.Should().BeTrue();
-
+            
             aggregate.Version.Should().Be(3);
             aggregate.Id.Should().Be(stubAggregate.Id);
         }
@@ -244,9 +252,9 @@ namespace EnjoyCQRS.UnitTests.Storage
         {
             var snapshotStrategy = CreateSnapshotStrategy(false);
 
-            var eventStore = new StubEventStore();
+            var stores = new InMemoryStores();
 
-            var session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy, null);
+            var session = _sessionFactory(stores, stores.EventStore, stores.SnapshotStore, stores.ProjectionStoreV1, _eventPublisherMock.Object, snapshotStrategy, null);
 
             var stubAggregate = StubSnapshotAggregate.Create("Snap");
 
@@ -256,7 +264,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             await session.AddAsync(stubAggregate).ConfigureAwait(false);
             await session.SaveChangesAsync().ConfigureAwait(false);
 
-            session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy, null);
+            session = _sessionFactory(stores, stores.EventStore, stores.SnapshotStore, stores.ProjectionStoreV1, _eventPublisherMock.Object, snapshotStrategy, null);
 
             var aggregate = await session.GetByIdAsync<StubSnapshotAggregate>(stubAggregate.Id).ConfigureAwait(false);
 
@@ -269,9 +277,9 @@ namespace EnjoyCQRS.UnitTests.Storage
         {
             var snapshotStrategy = CreateSnapshotStrategy();
 
-            var eventStore = new StubEventStore();
+            var stores = new InMemoryStores();
 
-            var session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy, null);
+            var session = _sessionFactory(stores, stores.EventStore, stores.SnapshotStore, stores.ProjectionStoreV1, _eventPublisherMock.Object, snapshotStrategy, null);
 
             var stubAggregate = StubSnapshotAggregate.Create("Snap");
 
@@ -284,7 +292,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             // dont make snapshot
             snapshotStrategy = CreateSnapshotStrategy(false);
 
-            session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy, null);
+            session = _sessionFactory(stores, stores.EventStore, stores.SnapshotStore, stores.ProjectionStoreV1, _eventPublisherMock.Object, snapshotStrategy, null);
 
             await session.AddAsync(stubAggregate).ConfigureAwait(false);
             await session.SaveChangesAsync().ConfigureAwait(false); // Version 3
@@ -299,9 +307,9 @@ namespace EnjoyCQRS.UnitTests.Storage
         {
             var snapshotStrategy = CreateSnapshotStrategy();
 
-            var eventStore = new StubEventStore();
+            var stores = new InMemoryStores();
 
-            var session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy, null);
+            var session = _sessionFactory(stores, stores.EventStore, stores.SnapshotStore, stores.ProjectionStoreV1, _eventPublisherMock.Object, snapshotStrategy, null);
 
             var newId = Guid.NewGuid();
 
@@ -323,12 +331,17 @@ namespace EnjoyCQRS.UnitTests.Storage
         {
             var snapshotStrategy = CreateSnapshotStrategy(false);
 
+            var transactionMock = new Mock<ITransaction>();
+
             var eventStoreMock = new Mock<IEventStore>();
             eventStoreMock.Setup(e => e.SaveAsync(It.IsAny<IEnumerable<IUncommittedEvent>>()))
                 .Callback(DoThrowExcetion)
                 .Returns(Task.CompletedTask);
 
-            var session = _sessionFactory(eventStoreMock.Object, _eventPublisherMock.Object, snapshotStrategy, null);
+            var snapshotStoreMock = new Mock<ISnapshotStore>();
+            var projectionStoreV1 = new Mock<IProjectionStoreV1>();
+
+            var session = _sessionFactory(transactionMock.Object, eventStoreMock.Object, snapshotStoreMock.Object, projectionStoreV1.Object, _eventPublisherMock.Object, snapshotStrategy, null);
 
             var stubAggregate = StubAggregate.Create("Guilty");
 
@@ -340,7 +353,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             }
             catch (Exception)
             {
-                eventStoreMock.Verify(e => e.Rollback(), Times.Once);
+                transactionMock.Verify(e => e.Rollback(), Times.Once);
                 _eventPublisherMock.Verify(e => e.Rollback(), Times.Once);
             }
         }
@@ -350,21 +363,25 @@ namespace EnjoyCQRS.UnitTests.Storage
         {
             var snapshotStrategy = CreateSnapshotStrategy(false);
 
+            var transactionMock = new Mock<ITransaction>();
+            transactionMock.Setup(e => e.BeginTransaction());
+            transactionMock.Setup(e => e.Rollback());
+
             var eventStoreMock = new Mock<IEventStore>();
             eventStoreMock.Setup(e => e.SaveAsync(It.IsAny<IEnumerable<IUncommittedEvent>>()))
                 .Callback(DoThrowExcetion)
                 .Returns(Task.CompletedTask);
 
-            eventStoreMock.Setup(e => e.BeginTransaction());
-            eventStoreMock.Setup(e => e.Rollback());
+            var snapshotStoreMock = new Mock<ISnapshotStore>();
+            var projectionStoreV1 = new Mock<IProjectionStoreV1>();
 
-            var session = _sessionFactory(eventStoreMock.Object, _eventPublisherMock.Object, snapshotStrategy, null);
+            var session = _sessionFactory(transactionMock.Object, eventStoreMock.Object, snapshotStoreMock.Object, projectionStoreV1.Object, _eventPublisherMock.Object, snapshotStrategy, null);
 
             var stubAggregate = StubAggregate.Create("Guilty");
 
             session.BeginTransaction();
 
-            eventStoreMock.Verify(e => e.BeginTransaction(), Times.Once);
+            transactionMock.Verify(e => e.BeginTransaction(), Times.Once);
 
             await session.AddAsync(stubAggregate).ConfigureAwait(false);
 
@@ -378,7 +395,7 @@ namespace EnjoyCQRS.UnitTests.Storage
                 session.Rollback();
             }
 
-            eventStoreMock.Verify(e => e.Rollback(), Times.Once);
+            transactionMock.Verify(e => e.Rollback(), Times.Once);
             _eventPublisherMock.Verify(e => e.Rollback(), Times.Once);
         }
 
@@ -387,10 +404,14 @@ namespace EnjoyCQRS.UnitTests.Storage
         {
             var snapshotStrategy = CreateSnapshotStrategy(false);
 
-            var eventStoreMock = new Mock<IEventStore>();
-            eventStoreMock.SetupAllProperties();
+            var transactionMock = new Mock<ITransaction>();
+            transactionMock.SetupAllProperties();
 
-            var session = _sessionFactory(eventStoreMock.Object, _eventPublisherMock.Object, snapshotStrategy, null);
+            var eventStoreMock = new Mock<IEventStore>();
+            var snapshotStoreMock = new Mock<ISnapshotStore>();
+            var projectionStoreV1 = new Mock<IProjectionStoreV1>();
+
+            var session = _sessionFactory(transactionMock.Object, eventStoreMock.Object, snapshotStoreMock.Object, projectionStoreV1.Object, _eventPublisherMock.Object, snapshotStrategy, null);
 
             session.BeginTransaction();
 
@@ -404,6 +425,9 @@ namespace EnjoyCQRS.UnitTests.Storage
         {
             var snapshotStrategy = CreateSnapshotStrategy(false);
 
+            var transactionMock = new Mock<ITransaction>();
+            transactionMock.SetupAllProperties();
+
             _eventPublisherMock.Setup(e => e.PublishAsync(It.IsAny<IDomainEvent>()))
                 .Callback(DoThrowExcetion)
                 .Returns(Task.CompletedTask);
@@ -415,7 +439,10 @@ namespace EnjoyCQRS.UnitTests.Storage
             var eventStoreMock = new Mock<IEventStore>();
             eventStoreMock.SetupAllProperties();
 
-            var session = _sessionFactory(eventStoreMock.Object, _eventPublisherMock.Object, snapshotStrategy, null);
+            var snapshotStoreMock = new Mock<ISnapshotStore>();
+            var projectionStoreV1 = new Mock<IProjectionStoreV1>();
+
+            var session = _sessionFactory(transactionMock.Object, eventStoreMock.Object, snapshotStoreMock.Object, projectionStoreV1.Object, _eventPublisherMock.Object, snapshotStrategy, null);
 
             await session.AddAsync(StubAggregate.Create("Test"));
 
@@ -425,7 +452,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             }
             catch (Exception)
             {
-                eventStoreMock.Verify(e => e.Rollback(), Times.Once);
+                transactionMock.Verify(e => e.Rollback(), Times.Once);
                 _eventPublisherMock.Verify(e => e.Rollback(), Times.Once);
             }
         }
@@ -435,13 +462,19 @@ namespace EnjoyCQRS.UnitTests.Storage
         {
             var snapshotStrategy = CreateSnapshotStrategy(false);
 
+            var transactionMock = new Mock<ITransaction>();
+            transactionMock.SetupAllProperties();
+
             var eventStoreMock = new Mock<IEventStore>();
             eventStoreMock.SetupAllProperties();
             eventStoreMock.Setup(e => e.SaveAsync(It.IsAny<IEnumerable<IUncommittedEvent>>()))
                 .Callback(DoThrowExcetion)
                 .Returns(Task.CompletedTask);
 
-            var session = _sessionFactory(eventStoreMock.Object, _eventPublisherMock.Object, snapshotStrategy, null);
+            var snapshotStoreMock = new Mock<ISnapshotStore>();
+            var projectionStoreV1 = new Mock<IProjectionStoreV1>();
+
+            var session = _sessionFactory(transactionMock.Object, eventStoreMock.Object, snapshotStoreMock.Object, projectionStoreV1.Object, _eventPublisherMock.Object, snapshotStrategy, null);
 
             await session.AddAsync(StubAggregate.Create("Test")).ConfigureAwait(false);
 
@@ -451,7 +484,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             }
             catch (Exception)
             {
-                eventStoreMock.Verify(e => e.Rollback(), Times.Once);
+                transactionMock.Verify(e => e.Rollback(), Times.Once);
                 _eventPublisherMock.Verify(e => e.Rollback(), Times.Once);
             }
         }
@@ -460,10 +493,10 @@ namespace EnjoyCQRS.UnitTests.Storage
         public async Task When_Save_events_Then_aggregate_projection_should_be_created()
         {
             var snapshotStrategy = CreateSnapshotStrategy(false);
+            
+            var stores = new InMemoryStores();
 
-            var eventStore = new StubEventStore();
-
-            var session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy, null);
+            var session = _sessionFactory(stores, stores.EventStore, stores.SnapshotStore, stores.ProjectionStoreV1, _eventPublisherMock.Object, snapshotStrategy, null);
 
             var stubAggregate1 = StubAggregate.Create("Walter White");
 
@@ -474,11 +507,11 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             await session.SaveChangesAsync().ConfigureAwait(false);
 
-            var projectionKey = new InMemoryEventStore.ProjectionKey(stubAggregate1.Id, typeof(StubAggregateProjection).Name);
+            var projectionKey = new ProjectionKey(stubAggregate1.Id, typeof(StubAggregateProjection).Name);
 
-            eventStore.Projections.ContainsKey(projectionKey).Should().BeTrue();
+            stores.Projections.ContainsKey(projectionKey).Should().BeTrue();
 
-            var projection = (StubAggregateProjection) eventStore.Projections[projectionKey];
+            var projection = (StubAggregateProjection) stores.Projections[projectionKey];
 
             projection.Id.Should().Be(stubAggregate1.Id);
             projection.Name.Should().Be(stubAggregate1.Name);
@@ -489,9 +522,9 @@ namespace EnjoyCQRS.UnitTests.Storage
         {
             var snapshotStrategy = CreateSnapshotStrategy(false);
 
-            var eventStore = new StubEventStore();
+            var stores = new InMemoryStores();
 
-            var session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy, null);
+            var session = _sessionFactory(stores, stores.EventStore, stores.SnapshotStore, stores.ProjectionStoreV1, _eventPublisherMock.Object, snapshotStrategy, null);
 
             var stubAggregate1 = StubAggregate.Create("Walter White");
 
@@ -504,12 +537,12 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             await session.SaveChangesAsync().ConfigureAwait(false);
 
-            eventStore.Projections.Count.Should().Be(1);
+            stores.Projections.Count.Should().Be(1);
 
-            var projectionKey = new InMemoryEventStore.ProjectionKey(stubAggregate1.Id, typeof(StubAggregateProjection).Name);
-            eventStore.Projections.ContainsKey(projectionKey).Should().BeTrue();
+            var projectionKey = new ProjectionKey(stubAggregate1.Id, typeof(StubAggregateProjection).Name);
+            stores.Projections.ContainsKey(projectionKey).Should().BeTrue();
 
-            var projection = (StubAggregateProjection) eventStore.Projections[projectionKey];
+            var projection = (StubAggregateProjection) stores.Projections[projectionKey];
 
             projection.Id.Should().Be(stubAggregate1.Id);
             projection.Name.Should().Be(stubAggregate1.Name);
@@ -524,8 +557,8 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             var eventsMetadataService = new EventsMetadataService();
 
-            var eventStore = new StubEventStore();
-            var session = _sessionFactory(eventStore, _eventPublisherMock.Object, snapshotStrategy, eventsMetadataService);
+            var stores = new InMemoryStores();
+            var session = _sessionFactory(stores, stores.EventStore, stores.SnapshotStore, stores.ProjectionStoreV1, _eventPublisherMock.Object, snapshotStrategy, eventsMetadataService);
 
             var stubAggregate = StubSnapshotAggregate.Create("Snap");
 

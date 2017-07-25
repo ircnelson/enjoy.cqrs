@@ -27,8 +27,8 @@ using EnjoyCQRS.MessageBus;
 using EnjoyCQRS.EventSource.Storage;
 using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Snapshots;
-using EnjoyCQRS.EventSource.Projections;
 using EnjoyCQRS.Logger;
+using EnjoyCQRS.Stores;
 
 namespace EnjoyCQRS.DependencyInjection.Autofac
 {

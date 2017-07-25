@@ -20,36 +20,50 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using EnjoyCQRS.Events;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using EnjoyCQRS.EventSource;
-using EnjoyCQRS.EventSource.Snapshots;
-using EnjoyCQRS.Collections;
-using EnjoyCQRS.Stores;
 
-namespace EnjoyCQRS.Extensions
+namespace EnjoyCQRS.Stores.InMemory
 {
-    internal static class AggregateExtensions
+    public class InMemoryEventStore : IEventStore
     {
-        public static async Task TakeSnapshot(this Aggregate aggregate, ISnapshotStore snapshotStore)
+        private readonly List<ICommittedEvent> _events = new List<ICommittedEvent>();
+        private readonly List<IUncommittedEvent> _uncommittedEvents = new List<IUncommittedEvent>();
+        public IReadOnlyList<ICommittedEvent> Events => _events.AsReadOnly();
+        public IReadOnlyList<IUncommittedEvent> Uncommitted => _uncommittedEvents.AsReadOnly();
+
+        public InMemoryEventStore(List<ICommittedEvent> storage)
         {
-            var snapshot = ((ISnapshotAggregate)aggregate).CreateSnapshot();
+            _events = storage;
+        }
 
-            var metadatas = new[]
-            {
-                new KeyValuePair<string, object>(MetadataKeys.AggregateId, aggregate.Id),
-                new KeyValuePair<string, object>(MetadataKeys.AggregateSequenceNumber, aggregate.Sequence),
-                new KeyValuePair<string, object>(MetadataKeys.SnapshotId, Guid.NewGuid()),
-                new KeyValuePair<string, object>(MetadataKeys.SnapshotClrType, snapshot.GetType().AssemblyQualifiedName),
-                new KeyValuePair<string, object>(MetadataKeys.SnapshotName, snapshot.GetType().Name),
-            };
+        public virtual Task<IEnumerable<ICommittedEvent>> GetAllEventsAsync(Guid id)
+        {
+            var events = Events
+            .Where(e => e.AggregateId == id)
+            .OrderBy(e => e.Version)
+            .ToList();
 
-            var metadata = new MetadataCollection(metadatas);
+            return Task.FromResult<IEnumerable<ICommittedEvent>>(events);
+        }
 
-            var uncommittedSnapshot = new UncommittedSnapshot(aggregate.Id, aggregate.Sequence, snapshot, metadata);
-            
-            await snapshotStore.SaveSnapshotAsync(uncommittedSnapshot).ConfigureAwait(false);
+        public virtual Task SaveAsync(IEnumerable<IUncommittedEvent> collection)
+        {
+            _uncommittedEvents.AddRange(collection);
+
+            return Task.CompletedTask;
+        }
+
+        public void Dispose()
+        {
+        }
+
+        internal void ClearUncommitted()
+        {
+            _uncommittedEvents.Clear();
         }
     }
 }

@@ -5,96 +5,196 @@ using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource.Projections;
 using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;
+using IProjectionStoreV1 = EnjoyCQRS.EventSource.Projections.IProjectionStore;
+using EnjoyCQRS.Stores;
+using EnjoyCQRS.Core;
 
 namespace EnjoyCQRS.UnitTests.Shared.TestSuit
 {
-    public class EventStoreWrapper : IEventStore
+    public class StoresWrapper : ITransaction, ICompositeStores
     {
-        public EventStoreMethods CalledMethods;
-
-        private readonly IEventStore _eventStore;
-
-        public EventStoreWrapper(IEventStore eventStore)
-        {
-            _eventStore = eventStore;
-
-            CalledMethods &= EventStoreMethods.Ctor;
+        private StoresWrapperVerifier _verifier;
+        public StoresWrapperVerifier Verifier {
+            get
+            {
+                return new StoresWrapperVerifier()
+                {
+                    CalledMethods = _verifier.CalledMethods
+                    |= _eventStore.Verifier.CalledMethods
+                    |= _snapshotStore.Verifier.CalledMethods
+                    |= _projectionStoreV1.Verifier.CalledMethods
+                };
+            }
         }
+        
+        private readonly ITransaction _transaction;
+        private readonly EventStoreWrapper _eventStore;
+        private readonly SnapshotStoreWrapper _snapshotStore;
+        private readonly ProjectionStoreV1Wrapper _projectionStoreV1;
 
-        public async Task SaveSnapshotAsync(IUncommittedSnapshot uncommittedSnapshot)
+        public IEventStore EventStore => _eventStore;
+        public ISnapshotStore SnapshotStore => _snapshotStore;
+        public IProjectionStoreV1 ProjectionStoreV1 => _projectionStoreV1;
+
+        public StoresWrapper(
+            ITransaction transaction, 
+            IEventStore eventStore,
+            ISnapshotStore snapshotStore,
+            IProjectionStoreV1 projectionStoreV1)
         {
-            await _eventStore.SaveSnapshotAsync(uncommittedSnapshot).ConfigureAwait(false);
+            _verifier = new StoresWrapperVerifier();
 
-            CalledMethods |= EventStoreMethods.SaveSnapshotAsync;
-        }
+            _verifier.CalledMethods |= EventStoreMethods.Ctor;
 
-        public async Task<ICommittedSnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
-        {
-            var result = await _eventStore.GetLatestSnapshotByIdAsync(aggregateId).ConfigureAwait(false);
+            _transaction = transaction;
 
-            CalledMethods |= EventStoreMethods.GetLatestSnapshotByIdAsync;
-
-            return result;
-        }
-
-        public async Task<IEnumerable<ICommittedEvent>> GetEventsForwardAsync(Guid aggregateId, int version)
-        {
-            var result = await _eventStore.GetEventsForwardAsync(aggregateId, version).ConfigureAwait(false);
-
-            CalledMethods |= EventStoreMethods.GetEventsForwardAsync;
-
-            return result;
+            _eventStore = new EventStoreWrapper(eventStore, _verifier);
+            _snapshotStore = new SnapshotStoreWrapper(snapshotStore, _verifier);
+            _projectionStoreV1 = new ProjectionStoreV1Wrapper(projectionStoreV1, _verifier);
+            
         }
 
         public void Dispose()
         {
-            _eventStore.Dispose();
+            EventStore.Dispose();
 
-            CalledMethods |= EventStoreMethods.Dispose;
+            _verifier.CalledMethods |= EventStoreMethods.Dispose;
         }
 
         public void BeginTransaction()
         {
-            _eventStore.BeginTransaction();
+            _transaction.BeginTransaction();
 
-            CalledMethods |= EventStoreMethods.BeginTransaction;
+            _verifier.CalledMethods |= EventStoreMethods.BeginTransaction;
         }
 
         public async Task CommitAsync()
         {
-            await _eventStore.CommitAsync();
+            await _transaction.CommitAsync();
 
-            CalledMethods |= EventStoreMethods.CommitAsync;
+            _verifier.CalledMethods |= EventStoreMethods.CommitAsync;
         }
 
         public void Rollback()
         {
-            _eventStore.Rollback();
+            _transaction.Rollback();
 
-            CalledMethods |= EventStoreMethods.Rollback;
+            _verifier.CalledMethods |= EventStoreMethods.Rollback;
         }
+        
+        
+    }
 
+    public class EventStoreWrapper : IEventStore
+    {
+        private readonly IEventStore _store;
+
+        public StoresWrapperVerifier Verifier;
+
+        public EventStoreWrapper(IEventStore eventStore, StoresWrapperVerifier methods)
+        {
+            _store = eventStore;
+            Verifier = methods;
+        }
+        
         public async Task<IEnumerable<ICommittedEvent>> GetAllEventsAsync(Guid id)
         {
-            var result = await _eventStore.GetAllEventsAsync(id).ConfigureAwait(false);
+            var result = await _store.GetAllEventsAsync(id).ConfigureAwait(false);
 
-            CalledMethods |= EventStoreMethods.GetAllEventsAsync;
+            Verifier.CalledMethods |= EventStoreMethods.GetAllEventsAsync;
 
             return result;
         }
 
         public async Task SaveAsync(IEnumerable<IUncommittedEvent> collection)
         {
-            await _eventStore.SaveAsync(collection).ConfigureAwait(false);
+            await _store.SaveAsync(collection).ConfigureAwait(false);
 
-            CalledMethods |= EventStoreMethods.SaveAsync;
+            Verifier.CalledMethods |= EventStoreMethods.SaveAsync;
         }
 
+        public void Dispose()
+        {
+            _store.Dispose();
+
+            Verifier.CalledMethods |= EventStoreMethods.Dispose;
+        }
+    }
+
+    public class SnapshotStoreWrapper : ISnapshotStore
+    {
+        private readonly ISnapshotStore _store;
+
+        public StoresWrapperVerifier Verifier;
+
+        public SnapshotStoreWrapper(ISnapshotStore snapshotStore, StoresWrapperVerifier methods)
+        {
+            _store = snapshotStore;
+            Verifier = methods;
+        }
+        
+        public async Task SaveSnapshotAsync(IUncommittedSnapshot uncommittedSnapshot)
+        {
+            await _store.SaveSnapshotAsync(uncommittedSnapshot).ConfigureAwait(false);
+
+            Verifier.CalledMethods |= EventStoreMethods.SaveSnapshotAsync;
+        }
+
+        public async Task<ICommittedSnapshot> GetLatestSnapshotByIdAsync(Guid aggregateId)
+        {
+            var result = await _store.GetLatestSnapshotByIdAsync(aggregateId).ConfigureAwait(false);
+
+            Verifier.CalledMethods |= EventStoreMethods.GetLatestSnapshotByIdAsync;
+
+            return result;
+        }
+
+        public async Task<IEnumerable<ICommittedEvent>> GetEventsForwardAsync(Guid aggregateId, int version)
+        {
+            var result = await _store.GetEventsForwardAsync(aggregateId, version).ConfigureAwait(false);
+
+            Verifier.CalledMethods |= EventStoreMethods.GetEventsForwardAsync;
+
+            return result;
+        }
+
+        public void Dispose()
+        {
+            _store.Dispose();
+
+            Verifier.CalledMethods |= EventStoreMethods.Dispose;
+        }
+    }
+
+    public class ProjectionStoreV1Wrapper : IProjectionStoreV1
+    {
+        private readonly IProjectionStoreV1 _store;
+
+        public StoresWrapperVerifier Verifier;
+
+        public ProjectionStoreV1Wrapper(IProjectionStoreV1 projectionStoreV1, StoresWrapperVerifier methods)
+        {
+            _store = projectionStoreV1;
+            Verifier = methods;
+        }
+        
         public async Task SaveProjectionAsync(IProjection projection)
         {
-            await _eventStore.SaveProjectionAsync(projection);
+            await _store.SaveProjectionAsync(projection);
 
-            CalledMethods |= EventStoreMethods.SaveAggregateProjection;
+            Verifier.CalledMethods |= EventStoreMethods.SaveAggregateProjection;
         }
+
+        public void Dispose()
+        {
+            _store.Dispose();
+
+            Verifier.CalledMethods |= EventStoreMethods.Dispose;
+        }
+    }
+
+    public struct StoresWrapperVerifier
+    {
+        public EventStoreMethods CalledMethods { get; set; }
     }
 }

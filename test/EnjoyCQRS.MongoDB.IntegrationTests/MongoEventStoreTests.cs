@@ -8,6 +8,7 @@ using FluentAssertions;
 using MongoDB.Driver;
 using Xunit;
 using EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.BarAggregate.Projections;
+using EnjoyCQRS.EventStore.MongoDB.Stores;
 
 namespace EnjoyCQRS.MongoDB.IntegrationTests
 {
@@ -27,7 +28,7 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests
         [Theory, MemberData(nameof(InvalidStates))]
         public void Should_validate_constructor_parameters(MongoClient mongoClient, string database, MongoEventStoreSetttings setttings)
         {
-            Action action = () => new MongoEventStore(mongoClient, database, setttings);
+            Action action = () => new MongoStores(mongoClient, database, setttings);
 
             action.ShouldThrowExactly<ArgumentNullException>();
         }
@@ -35,9 +36,9 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests
         [Fact]
         public async Task Test_events()
         {
-            using (var eventStore = new MongoEventStore(_mongoClient, _fixture.DatabaseName))
+            using (var store = new MongoStores(_mongoClient, _fixture.DatabaseName))
             {
-                var eventStoreTestSuit = new EventStoreTestSuit(eventStore);
+                var eventStoreTestSuit = new EventStoreTestSuit(store, store);
 
                 var aggregate = await eventStoreTestSuit.EventTestsAsync();
 
@@ -63,9 +64,9 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests
         [Fact]
         public async Task Test_snapshot()
         {
-            using (var eventStore = new MongoEventStore(_mongoClient, _fixture.DatabaseName))
+            using (var stores = new MongoStores(_mongoClient, _fixture.DatabaseName))
             {
-                var eventStoreTestSuit = new EventStoreTestSuit(eventStore);
+                var eventStoreTestSuit = new EventStoreTestSuit(stores, stores);
 
                 await eventStoreTestSuit.SnapshotTestsAsync();
             }
@@ -74,9 +75,9 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests
         [Fact]
         public async Task When_any_exception_be_thrown()
         {
-            using (var eventStore = new MongoEventStore(_mongoClient, _fixture.DatabaseName))
+            using (var stores = new MongoStores(_mongoClient, _fixture.DatabaseName))
             {
-                var eventStoreTestSuit = new EventStoreTestSuit(eventStore);
+                var eventStoreTestSuit = new EventStoreTestSuit(stores, stores);
 
                 await eventStoreTestSuit.DoSomeProblemAsync();
             }

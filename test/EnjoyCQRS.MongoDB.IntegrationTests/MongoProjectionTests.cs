@@ -5,11 +5,11 @@ using MongoDB.Driver;
 using System;
 using System.Threading.Tasks;
 using Xunit;
-using EnjoyCQRS.EventStore.MongoDB;
 using EnjoyCQRS.UnitTests.Shared.Helpers;
 using EnjoyCQRS.EventStore.MongoDB.Projection;
 using EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.UserAggregate;
 using EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.UserAggregate.Projections;
+using EnjoyCQRS.EventStore.MongoDB.Stores;
 
 namespace EnjoyCQRS.MongoDB.IntegrationTests
 {
@@ -40,8 +40,8 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests
             inactiveUser.ChangeFirstName("Jesse");
             inactiveUser.Deactivate();
 
-            var eventStore = new MongoEventStore(_fixture.Database);
-            var session = SessionHelper.Create(eventStore);
+            var stores = new MongoStores(_fixture.Database);
+            var session = SessionHelper.Create(stores, stores);
 
             await session.AddAsync(activeUser).ConfigureAwait(false);
             await session.AddAsync(inactiveUser).ConfigureAwait(false);
@@ -132,9 +132,9 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests
             
             var projectionProcessor = new ProjectionRebuilder(documentStore, new object[] { allUserProjection, onlyActiveUserProjection });
             var eventStreamReader = new MongoEventStreamReader(_fixture.Database);
-            var eventStore = new MongoEventStore(_fixture.Database, projectionProcessor, eventStreamReader);
+            var stores = new MongoStores(_fixture.Database, projectionProcessor, eventStreamReader);
 
-            var session = SessionHelper.Create(eventStore);
+            var session = SessionHelper.Create(stores, stores);
 
             await session.AddAsync(activeUser).ConfigureAwait(false);
             await session.SaveChangesAsync().ConfigureAwait(false);
