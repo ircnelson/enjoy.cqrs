@@ -6,7 +6,6 @@ using EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.BarAggregate;
 using EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.FooAggregate;
 using FluentAssertions;
 using EnjoyCQRS.UnitTests.Shared.Helpers;
-using IProjectionStoreV1 = EnjoyCQRS.EventSource.Projections.IProjectionStore;
 using EnjoyCQRS.Stores;
 using EnjoyCQRS.Core;
 
@@ -18,7 +17,7 @@ namespace EnjoyCQRS.UnitTests.Shared.TestSuit
         
         public EventStoreTestSuit(ITransaction transaction, ICompositeStores stores)
         {
-            _stores = new StoresWrapper(transaction, stores.EventStore, stores.SnapshotStore, stores.ProjectionStoreV1);
+            _stores = new StoresWrapper(transaction, stores.EventStore, stores.SnapshotStore);
         }
 
         public async Task<Bar> EventTestsAsync()
@@ -37,7 +36,6 @@ namespace EnjoyCQRS.UnitTests.Shared.TestSuit
             var result = _stores.Verifier.CalledMethods.HasFlag(EventStoreMethods.Ctor
                 | EventStoreMethods.BeginTransaction
                 | EventStoreMethods.SaveAsync
-                | EventStoreMethods.SaveAggregateProjection
                 | EventStoreMethods.CommitAsync
                 | EventStoreMethods.GetAllEventsAsync);
 

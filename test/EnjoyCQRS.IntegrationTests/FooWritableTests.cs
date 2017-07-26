@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using EnjoyCQRS.EventSource.Storage;
 using FluentAssertions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
@@ -12,7 +11,6 @@ using EnjoyCQRS.EventSource;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using EnjoyCQRS.Stores;
-using IProjectionStoreV1 = EnjoyCQRS.EventSource.Projections.IProjectionStore;
 using EnjoyCQRS.Core;
 using EnjoyCQRS.Stores.InMemory;
 
@@ -102,7 +100,6 @@ namespace EnjoyCQRS.IntegrationTests
                     services.AddScoped<ITransaction>(provider => transaction);
                     services.AddScoped<IEventStore>(provider => compositeStores.EventStore);
                     services.AddScoped<ISnapshotStore>(provider => compositeStores.SnapshotStore);
-                    services.AddScoped<IProjectionStoreV1>(provider => compositeStores.ProjectionStoreV1);
                     services.AddScoped<IMetadataProvider, FakeUserMetadataProvider>();
                 });
 

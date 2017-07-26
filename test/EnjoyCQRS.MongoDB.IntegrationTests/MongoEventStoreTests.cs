@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using EnjoyCQRS.EventStore.MongoDB;
 using EnjoyCQRS.UnitTests.Shared.TestSuit;
 using FluentAssertions;
 using MongoDB.Driver;
 using Xunit;
-using EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.BarAggregate.Projections;
 using EnjoyCQRS.EventStore.MongoDB.Stores;
 
 namespace EnjoyCQRS.MongoDB.IntegrationTests
@@ -42,22 +40,7 @@ namespace EnjoyCQRS.MongoDB.IntegrationTests
 
                 var aggregate = await eventStoreTestSuit.EventTestsAsync();
 
-                using (var projectionRepository = new MongoProjectionRepository(_mongoClient, _fixture.DatabaseName))
-                {
-                    var projection = await projectionRepository.GetAsync<BarProjection>(nameof(BarProjection), aggregate.Id);
-
-                    projection.Id.Should().Be(aggregate.Id);
-                    projection.LastText.Should().Be(aggregate.LastText);
-                    projection.UpdatedAt.ToString("G").Should().Be(aggregate.UpdatedAt.ToString("G"));
-                    projection.Messages.Count.Should().Be(aggregate.Messages.Count);
-                }
-
-                using (var projectionRepository = new MongoProjectionRepository<BarProjection>(_mongoClient, _fixture.DatabaseName))
-                {
-                    var projections = await projectionRepository.FindAsync(e => e.Id == aggregate.Id);
-
-                    projections.Count().Should().BeGreaterOrEqualTo(1);
-                }
+                aggregate.Should().NotBeNull();
             }
         }
         

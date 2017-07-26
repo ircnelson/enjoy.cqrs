@@ -21,7 +21,6 @@
 // SOFTWARE.
 
 using EnjoyCQRS.EventSource;
-using EnjoyCQRS.EventSource.Projections;
 using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;
 using EnjoyCQRS.Logger;

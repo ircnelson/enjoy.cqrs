@@ -39,7 +39,7 @@ namespace EnjoyCQRS.UnitTests.Storage
             _mockEventPublisher = new Mock<IEventPublisher>();
             _mockEventPublisher.Setup(e => e.PublishAsync(It.IsAny<IEnumerable<IDomainEvent>>())).Returns(Task.CompletedTask);
             
-            var session = new Session(mockLoggerFactory.Object, _stores, _stores.EventStore, _stores.SnapshotStore, _stores.ProjectionStoreV1, _mockEventPublisher.Object);
+            var session = new Session(mockLoggerFactory.Object, _stores, _stores.EventStore, _stores.SnapshotStore, _mockEventPublisher.Object);
             _repository = new Repository(mockLoggerFactory.Object, session);
 
             var unitOfWorkMock = new Mock<IUnitOfWork>();

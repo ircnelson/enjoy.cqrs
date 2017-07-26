@@ -77,24 +77,9 @@ namespace EnjoyCQRS.EventStore.MongoDB.Stores
 
         public Task<IEnumerable<ICommittedEvent>> GetEventsForwardAsync(Guid aggregateId, int version)
         {
-            var collection = _db.GetCollection<EventDocument>(_settings.EventsCollectionName);
-
-            var sort = Builders<EventDocument>.Sort;
-            var filterBuilder = Builders<EventDocument>.Filter;
-
-            var filter = filterBuilder.Empty
-                & filterBuilder.Eq(x => x.AggregateId, aggregateId)
-                & filterBuilder.Gt(x => x.Version, version)
-                & filterBuilder.Or(filterBuilder.Exists(x => x.Metadata[MetadataKeys.EventIgnore], exists: false), filterBuilder.Eq(x => x.Metadata[MetadataKeys.EventIgnore], false));
-
-            var events = collection
-                .Find(filter)
-                .Sort(sort.Ascending(x => x.Metadata[MetadataKeys.EventVersion]))
-                .ToList()
-                .Select(_eventStore.Deserialize);
-
-            return Task.FromResult(events);
+            return _eventStore.GetEventsForwardAsync(aggregateId, version);
         }
+
         public SnapshotDocument Serialize(IUncommittedSnapshot serializedSnapshot)
         {
             var id = serializedSnapshot.Metadata.GetValue(MetadataKeys.SnapshotId, value => Guid.Parse(value.ToString()));

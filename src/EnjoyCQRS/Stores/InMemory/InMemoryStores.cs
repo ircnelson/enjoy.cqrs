@@ -26,43 +26,34 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using EnjoyCQRS.Events;
-using EnjoyCQRS.EventSource.Projections;
 using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.Collections;
 using EnjoyCQRS.Projections;
 using System.Threading;
-using EnjoyCQRS.Stores;
 using EnjoyCQRS.Core;
-using IProjectionStoreV1 = EnjoyCQRS.EventSource.Projections.IProjectionStore;
 
 namespace EnjoyCQRS.Stores.InMemory
 {
     public class InMemoryStores :  ITransaction, ICompositeStores
     {
-        private readonly IProjectionStoreV1 _projectionStore;
         private readonly ProjectionRebuilder _projectionRebuilder;
         
         private readonly List<ICommittedEvent> _events = new List<ICommittedEvent>();
         private readonly List<ICommittedSnapshot> _snapshots = new List<ICommittedSnapshot>();
-        private readonly Dictionary<ProjectionKey, object> _projections = new Dictionary<ProjectionKey, object>();
 
         private readonly InMemoryEventStore _eventStore;
         private readonly InMemorySnapshotStore _snapshotStore;
-        private readonly InMemoryProjectionStoreV1 _projectionStoreV1;
 
         public IReadOnlyList<ICommittedEvent> Events => _events.AsReadOnly();
         public IReadOnlyList<ICommittedSnapshot> Snapshots => _snapshots.AsReadOnly();
-        public IReadOnlyDictionary<ProjectionKey, object> Projections => new ReadOnlyDictionary<ProjectionKey, object>(_projections);
         public bool InTransaction { get; private set; }
         public IEventStore EventStore => _eventStore;
         public ISnapshotStore SnapshotStore => _snapshotStore;
-        public IProjectionStoreV1 ProjectionStoreV1 => _projectionStoreV1;
 
         public InMemoryStores(ProjectionRebuilder projectionRebuilder = null)
         {
             _eventStore = new InMemoryEventStore(_events);
             _snapshotStore = new InMemorySnapshotStore(_eventStore, _snapshots);
-            _projectionStoreV1 = new InMemoryProjectionStoreV1(_projections);
             
             _projectionRebuilder = projectionRebuilder;
         }
@@ -94,23 +85,7 @@ namespace EnjoyCQRS.Stores.InMemory
             _snapshots.AddRange(committedSnapshots);
 
             _snapshotStore.ClearUncommitted();
-
-            var uncommittedProjections = _projectionStoreV1.Uncommitted.ToList();
-
-            foreach (var uncommittedProjection in uncommittedProjections)
-            {
-                if (!_projections.ContainsKey(uncommittedProjection.Key))
-                {
-                    _projections.Add(uncommittedProjection.Key, uncommittedProjection.Value);
-                }
-                else
-                {
-                    _projections[uncommittedProjection.Key] = uncommittedProjection.Value;
-                }
-            }
-
-            _projectionStoreV1.ClearUncommitted();
-
+            
             InTransaction = false;
 
             //return Task.CompletedTask;
@@ -120,7 +95,6 @@ namespace EnjoyCQRS.Stores.InMemory
         {
             _eventStore.ClearUncommitted();
             _snapshotStore.ClearUncommitted();
-            _projectionStoreV1.ClearUncommitted();
 
             InTransaction = false;
         }
@@ -167,18 +141,7 @@ namespace EnjoyCQRS.Stores.InMemory
         {
         }
     }    
-
-    public struct ProjectionKey
-    {
-        public Guid Id { get; }
-        public string Category { get; }
-
-        public ProjectionKey(Guid id, string category)
-        {
-            Id = id;
-            Category = category;
-        }
-    }
+    
 
     public class InMemoryEventStreamReader : EventStreamReader
     {

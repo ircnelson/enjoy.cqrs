@@ -28,13 +28,11 @@ using EnjoyCQRS.Collections;
 using EnjoyCQRS.Core;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource.Exceptions;
-using EnjoyCQRS.EventSource.Projections;
 using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.Extensions;
 using EnjoyCQRS.Logger;
 using EnjoyCQRS.MessageBus;
 using EnjoyCQRS.MetadataProviders;
-using IProjectionStoreV1 = EnjoyCQRS.EventSource.Projections.IProjectionStore;
 using EnjoyCQRS.Stores;
 
 namespace EnjoyCQRS.EventSource.Storage
@@ -46,9 +44,7 @@ namespace EnjoyCQRS.EventSource.Storage
         private readonly ITransaction _transaction;
         private readonly IEventStore _eventStore;
         private readonly ISnapshotStore _snapshotStore;
-        private readonly IProjectionStoreV1 _projectionStoreV1;
         private readonly IEventPublisher _eventPublisher;
-        private readonly IProjectionProviderScanner _projectionProviderScanner;
         private readonly IEventUpdateManager _eventUpdateManager;
         private readonly ISnapshotStrategy _snapshotStrategy;
         private readonly IEnumerable<IMetadataProvider> _metadataProviders;
@@ -64,9 +60,7 @@ namespace EnjoyCQRS.EventSource.Storage
             ITransaction transaction,
             IEventStore eventStore,
             ISnapshotStore snapshotStore,
-            IProjectionStoreV1 projectionStoreV1,
             IEventPublisher eventPublisher,
-            IProjectionProviderScanner projectionProviderScanner = null,
             IEventUpdateManager eventUpdateManager = null,
             IEnumerable<IMetadataProvider> metadataProviders = null,
             ISnapshotStrategy snapshotStrategy = null,
@@ -81,12 +75,7 @@ namespace EnjoyCQRS.EventSource.Storage
                 new EventTypeMetadataProvider(),
                 new CorrelationIdMetadataProvider()
             });
-
-            if (projectionProviderScanner == null)
-            {
-                projectionProviderScanner = new ProjectionProviderAttributeScanner();
-            }
-
+            
             if (snapshotStrategy == null)
             {
                 snapshotStrategy = new IntervalSnapshotStrategy();
@@ -102,11 +91,9 @@ namespace EnjoyCQRS.EventSource.Storage
             _transaction = transaction ?? throw new ArgumentNullException(nameof(transaction));
             _eventStore = eventStore ?? throw new ArgumentNullException(nameof(eventStore));
             _snapshotStore = snapshotStore ?? throw new ArgumentNullException(nameof(snapshotStore));
-            _projectionStoreV1 = projectionStoreV1 ?? throw new ArgumentNullException(nameof(projectionStoreV1));
             _eventPublisher = eventPublisher ?? throw new ArgumentNullException(nameof(eventPublisher));
             _snapshotStrategy = snapshotStrategy;
             _eventUpdateManager = eventUpdateManager;
-            _projectionProviderScanner = projectionProviderScanner;
             _metadataProviders = metadataProviders;
             _eventsMetadataService = eventsMetadataService;
         }
@@ -233,7 +220,7 @@ namespace EnjoyCQRS.EventSource.Storage
         }
 
         /// <summary>
-        /// Call <see cref="IEventStore.SaveAsync"/> in <see cref="IEventStore"/> passing serialized events.
+        /// Call <see cref="IEventStore.AppendAsync"/> in <see cref="IEventStore"/> passing serialized events.
         /// </summary>
         public virtual async Task SaveChangesAsync()
         {
@@ -264,7 +251,7 @@ namespace EnjoyCQRS.EventSource.Storage
 
                 _logger.LogInformation("Saving events on Event Store.");
 
-                await _eventStore.SaveAsync(uncommittedEvents).ConfigureAwait(false);
+                await _eventStore.AppendAsync(uncommittedEvents).ConfigureAwait(false);
 
                 _logger.LogInformation("Begin iterate in collection of aggregate.");
 
@@ -284,20 +271,6 @@ namespace EnjoyCQRS.EventSource.Storage
                     aggregate.UpdateVersion(aggregate.Sequence);
 
                     aggregate.ClearUncommittedEvents();
-
-                    _logger.LogInformation($"Scanning projection providers for {aggregate.GetType().Name}.");
-
-                    var scanResult = await _projectionProviderScanner.ScanAsync(aggregate.GetType()).ConfigureAwait(false);
-
-                    _logger.LogInformation($"Projection providers found: {scanResult.Providers.Count()}.");
-
-                    foreach (var provider in scanResult.Providers)
-                    {
-                        var projection = provider.CreateProjection(aggregate);
-                        
-                        await _projectionStoreV1.SaveProjectionAsync(projection).ConfigureAwait(false);
-                    }
-
                 }
 
                 _logger.Log(LogLevel.Information, "End iterate.");

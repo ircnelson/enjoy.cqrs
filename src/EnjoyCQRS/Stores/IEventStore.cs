@@ -40,9 +40,17 @@ namespace EnjoyCQRS.Stores
         Task<IEnumerable<ICommittedEvent>> GetAllEventsAsync(Guid id);
 
         /// <summary>
-        /// Save the events in Event Store.
+        /// Retrieves the forward events from <param name="version"></param>.
         /// </summary>
-        /// <param name="collection"></param>
-        Task SaveAsync(IEnumerable<IUncommittedEvent> collection);
+        /// <param name="id"></param>
+        /// <param name="version"></param>
+        /// <returns></returns>
+        Task<IEnumerable<ICommittedEvent>> GetEventsForwardAsync(Guid id, int version);
+
+        /// <summary>
+        /// Appends the events in Event Store.
+        /// </summary>
+        /// <param name="uncommittedEvents"></param>
+        Task AppendAsync(IEnumerable<IUncommittedEvent> uncommittedEvents);
     }
 }

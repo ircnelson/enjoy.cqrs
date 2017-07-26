@@ -30,7 +30,7 @@ namespace EnjoyCQRS.Stores.InMemory
 {
     public class InMemoryEventStore : IEventStore
     {
-        private readonly List<ICommittedEvent> _events = new List<ICommittedEvent>();
+        private readonly List<ICommittedEvent> _events;
         private readonly List<IUncommittedEvent> _uncommittedEvents = new List<IUncommittedEvent>();
         public IReadOnlyList<ICommittedEvent> Events => _events.AsReadOnly();
         public IReadOnlyList<IUncommittedEvent> Uncommitted => _uncommittedEvents.AsReadOnly();
@@ -50,9 +50,19 @@ namespace EnjoyCQRS.Stores.InMemory
             return Task.FromResult<IEnumerable<ICommittedEvent>>(events);
         }
 
-        public virtual Task SaveAsync(IEnumerable<IUncommittedEvent> collection)
+        public virtual Task<IEnumerable<ICommittedEvent>> GetEventsForwardAsync(Guid id, int version)
         {
-            _uncommittedEvents.AddRange(collection);
+            var events = Events
+                .Where(e => e.AggregateId == id && e.Version > version)
+                .OrderBy(e => e.Version)
+                .ToList();
+
+            return Task.FromResult<IEnumerable<ICommittedEvent>>(events);
+        }
+
+        public virtual Task AppendAsync(IEnumerable<IUncommittedEvent> uncommittedEvents)
+        {
+            _uncommittedEvents.AddRange(uncommittedEvents);
 
             return Task.CompletedTask;
         }

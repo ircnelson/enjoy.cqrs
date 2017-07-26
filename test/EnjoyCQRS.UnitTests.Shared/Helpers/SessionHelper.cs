@@ -1,6 +1,5 @@
 ﻿using EnjoyCQRS.Core;
 using EnjoyCQRS.EventSource;
-using EnjoyCQRS.EventSource.Projections;
 using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;
 using EnjoyCQRS.Logger;
@@ -9,7 +8,6 @@ using EnjoyCQRS.MessageBus.InProcess;
 using EnjoyCQRS.Stores;
 using System;
 using System.Collections.Generic;
-using IProjectionStoreV1 = EnjoyCQRS.EventSource.Projections.IProjectionStore;
 
 namespace EnjoyCQRS.UnitTests.Shared.Helpers
 {
@@ -21,7 +19,6 @@ namespace EnjoyCQRS.UnitTests.Shared.Helpers
             ILoggerFactory loggerFactory = null,
             IEventPublisher eventPublisher = null,
             IEventRouter eventRouter = null,
-            IProjectionProviderScanner projectionProviderScanner = null,
             IEventUpdateManager eventUpdateManager = null,
             IEnumerable<IMetadataProvider> metadataProviders = null,
             ISnapshotStrategy snapshotStrategy = null,
@@ -30,11 +27,9 @@ namespace EnjoyCQRS.UnitTests.Shared.Helpers
             return Create(transaction,
                 stores.EventStore,
                 stores.SnapshotStore,
-                stores.ProjectionStoreV1,
                 loggerFactory,
                 eventPublisher,
                 eventRouter,
-                projectionProviderScanner,
                 eventUpdateManager,
                 metadataProviders,
                 snapshotStrategy,
@@ -45,11 +40,9 @@ namespace EnjoyCQRS.UnitTests.Shared.Helpers
             ITransaction transaction,
             IEventStore eventStore,
             ISnapshotStore snapshotStore,
-            IProjectionStoreV1 projectionStoreV1,
             ILoggerFactory loggerFactory = null,
             IEventPublisher eventPublisher = null,
             IEventRouter eventRouter = null,
-            IProjectionProviderScanner projectionProviderScanner = null,
             IEventUpdateManager eventUpdateManager = null,
             IEnumerable<IMetadataProvider> metadataProviders = null,
             ISnapshotStrategy snapshotStrategy = null,
@@ -59,7 +52,6 @@ namespace EnjoyCQRS.UnitTests.Shared.Helpers
 
             if (eventStore == null) throw new ArgumentNullException(nameof(eventStore));
             if (snapshotStore == null) throw new ArgumentNullException(nameof(snapshotStore));
-            if (projectionStoreV1 == null) throw new ArgumentNullException(nameof(projectionStoreV1));
 
             if (loggerFactory == null)
             {
@@ -81,9 +73,7 @@ namespace EnjoyCQRS.UnitTests.Shared.Helpers
                 transaction: transaction,
                 eventStore: eventStore,
                 snapshotStore: snapshotStore,
-                projectionStoreV1: projectionStoreV1,
                 eventPublisher: eventPublisher,
-                projectionProviderScanner: projectionProviderScanner,
                 eventUpdateManager: eventUpdateManager,
                 metadataProviders: metadataProviders,
                 snapshotStrategy: snapshotStrategy,

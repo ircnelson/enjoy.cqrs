@@ -31,7 +31,7 @@ namespace EnjoyCQRS.Stores.InMemory
 {
     public class InMemorySnapshotStore : ISnapshotStore
     {
-        private readonly List<ICommittedSnapshot> _snapshots = new List<ICommittedSnapshot>();
+        private readonly List<ICommittedSnapshot> _snapshots;
         private readonly List<IUncommittedSnapshot> _uncommittedSnapshots = new List<IUncommittedSnapshot>();
         private readonly InMemoryEventStore _eventStore;
 
@@ -61,12 +61,7 @@ namespace EnjoyCQRS.Stores.InMemory
 
         public virtual Task<IEnumerable<ICommittedEvent>> GetEventsForwardAsync(Guid aggregateId, int version)
         {
-            var events = _eventStore.Events
-            .Where(e => e.AggregateId == aggregateId && e.Version > version)
-            .OrderBy(e => e.Version)
-            .ToList();
-
-            return Task.FromResult<IEnumerable<ICommittedEvent>>(events);
+            return _eventStore.GetEventsForwardAsync(aggregateId, version);
         }
 
         internal void ClearUncommitted()
