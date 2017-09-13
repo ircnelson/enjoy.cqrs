@@ -42,8 +42,7 @@ Task ("Restore-NuGet-Packages")
 {
     DotNetCoreRestore("./", new DotNetCoreRestoreSettings
     {
-        Verbose = false,
-      
+		Verbosity = DotNetCoreVerbosity.Quiet,
         Sources = new [] {
             "https://api.nuget.org/v3/index.json"
         }
@@ -108,7 +107,7 @@ Task ("Run-Unit-Tests")
                     tool.DotNetCoreTest(project.FullPath, new DotNetCoreTestSettings {
                         Configuration = configuration,
                         NoBuild = true,
-                        Verbose = false
+                        Verbosity = DotNetCoreVerbosity.Quiet
                         //ArgumentCustomization = args =>
                         //    args.Append("-xml").Append(testResultsDir.CombineWithFilePath(project.GetFilenameWithoutExtension()).FullPath + ".xml")
                     });
@@ -175,7 +174,7 @@ Task ("Create-NuGet-Packages")
             Configuration = configuration,
             OutputDirectory = outputNugets,
             NoBuild = true,
-            Verbose = false
+            Verbosity = DotNetCoreVerbosity.Quiet
         };
 
         if (isAppVeyorBuild && branch != "master") 

@@ -22,7 +22,7 @@ environment:
 skip_commits:
   message: /\[ci skip\]/
 build_script:
-- ps: .\build.ps1 -Target AppVeyor
+- ps: .\build.ps1 -Target Default
 test: off
 artifacts:
   - path: artifacts\test-results\*.*
