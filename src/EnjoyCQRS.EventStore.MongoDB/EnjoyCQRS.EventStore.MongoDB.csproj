@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard1.6;net461</TargetFrameworks>
     <AssemblyName>EnjoyCQRS.EventStore.MongoDB</AssemblyName>
-    <AssemblyVersion>2.5.0.0</AssemblyVersion>
-    <FileVersion>2.5.0.0</FileVersion>
+    <AssemblyVersion>3.0.0.0</AssemblyVersion>
+    <FileVersion>3.0.0.0</FileVersion>
     <VersionPrefix>2.5.0</VersionPrefix>
     <Authors>ircnelson</Authors>
     <Company>EnjoyCQRS</Company>
@@ -23,6 +23,7 @@
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.6' ">1.6.1</NetStandardImplicitPackageVersion>
+    <Version>3.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup>

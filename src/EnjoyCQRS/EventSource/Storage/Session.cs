@@ -39,6 +39,8 @@ namespace EnjoyCQRS.EventSource.Storage
 {
     public class Session : ISession
     {
+        private static Type _eventWrapperType = typeof(Event<>);
+
         private readonly AggregateTracker _aggregateTracker = new AggregateTracker();
         private readonly List<Aggregate> _aggregates = new List<Aggregate>();
         private readonly ITransaction _transaction;
@@ -236,22 +238,33 @@ namespace EnjoyCQRS.EventSource.Storage
             try
             {
                 _logger.LogInformation("Serializing events.");
-
+                
                 var uncommittedEvents =
                     _aggregates.SelectMany(e => e.UncommittedEvents)
                     .OrderBy(o => o.CreatedAt)
                     .Cast<UncommittedEvent>()
                     .Select(GenerateMetadata)
+                    .Select(e => new
+                            {
+                                UncommitedEvent = e,
+                                EventWrapper = _eventWrapperType.MakeGenericType(e.Data.GetType()),
+                                Event = e.Data,
+                                Metadata = e.Metadata
+                            })
+                    .Select(e => new {
+                        EventWrapper = (IEventWrapper) Activator.CreateInstance(e.EventWrapper, e.Event, e.Metadata),
+                        UncommittedEvent = e.UncommitedEvent
+                    })
                     .ToList();
                 
-                foreach (var uncommittedEvent in uncommittedEvents)
+                foreach (var uncommittedEvent in uncommittedEvents.Select(e => e.UncommittedEvent))
                 {
                     _eventsMetadataService.Add(uncommittedEvent.Data, uncommittedEvent.Metadata);
                 }
 
                 _logger.LogInformation("Saving events on Event Store.");
 
-                await _eventStore.AppendAsync(uncommittedEvents).ConfigureAwait(false);
+                await _eventStore.AppendAsync(uncommittedEvents.Select(e => e.UncommittedEvent)).ConfigureAwait(false);
 
                 _logger.LogInformation("Begin iterate in collection of aggregate.");
 
@@ -277,7 +290,7 @@ namespace EnjoyCQRS.EventSource.Storage
 
                 _logger.LogInformation($"Publishing events. [Qty: {uncommittedEvents.Count}]");
 
-                await _eventPublisher.PublishAsync(uncommittedEvents.Select(e => e.Data)).ConfigureAwait(false);
+                await _eventPublisher.PublishAsync(uncommittedEvents.Select(e => e.EventWrapper)).ConfigureAwait(false);
 
                 _logger.LogInformation("Published events.");
 

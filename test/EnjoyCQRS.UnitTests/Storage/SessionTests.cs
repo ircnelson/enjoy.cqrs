@@ -161,20 +161,20 @@ namespace EnjoyCQRS.UnitTests.Storage
 
             await session.SaveChangesAsync().ConfigureAwait(false);
 
-            events[0].Should().BeOfType<StubAggregateCreatedEvent>().Which.AggregateId.Should().Be(stubAggregate1.Id);
-            events[0].Should().BeOfType<StubAggregateCreatedEvent>().Which.Name.Should().Be("Walter White");
+            events[0].Should().BeOfType<Event<StubAggregateCreatedEvent>>().Which.InnerEvent.AggregateId.Should().Be(stubAggregate1.Id);
+            events[0].Should().BeOfType<Event<StubAggregateCreatedEvent>>().Which.InnerEvent.Name.Should().Be("Walter White");
 
-            events[1].Should().BeOfType<StubAggregateCreatedEvent>().Which.AggregateId.Should().Be(stubAggregate2.Id);
-            events[1].Should().BeOfType<StubAggregateCreatedEvent>().Which.Name.Should().Be("Heinsenberg");
+            events[1].Should().BeOfType<Event<StubAggregateCreatedEvent>>().Which.InnerEvent.AggregateId.Should().Be(stubAggregate2.Id);
+            events[1].Should().BeOfType<Event<StubAggregateCreatedEvent>>().Which.InnerEvent.Name.Should().Be("Heinsenberg");
 
-            events[2].Should().BeOfType<NameChangedEvent>().Which.AggregateId.Should().Be(stubAggregate1.Id);
-            events[2].Should().BeOfType<NameChangedEvent>().Which.Name.Should().Be("Saul Goodman");
+            events[2].Should().BeOfType<Event<NameChangedEvent>>().Which.InnerEvent.AggregateId.Should().Be(stubAggregate1.Id);
+            events[2].Should().BeOfType<Event<NameChangedEvent>>().Which.InnerEvent.Name.Should().Be("Saul Goodman");
 
-            events[3].Should().BeOfType<StubAggregateRelatedEvent>().Which.AggregateId.Should().Be(stubAggregate2.Id);
-            events[3].Should().BeOfType<StubAggregateRelatedEvent>().Which.StubAggregateId.Should().Be(stubAggregate1.Id);
+            events[3].Should().BeOfType<Event<StubAggregateRelatedEvent>>().Which.InnerEvent.AggregateId.Should().Be(stubAggregate2.Id);
+            events[3].Should().BeOfType<Event<StubAggregateRelatedEvent>>().Which.InnerEvent.StubAggregateId.Should().Be(stubAggregate1.Id);
 
-            events[4].Should().BeOfType<NameChangedEvent>().Which.AggregateId.Should().Be(stubAggregate1.Id);
-            events[4].Should().BeOfType<NameChangedEvent>().Which.Name.Should().Be("Jesse Pinkman");
+            events[4].Should().BeOfType<Event<NameChangedEvent>>().Which.InnerEvent.AggregateId.Should().Be(stubAggregate1.Id);
+            events[4].Should().BeOfType<Event<NameChangedEvent>>().Which.InnerEvent.Name.Should().Be("Jesse Pinkman");
         }
         
         [Fact]
