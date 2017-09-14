@@ -20,26 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using System.Collections.Generic;
 
 namespace EnjoyCQRS.Events
 {
-    public class Event<TEvent> : IEventWrapper
-        where TEvent : IDomainEvent
+    public interface IEventWrapper : IDomainEvent
     {
-        IReadOnlyDictionary<string, object> IEventWrapper.Attributes => Attributes;
-        IDomainEvent IEventWrapper.InnerEvent => InnerEvent;
-
-        public IReadOnlyDictionary<string, object> Attributes { get; }
-        public TEvent InnerEvent { get; }
-        
-        public Event(TEvent innerEvent, IReadOnlyDictionary<string, object> attributes)
-        {
-            if (innerEvent == null) throw new ArgumentNullException(nameof(innerEvent));
-
-            InnerEvent = innerEvent;
-            Attributes = attributes;
-        }
+        IReadOnlyDictionary<string, object> Attributes { get; }
+        IDomainEvent InnerEvent { get; }
     }
 }
