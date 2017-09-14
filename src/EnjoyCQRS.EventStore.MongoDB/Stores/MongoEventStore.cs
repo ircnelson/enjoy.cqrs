@@ -105,7 +105,8 @@ namespace EnjoyCQRS.EventStore.MongoDB.Stores
             var eventType = eventToSerialize.Metadata.GetValue(MetadataKeys.EventName, value => value.ToString());
             var timestamp = eventToSerialize.Metadata.GetValue(MetadataKeys.Timestamp, value => (DateTime)value);
 
-            var json = JsonConvert.SerializeObject(eventToSerialize.Data, JsonSettings);
+            var dataJson = JsonConvert.SerializeObject(eventToSerialize.Data, JsonSettings);
+            var metadataJson = JsonConvert.SerializeObject(eventToSerialize.Metadata, JsonSettings);
 
             var @event = new EventDocument
             {
@@ -114,8 +115,8 @@ namespace EnjoyCQRS.EventStore.MongoDB.Stores
                 EventType = eventType,
                 AggregateId = eventToSerialize.AggregateId,
                 Version = eventToSerialize.Version,
-                EventData = BsonDocument.Parse(json),
-                Metadata = BsonDocument.Create(eventToSerialize.Metadata)
+                EventData = BsonDocument.Parse(dataJson),
+                Metadata = BsonDocument.Parse(metadataJson)
             };
 
             return @event;
