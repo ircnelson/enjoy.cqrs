@@ -33,9 +33,7 @@ namespace EnjoyCQRS.MetadataProviders
         public IEnumerable<KeyValuePair<string, object>> Provide<TAggregate>(TAggregate aggregate, IDomainEvent @event, IMetadataCollection metadata)
             where TAggregate : IAggregate
         {
-            string eventName;
-
-            if (!@event.TryGetEventNameAttribute(out eventName))
+            if (!@event.TryGetEventNameAttribute(out var eventName))
             {
                 eventName = @event.GetType().Name;
             }

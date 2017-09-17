@@ -37,9 +37,10 @@ using EnjoyCQRS.Stores;
 
 namespace EnjoyCQRS.EventSource.Storage
 {
+    /// <inheritdoc />
     public class Session : ISession
     {
-        private static Type _eventWrapperType = typeof(Event<>);
+        private static readonly Type EventWrapperType = typeof(Event<>);
 
         private readonly AggregateTracker _aggregateTracker = new AggregateTracker();
         private readonly List<Aggregate> _aggregates = new List<Aggregate>();
@@ -100,13 +101,8 @@ namespace EnjoyCQRS.EventSource.Storage
             _eventsMetadataService = eventsMetadataService;
         }
 
-        /// <summary>
-        /// Retrieves an aggregate, load your historical events and add to tracking.
-        /// </summary>
-        /// <typeparam name="TAggregate"></typeparam>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        /// <exception cref="AggregateNotFoundException"></exception>
+
+        /// <inheritdoc />
         public async Task<TAggregate> GetByIdAsync<TAggregate>(Guid id) where TAggregate : Aggregate, new()
         {
             _logger.LogDebug($"Getting aggregate '{typeof(TAggregate).FullName}' with identifier: '{id}'.");
@@ -172,11 +168,7 @@ namespace EnjoyCQRS.EventSource.Storage
             return aggregate;
         }
 
-        /// <summary>
-        /// Add the aggregate to tracking.
-        /// </summary>
-        /// <typeparam name="TAggregate"></typeparam>
-        /// <param name="aggregate"></param>
+        /// <inheritdoc />
         public Task AddAsync<TAggregate>(TAggregate aggregate) where TAggregate : Aggregate
         {
             CheckConcurrency(aggregate);
@@ -186,9 +178,7 @@ namespace EnjoyCQRS.EventSource.Storage
             return Task.CompletedTask;
         }
 
-        /// <summary>
-        /// Start transaction.
-        /// </summary>
+        /// <inheritdoc />
         public void BeginTransaction()
         {
             _logger.LogInformation($"Called method: {nameof(Session)}.{nameof(BeginTransaction)}.");
@@ -204,10 +194,7 @@ namespace EnjoyCQRS.EventSource.Storage
             _transaction.BeginTransaction();
         }
 
-        /// <summary>
-        /// Confirm changes.
-        /// </summary>
-        /// <returns></returns>
+        /// <inheritdoc />
         public async Task CommitAsync()
         {
             _logger.LogInformation($"Called method: {nameof(Session)}.{nameof(CommitAsync)}.");
@@ -221,9 +208,7 @@ namespace EnjoyCQRS.EventSource.Storage
             Reset();
         }
 
-        /// <summary>
-        /// Call <see cref="IEventStore.AppendAsync"/> in <see cref="IEventStore"/> passing serialized events.
-        /// </summary>
+        /// <inheritdoc />
         public virtual async Task SaveChangesAsync()
         {
             _logger.LogInformation($"Called method: {nameof(Session)}.{nameof(SaveChangesAsync)}.");
@@ -247,7 +232,7 @@ namespace EnjoyCQRS.EventSource.Storage
                     .Select(e => new
                             {
                                 UncommitedEvent = e,
-                                EventWrapper = _eventWrapperType.MakeGenericType(e.Data.GetType()),
+                                EventWrapper = EventWrapperType.MakeGenericType(e.Data.GetType()),
                                 Event = e.Data,
                                 Metadata = e.Metadata
                             })
@@ -334,9 +319,7 @@ namespace EnjoyCQRS.EventSource.Storage
             return uncommittedEvent;
         }
 
-        /// <summary>
-        /// Rollback <see cref="IEventPublisher"/>, <see cref="IEventStore"/> and remove aggregate tracking.
-        /// </summary>
+        /// <inheritdoc />
         public void Rollback()
         {
             _logger.LogInformation("Calling Event Publisher Rollback.");

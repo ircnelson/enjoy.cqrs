@@ -95,10 +95,7 @@ namespace EnjoyCQRS.Projections
         {
             var wires = ProjectorMethodMapper.GetWiresOf(@event.GetType());
 
-            if (wires != null)
-            {
-                wires.ForEach(projectorMethod => projectorMethod.Call(@event, metadata));
-            }
+            wires?.ForEach(projectorMethod => projectorMethod.Call(@event, metadata));
         }
     }
 }

@@ -55,7 +55,7 @@ namespace EnjoyCQRS.DependencyInjection.Autofac
 
         public override IEnjoyDependenciesBuilder<IComponentContext> WithEventStore(Type type)
         {
-            _builder.RegisterType(type).As<IEventStore>().InstancePerLifetimeScope().IfNotRegistered(typeof(IEventStore)); ;
+            _builder.RegisterType(type).As<IEventStore>().InstancePerLifetimeScope().IfNotRegistered(typeof(IEventStore));
 
             return this;
         }
@@ -74,7 +74,7 @@ namespace EnjoyCQRS.DependencyInjection.Autofac
 
         public override IEnjoyDependenciesBuilder<IComponentContext> WithCommandDispatcher(Type type)
         {
-            _builder.RegisterType(type).As<ICommandDispatcher>().InstancePerLifetimeScope().IfNotRegistered(typeof(ICommandDispatcher));;
+            _builder.RegisterType(type).As<ICommandDispatcher>().InstancePerLifetimeScope().IfNotRegistered(typeof(ICommandDispatcher));
 
             return this;
         }
@@ -86,14 +86,14 @@ namespace EnjoyCQRS.DependencyInjection.Autofac
 
         public override IEnjoyDependenciesBuilder<IComponentContext> WithUnitOfWork<TUnitOfWork>(Func<IComponentContext, TUnitOfWork> instanceFactory)
         {
-            _builder.Register(instanceFactory).As<IUnitOfWork>().InstancePerLifetimeScope().IfNotRegistered(typeof(IUnitOfWork));;
+            _builder.Register(instanceFactory).As<IUnitOfWork>().InstancePerLifetimeScope().IfNotRegistered(typeof(IUnitOfWork));
 
             return this;
         }
 
         public override IEnjoyDependenciesBuilder<IComponentContext> WithUnitOfWork(Type type)
         {
-            _builder.RegisterType(type).As<IUnitOfWork>().InstancePerLifetimeScope().IfNotRegistered(typeof(IUnitOfWork));;
+            _builder.RegisterType(type).As<IUnitOfWork>().InstancePerLifetimeScope().IfNotRegistered(typeof(IUnitOfWork));
 
             return this;
         }
@@ -226,7 +226,7 @@ namespace EnjoyCQRS.DependencyInjection.Autofac
 
         public override IEnjoyDependenciesBuilder<IComponentContext> WithEventUpdateManager(Type type)
         {
-            _builder.RegisterType(type).As<IEventUpdateManager>().SingleInstance().IfNotRegistered(typeof(IEventUpdateManager));;
+            _builder.RegisterType(type).As<IEventUpdateManager>().SingleInstance().IfNotRegistered(typeof(IEventUpdateManager));
 
             return this;
         }

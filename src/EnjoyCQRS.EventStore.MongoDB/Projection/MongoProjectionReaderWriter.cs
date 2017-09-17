@@ -120,9 +120,7 @@ namespace EnjoyCQRS.EventStore.MongoDB.Projection
 
             try
             {
-                var doc = _collection.Find(filter).SingleOrDefault();
-
-                var result = _collection.DeleteOne(filter);
+                _collection.DeleteOne(filter);
 
                 return true;
             }

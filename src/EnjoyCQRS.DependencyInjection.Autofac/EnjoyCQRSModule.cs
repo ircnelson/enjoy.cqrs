@@ -69,7 +69,7 @@ namespace EnjoyCQRS.DependencyInjection.AutofacExtensions
             enjoyDependenciesBuilder.WithEventUpdateManager<EventUpdateManager>();
             enjoyDependenciesBuilder.WithLoggerFactory<NoopLoggerFactory>();
 
-            var enjoyDependencies = enjoyDependenciesBuilder.Build();
+            enjoyDependenciesBuilder.Build();
         }
     }
 }

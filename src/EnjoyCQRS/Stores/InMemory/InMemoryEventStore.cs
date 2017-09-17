@@ -32,8 +32,9 @@ namespace EnjoyCQRS.Stores.InMemory
     {
         private readonly List<ICommittedEvent> _events;
         private readonly List<IUncommittedEvent> _uncommittedEvents = new List<IUncommittedEvent>();
-        public IReadOnlyList<ICommittedEvent> Events => _events.AsReadOnly();
-        public IReadOnlyList<IUncommittedEvent> Uncommitted => _uncommittedEvents.AsReadOnly();
+        
+        public IEnumerable<ICommittedEvent> Events => _events.AsReadOnly();
+        public IEnumerable<IUncommittedEvent> Uncommitted => _uncommittedEvents.AsReadOnly();
 
         public InMemoryEventStore(List<ICommittedEvent> storage)
         {
