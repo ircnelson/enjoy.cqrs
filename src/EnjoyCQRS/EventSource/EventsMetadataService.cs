@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using EnjoyCQRS.Collections;
 using EnjoyCQRS.Events;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,7 +36,7 @@ namespace EnjoyCQRS.EventSource
             return _items.Values.ToList().AsReadOnly();
         }
 
-        public void Add<TEvent>(TEvent @event, IMetadata metadata)
+        public void Add<TEvent>(TEvent @event, IMetadataCollection metadata)
             where TEvent : IDomainEvent
         {
             _items.Add(@event, EventMetadataItem.Create(@event, metadata));

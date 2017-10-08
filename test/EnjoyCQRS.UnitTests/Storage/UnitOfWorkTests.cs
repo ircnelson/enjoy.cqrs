@@ -8,14 +8,11 @@ using Xunit;
 
 namespace EnjoyCQRS.UnitTests.Storage
 {
+    [Trait("Unit", "Unit of work")]
     public class UnitOfWorkTests
-    {
-        public const string CategoryName = "Unit";
-        public const string CategoryValue = "Unit of work";
-
-        [Trait(CategoryName, CategoryValue)]
+    {   
         [Fact]
-        public void Should_call_Rollback()
+        public void Should_call_Rollback_1()
         {
             Mock<ISession> mockSession = new Mock<ISession>();
             mockSession.SetupAllProperties();
@@ -31,6 +28,29 @@ namespace EnjoyCQRS.UnitTests.Storage
             Func<Task> act = async () => { await unitOfWork.CommitAsync(); };
 
             act.ShouldThrowExactly<Exception>().WithMessage("Intentional exception");
+
+            mockSession.Verify(e => e.Rollback());
+        }
+
+        [Fact]
+        public void Should_call_Rollback_2()
+        {
+            Mock<ISession> mockSession = new Mock<ISession>();
+            mockSession.SetupAllProperties();
+            mockSession.Setup(e => e.SaveChangesAsync())
+                .Callback(() =>
+                {
+                    throw new Exception("Intentional exception");
+                })
+                .Returns(Task.CompletedTask);
+
+            UnitOfWork unitOfWork = new UnitOfWork(mockSession.Object);
+
+            Func<Task> act = async () => { await unitOfWork.CommitAsync(); };
+
+            act.ShouldThrowExactly<Exception>().WithMessage("Intentional exception");
+
+            mockSession.Verify(e => e.Rollback());
         }
     }
 }

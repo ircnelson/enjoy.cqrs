@@ -14,7 +14,6 @@ namespace EnjoyCQRS.UnitTests.Shared.TestSuit
         SaveSnapshotAsync = 32,
         GetAllEventsAsync = 64,
         GetLatestSnapshotByIdAsync = 128,
-        GetEventsForwardAsync = 256,
-        SaveAggregateProjection = 512
+        GetEventsForwardAsync = 256
     }
 }

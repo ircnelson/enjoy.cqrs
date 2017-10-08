@@ -22,6 +22,7 @@
 
 using System.Collections.Generic;
 using EnjoyCQRS.Events;
+using EnjoyCQRS.Collections;
 using EnjoyCQRS.EventSource;
 using EnjoyCQRS.Extensions;
 
@@ -29,12 +30,10 @@ namespace EnjoyCQRS.MetadataProviders
 {
     public class EventTypeMetadataProvider : IMetadataProvider
     {
-        public IEnumerable<KeyValuePair<string, object>> Provide<TAggregate>(TAggregate aggregate, IDomainEvent @event, IMetadata metadata)
+        public IEnumerable<KeyValuePair<string, object>> Provide<TAggregate>(TAggregate aggregate, IDomainEvent @event, IMetadataCollection metadata)
             where TAggregate : IAggregate
         {
-            string eventName;
-
-            if (!@event.TryGetEventNameAttribute(out eventName))
+            if (!@event.TryGetEventNameAttribute(out var eventName))
             {
                 eventName = @event.GetType().Name;
             }

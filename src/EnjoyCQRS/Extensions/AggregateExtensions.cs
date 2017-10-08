@@ -22,19 +22,17 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Snapshots;
-using EnjoyCQRS.EventSource.Storage;
+using EnjoyCQRS.Collections;
+using EnjoyCQRS.Stores;
 
 namespace EnjoyCQRS.Extensions
 {
     internal static class AggregateExtensions
     {
-        public static async Task TakeSnapshot(this Aggregate aggregate,
-            IEventStore eventStore,
-            ISnapshotSerializer snapshotSerializer)
+        public static async Task TakeSnapshot(this Aggregate aggregate, ISnapshotStore snapshotStore)
         {
             var snapshot = ((ISnapshotAggregate)aggregate).CreateSnapshot();
 
@@ -47,9 +45,11 @@ namespace EnjoyCQRS.Extensions
                 new KeyValuePair<string, object>(MetadataKeys.SnapshotName, snapshot.GetType().Name),
             };
 
-            var serializedSnapshot = snapshotSerializer.Serialize(aggregate, snapshot, metadatas);
+            var metadata = new MetadataCollection(metadatas);
 
-            await eventStore.SaveSnapshotAsync(serializedSnapshot).ConfigureAwait(false);
+            var uncommittedSnapshot = new UncommittedSnapshot(aggregate.Id, aggregate.Sequence, snapshot, metadata);
+            
+            await snapshotStore.SaveSnapshotAsync(uncommittedSnapshot).ConfigureAwait(false);
         }
     }
 }

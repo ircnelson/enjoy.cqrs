@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using EnjoyCQRS.Collections;
 using EnjoyCQRS.Events;
 
 namespace EnjoyCQRS.EventSource
@@ -27,15 +28,15 @@ namespace EnjoyCQRS.EventSource
     public class EventMetadataItem
     {
         public IDomainEvent Event { get; }
-        public IMetadata Metadata { get; }
+        public IMetadataCollection Metadata { get; }
 
-        public EventMetadataItem(IDomainEvent @event, IMetadata metadata)
+        public EventMetadataItem(IDomainEvent @event, IMetadataCollection metadata)
         {
             Event = @event;
             Metadata = metadata;
         }
 
-        public static EventMetadataItem Create<TEvent>(TEvent @event, IMetadata metadata)
+        public static EventMetadataItem Create<TEvent>(TEvent @event, IMetadataCollection metadata)
             where TEvent : IDomainEvent
         {
             return new EventMetadataItem(@event, metadata);

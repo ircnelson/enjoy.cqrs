@@ -3,7 +3,6 @@ using Xunit;
 using EnjoyCQRS.EventSource.Storage;
 using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Snapshots;
-using EnjoyCQRS.EventSource.Projections;
 using EnjoyCQRS.Logger;
 using EnjoyCQRS.MessageBus.InProcess;
 using System.Linq;
@@ -12,17 +11,16 @@ using EnjoyCQRS.UnitTests.Core.Stubs;
 using System;
 using EnjoyCQRS.MessageBus;
 using Moq;
+using EnjoyCQRS.Stores;
+using EnjoyCQRS.Stores.InMemory;
 
 namespace EnjoyCQRS.UnitTests.Core
 {
+    [Trait("Unit", "Dependencies")]
     public class EnjoyDependenciesBuilderTests
     {
-        public const string CategoryName = "Unit";
-        public const string CategoryValue = "Dependencies";
-
-        private const int FrameworkDependencies = 15;
-
-        [Trait(CategoryName, CategoryValue)]
+        private const int FrameworkDependencies = 11;
+        
         [Fact]
         public void Throw_exception_When_some_dependency_not_registered()
         {
@@ -38,8 +36,7 @@ namespace EnjoyCQRS.UnitTests.Core
 
             act.ShouldThrowExactly<AggregateException>().And.InnerExceptions.Count().Should().Be(FrameworkDependencies);
         }
-
-        [Trait(CategoryName, CategoryValue)]
+        
         [Fact]
         public void Should_register_default_dependencies_with_generics()
         {
@@ -57,11 +54,7 @@ namespace EnjoyCQRS.UnitTests.Core
             enjoyDependenciesBuilder.WithUnitOfWork<UnitOfWork>();
             enjoyDependenciesBuilder.WithSession<Session>();
             enjoyDependenciesBuilder.WithRepository<Repository>();
-            enjoyDependenciesBuilder.WithTextSerializer<DefaultTextSerializer>();
-            enjoyDependenciesBuilder.WithSnapshotSerializer<SnapshotSerializer>();
             enjoyDependenciesBuilder.WithSnapshotStrategy<IntervalSnapshotStrategy>();
-            enjoyDependenciesBuilder.WithEventSerializer<EventSerializer>();
-            enjoyDependenciesBuilder.WithProjectionSerializer<ProjectionSerializer>();
             enjoyDependenciesBuilder.WithLoggerFactory<NoopLoggerFactory>();
             enjoyDependenciesBuilder.WithEventsMetadataService<EventsMetadataService>();
 
@@ -72,7 +65,6 @@ namespace EnjoyCQRS.UnitTests.Core
             dependencies.IsValid().Should().BeTrue();
         }
 
-        [Trait(CategoryName, CategoryValue)]
         [Fact]
         public void Should_register_default_dependencies_with_type()
         {
@@ -82,7 +74,7 @@ namespace EnjoyCQRS.UnitTests.Core
 
             // Act
 
-            enjoyDependenciesBuilder.WithEventStore(typeof(InMemoryEventStore));
+            enjoyDependenciesBuilder.WithEventStore(typeof(InMemoryStores));
             enjoyDependenciesBuilder.WithCommandDispatcher(typeof(DefaultCommandDispatcher));
             enjoyDependenciesBuilder.WithEventRouter(typeof(DefaultEventRouter));
             enjoyDependenciesBuilder.WithEventUpdateManager(typeof(DefaultEventUpdateManager));
@@ -90,11 +82,7 @@ namespace EnjoyCQRS.UnitTests.Core
             enjoyDependenciesBuilder.WithUnitOfWork(typeof(UnitOfWork));
             enjoyDependenciesBuilder.WithSession(typeof(Session));
             enjoyDependenciesBuilder.WithRepository(typeof(Repository));
-            enjoyDependenciesBuilder.WithTextSerializer(typeof(DefaultTextSerializer));
-            enjoyDependenciesBuilder.WithSnapshotSerializer(typeof(SnapshotSerializer));
             enjoyDependenciesBuilder.WithSnapshotStrategy(typeof(IntervalSnapshotStrategy));
-            enjoyDependenciesBuilder.WithEventSerializer(typeof(EventSerializer));
-            enjoyDependenciesBuilder.WithProjectionSerializer(typeof(ProjectionSerializer));
             enjoyDependenciesBuilder.WithLoggerFactory(typeof(NoopLoggerFactory));
             enjoyDependenciesBuilder.WithEventsMetadataService(typeof(EventsMetadataService));
 
@@ -104,8 +92,7 @@ namespace EnjoyCQRS.UnitTests.Core
 
             dependencies.IsValid().Should().BeTrue();
         }
-
-        [Trait(CategoryName, CategoryValue)]
+        
         [Fact]
         public void Should_register_default_dependencies_with_instance_factory()
         {
@@ -123,11 +110,7 @@ namespace EnjoyCQRS.UnitTests.Core
             enjoyDependenciesBuilder.WithUnitOfWork((c) => Mock.Of<IUnitOfWork>());
             enjoyDependenciesBuilder.WithSession((c) => Mock.Of<ISession>());
             enjoyDependenciesBuilder.WithRepository((c) => Mock.Of<IRepository>());
-            enjoyDependenciesBuilder.WithTextSerializer((c) => Mock.Of<ITextSerializer>());
-            enjoyDependenciesBuilder.WithSnapshotSerializer((c) => Mock.Of<ISnapshotSerializer>());
             enjoyDependenciesBuilder.WithSnapshotStrategy((c) => Mock.Of<ISnapshotStrategy>());
-            enjoyDependenciesBuilder.WithEventSerializer((c) => Mock.Of<IEventSerializer>());
-            enjoyDependenciesBuilder.WithProjectionSerializer((c) => Mock.Of<IProjectionSerializer>());
             enjoyDependenciesBuilder.WithLoggerFactory((c) => Mock.Of<ILoggerFactory>());
             enjoyDependenciesBuilder.WithEventsMetadataService((c) => Mock.Of<IEventsMetadataService>());
 

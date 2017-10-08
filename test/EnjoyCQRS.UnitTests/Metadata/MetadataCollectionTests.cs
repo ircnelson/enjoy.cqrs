@@ -20,7 +20,7 @@ namespace EnjoyCQRS.UnitTests.Metadata
                 new KeyValuePair<string, object>("key2", "value2")
             };
 
-            var metadataCollection = new EventSource.Metadata(metadatas);
+            var metadataCollection = new MetadataCollection(metadatas);
 
             metadataCollection.Should().HaveCount(2);
         }

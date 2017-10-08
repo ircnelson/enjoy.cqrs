@@ -24,11 +24,7 @@ using System;
 
 namespace EnjoyCQRS.Events
 {
-    /// <summary>
-    /// Used to represent an Domain event.
-    /// The domain event are things that have value for your domain.
-    /// They are raised when occur changes on the aggregate root.
-    /// </summary>
+    /// <inheritdoc />
     public abstract class DomainEvent : IDomainEvent
     {
         /// <summary>

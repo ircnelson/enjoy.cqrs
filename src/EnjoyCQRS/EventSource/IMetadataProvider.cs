@@ -22,6 +22,7 @@
 
 using System.Collections.Generic;
 using EnjoyCQRS.Events;
+using EnjoyCQRS.Collections;
 
 namespace EnjoyCQRS.EventSource
 {
@@ -35,7 +36,7 @@ namespace EnjoyCQRS.EventSource
         /// <param name="event"></param>
         /// <param name="metadata"></param>
         /// <returns></returns>
-        IEnumerable<KeyValuePair<string, object>> Provide<TAggregate>(TAggregate aggregate, IDomainEvent @event, IMetadata metadata)
+        IEnumerable<KeyValuePair<string, object>> Provide<TAggregate>(TAggregate aggregate, IDomainEvent @event, IMetadataCollection metadata)
             where TAggregate : IAggregate;
     }
 }

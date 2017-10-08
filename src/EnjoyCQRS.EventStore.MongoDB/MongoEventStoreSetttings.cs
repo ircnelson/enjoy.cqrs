@@ -29,7 +29,8 @@ namespace EnjoyCQRS.EventStore.MongoDB
         public string EventsCollectionName { get; set; } = "Events";
         public string SnapshotsCollectionName { get; set; } = "Snapshots";
         public string ProjectionsCollectionName { get; set; } = "Projections";
-        
+        public string TempProjectionsCollectionName { get; set; } = "TempProjections";
+
         internal void Validate()
         {
             if (string.IsNullOrWhiteSpace(EventsCollectionName))
@@ -40,6 +41,9 @@ namespace EnjoyCQRS.EventStore.MongoDB
 
             if (string.IsNullOrWhiteSpace(ProjectionsCollectionName))
                 throw new ArgumentNullException(nameof(ProjectionsCollectionName));
+
+            if (string.IsNullOrWhiteSpace(TempProjectionsCollectionName))
+                throw new ArgumentNullException(nameof(TempProjectionsCollectionName));
         }
     }
 }

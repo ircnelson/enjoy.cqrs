@@ -26,11 +26,11 @@ using EnjoyCQRS.DependencyInjection.Autofac;
 using EnjoyCQRS.DependencyInjection.Autofac.Core;
 using EnjoyCQRS.DependencyInjection.Autofac.MessageBus;
 using EnjoyCQRS.EventSource;
-using EnjoyCQRS.EventSource.Projections;
 using EnjoyCQRS.EventSource.Snapshots;
 using EnjoyCQRS.EventSource.Storage;
 using EnjoyCQRS.Logger;
 using EnjoyCQRS.MessageBus.InProcess;
+using EnjoyCQRS.Stores.InMemory;
 using System;
 
 namespace EnjoyCQRS.DependencyInjection.AutofacExtensions
@@ -65,15 +65,11 @@ namespace EnjoyCQRS.DependencyInjection.AutofacExtensions
             enjoyDependenciesBuilder.WithUnitOfWork<UnitOfWork>();
             enjoyDependenciesBuilder.WithEventsMetadataService<EventsMetadataService>();
             enjoyDependenciesBuilder.WithRepository<Repository>();
-            enjoyDependenciesBuilder.WithTextSerializer<NewtonsoftSerializer>();
-            enjoyDependenciesBuilder.WithSnapshotSerializer<SnapshotSerializer>();
             enjoyDependenciesBuilder.WithSnapshotStrategy<IntervalSnapshotStrategy>();
-            enjoyDependenciesBuilder.WithEventSerializer<EventSerializer>();
-            enjoyDependenciesBuilder.WithProjectionSerializer<ProjectionSerializer>();
             enjoyDependenciesBuilder.WithEventUpdateManager<EventUpdateManager>();
             enjoyDependenciesBuilder.WithLoggerFactory<NoopLoggerFactory>();
 
-            var enjoyDependencies = enjoyDependenciesBuilder.Build();
+            enjoyDependenciesBuilder.Build();
         }
     }
 }

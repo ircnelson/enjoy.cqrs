@@ -7,7 +7,6 @@ using EnjoyCQRS.Core;
 using EnjoyCQRS.Events;
 using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Exceptions;
-using EnjoyCQRS.EventSource.Projections;
 using EnjoyCQRS.EventSource.Storage;
 using EnjoyCQRS.Logger;
 using EnjoyCQRS.MessageBus.InProcess;
@@ -17,9 +16,12 @@ using EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.FooAggregate;
 using FluentAssertions;
 using Moq;
 using Xunit;
+using EnjoyCQRS.Collections;
+using EnjoyCQRS.Stores.InMemory;
 
 namespace EnjoyCQRS.UnitTests.EventUpgrader
 {
+    [Trait("Unit", "EventUpdater")]
     public class EventUpgraderTests
     {
         [Fact]
@@ -181,34 +183,33 @@ namespace EnjoyCQRS.UnitTests.EventUpgrader
             var loggerFactory = new NoopLoggerFactory();
             var eventPublisher = new EventPublisher(new StubEventRouter());
 
-            var eventStore = new InMemoryEventStore();
-            var eventSerializer = new EventSerializer(new JsonTextSerializer());
-            var snapshotSerializer = new SnapshotSerializer(new JsonTextSerializer());
-            var projectionSerializer = new ProjectionSerializer(new JsonTextSerializer());
+            var stores = new InMemoryStores();
 
-            var session = new Session(loggerFactory, eventStore, eventPublisher, eventSerializer, snapshotSerializer, projectionSerializer, eventUpdateManager: eventUpdateManager);
+            var session = new Session(loggerFactory, stores, stores.EventStore, stores.SnapshotStore, eventPublisher, eventUpdateManager: eventUpdateManager);
             
             var aggregate = (TAggregate) Activator.CreateInstance(typeof(TAggregate), args: aggregateId);
             
-            aggregate.UpdateVersion(arrangeEvents.Length - 1);
-
             var serializedEvents = arrangeEvents.Select((e, index) =>
             {
                 index++;
 
-                var metadatas =
-                    metadataProviders.SelectMany(md => md.Provide(aggregate, e, EventSource.Metadata.Empty)).Concat(new[]
+                var eventVersion = aggregate.Version + index;
+
+                var metadata = metadataProviders.SelectMany(md => md.Provide(aggregate, e, MetadataCollection.Empty)).Concat(new[]
                     {
                         new KeyValuePair<string, object>(MetadataKeys.EventId, Guid.NewGuid()),
-                        new KeyValuePair<string, object>(MetadataKeys.EventVersion, (aggregate.Version + index))
+                        new KeyValuePair<string, object>(MetadataKeys.EventVersion, eventVersion)
                     });
-                return eventSerializer.Serialize(aggregate, e, new EventSource.Metadata(metadatas));
+                
+                return new UncommittedEvent(aggregate, e, eventVersion) {
+                    Metadata = new MetadataCollection(metadata)
+                };
             });
 
-            eventStore.BeginTransaction();
+            stores.BeginTransaction();
 
-            await eventStore.SaveAsync(serializedEvents);
-            await eventStore.CommitAsync();
+            await stores.EventStore.AppendAsync(serializedEvents);
+            await stores.CommitAsync();
 
             return session;
         }

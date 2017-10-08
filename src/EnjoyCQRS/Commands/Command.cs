@@ -24,9 +24,7 @@ using System;
 
 namespace EnjoyCQRS.Commands
 {
-    /// <summary>
-    /// Represent the User Intention (UI) abstraction.
-    /// </summary>
+    /// <inheritdoc />
     public abstract class Command : ICommand
     {
         /// <summary>

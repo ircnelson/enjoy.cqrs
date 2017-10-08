@@ -31,9 +31,9 @@ namespace EnjoyCQRS.EventSource
     {
         Guid Id { get; }
         int Sequence { get; }
-        IReadOnlyCollection<IUncommitedEvent> UncommitedEvents { get; }
+        IReadOnlyCollection<IUncommittedEvent> UncommittedEvents { get; }
         int Version { get; }
-        void ClearUncommitedEvents();
-        void LoadFromHistory(CommitedDomainEventCollection domainEvents);
+        void ClearUncommittedEvents();
+        void LoadFromHistory(CommittedEventsCollection domainEvents);
     }
 }

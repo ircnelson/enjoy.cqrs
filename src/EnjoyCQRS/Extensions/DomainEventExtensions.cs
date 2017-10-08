@@ -8,14 +8,8 @@ namespace EnjoyCQRS.Extensions
     {
         public static bool TryGetEventNameAttribute(this IDomainEvent @event, out string eventName)
         {
-
-            EventNameAttribute attribute;
-
-#if REFLECTIONBRIDGE && (!(NET40 || NET35 || NET20))
-            attribute =  @event.GetType().GetCustomAttribute<EventNameAttribute>();
-#else
-            attribute = @event.GetType().GetTypeInfo().GetCustomAttribute<EventNameAttribute>();
-#endif
+            var attribute = @event.GetType().GetTypeInfo().GetCustomAttribute<EventNameAttribute>();
+            
             eventName = attribute?.EventName;
             
             return !string.IsNullOrWhiteSpace(eventName);

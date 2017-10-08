@@ -27,8 +27,8 @@ using EnjoyCQRS.MessageBus;
 using EnjoyCQRS.EventSource.Storage;
 using EnjoyCQRS.EventSource;
 using EnjoyCQRS.EventSource.Snapshots;
-using EnjoyCQRS.EventSource.Projections;
 using EnjoyCQRS.Logger;
+using EnjoyCQRS.Stores;
 
 namespace EnjoyCQRS.DependencyInjection.Autofac
 {
@@ -55,7 +55,7 @@ namespace EnjoyCQRS.DependencyInjection.Autofac
 
         public override IEnjoyDependenciesBuilder<IComponentContext> WithEventStore(Type type)
         {
-            _builder.RegisterType(type).As<IEventStore>().InstancePerLifetimeScope().IfNotRegistered(typeof(IEventStore)); ;
+            _builder.RegisterType(type).As<IEventStore>().InstancePerLifetimeScope().IfNotRegistered(typeof(IEventStore));
 
             return this;
         }
@@ -74,7 +74,7 @@ namespace EnjoyCQRS.DependencyInjection.Autofac
 
         public override IEnjoyDependenciesBuilder<IComponentContext> WithCommandDispatcher(Type type)
         {
-            _builder.RegisterType(type).As<ICommandDispatcher>().InstancePerLifetimeScope().IfNotRegistered(typeof(ICommandDispatcher));;
+            _builder.RegisterType(type).As<ICommandDispatcher>().InstancePerLifetimeScope().IfNotRegistered(typeof(ICommandDispatcher));
 
             return this;
         }
@@ -86,14 +86,14 @@ namespace EnjoyCQRS.DependencyInjection.Autofac
 
         public override IEnjoyDependenciesBuilder<IComponentContext> WithUnitOfWork<TUnitOfWork>(Func<IComponentContext, TUnitOfWork> instanceFactory)
         {
-            _builder.Register(instanceFactory).As<IUnitOfWork>().InstancePerLifetimeScope().IfNotRegistered(typeof(IUnitOfWork));;
+            _builder.Register(instanceFactory).As<IUnitOfWork>().InstancePerLifetimeScope().IfNotRegistered(typeof(IUnitOfWork));
 
             return this;
         }
 
         public override IEnjoyDependenciesBuilder<IComponentContext> WithUnitOfWork(Type type)
         {
-            _builder.RegisterType(type).As<IUnitOfWork>().InstancePerLifetimeScope().IfNotRegistered(typeof(IUnitOfWork));;
+            _builder.RegisterType(type).As<IUnitOfWork>().InstancePerLifetimeScope().IfNotRegistered(typeof(IUnitOfWork));
 
             return this;
         }
@@ -135,83 +135,7 @@ namespace EnjoyCQRS.DependencyInjection.Autofac
 
             return this;
         }
-
-        public override IEnjoyDependenciesBuilder<IComponentContext> WithTextSerializer<TTextSerializer>()
-        {
-            return WithTextSerializer(typeof(TTextSerializer));
-        }
-
-        public override IEnjoyDependenciesBuilder<IComponentContext> WithTextSerializer<TTextSerializer>(Func<IComponentContext, TTextSerializer> instanceFactory)
-        {
-            _builder.Register(instanceFactory).As<ITextSerializer>().InstancePerDependency().IfNotRegistered(typeof(ITextSerializer));
-
-            return this;
-        }
-
-        public override IEnjoyDependenciesBuilder<IComponentContext> WithTextSerializer(Type type)
-        {
-            _builder.RegisterType(type).As<ITextSerializer>().InstancePerDependency().IfNotRegistered(typeof(ITextSerializer));
-
-            return this;
-        }
-
-        public override IEnjoyDependenciesBuilder<IComponentContext> WithEventSerializer<TEventSerializer>()
-        {
-            return WithEventSerializer(typeof(TEventSerializer));
-        }
-
-        public override IEnjoyDependenciesBuilder<IComponentContext> WithEventSerializer<TEventSerializer>(Func<IComponentContext, TEventSerializer> instanceFactory)
-        {
-            _builder.Register(instanceFactory).As<IEventSerializer>().InstancePerDependency().IfNotRegistered(typeof(IEventSerializer));
-
-            return this;
-        }
-
-        public override IEnjoyDependenciesBuilder<IComponentContext> WithEventSerializer(Type type)
-        {
-            _builder.RegisterType(type).As<IEventSerializer>().InstancePerDependency().IfNotRegistered(typeof(IEventSerializer));
-
-            return this;
-        }
-
-        public override IEnjoyDependenciesBuilder<IComponentContext> WithSnapshotSerializer<TSnapshotSerializer>()
-        {
-            return WithSnapshotSerializer(typeof(TSnapshotSerializer));
-        }
-
-        public override IEnjoyDependenciesBuilder<IComponentContext> WithSnapshotSerializer<TSnapshotSerializer>(Func<IComponentContext, TSnapshotSerializer> instanceFactory)
-        {
-            _builder.Register(instanceFactory).As<ISnapshotSerializer>().InstancePerDependency().IfNotRegistered(typeof(ISnapshotSerializer));
-
-            return this;
-        }
-
-        public override IEnjoyDependenciesBuilder<IComponentContext> WithSnapshotSerializer(Type type)
-        {
-            _builder.RegisterType(type).As<ISnapshotSerializer>().InstancePerDependency().IfNotRegistered(typeof(ISnapshotSerializer));
-
-            return this;
-        }
-
-        public override IEnjoyDependenciesBuilder<IComponentContext> WithProjectionSerializer<TProjectionSerializer>()
-        {
-            return WithProjectionSerializer(typeof(TProjectionSerializer));
-        }
-
-        public override IEnjoyDependenciesBuilder<IComponentContext> WithProjectionSerializer<TProjectionSerializer>(Func<IComponentContext, TProjectionSerializer> instanceFactory)
-        {
-            _builder.Register(instanceFactory).As<IProjectionSerializer>().InstancePerDependency().IfNotRegistered(typeof(IProjectionSerializer));
-
-            return this;
-        }
-
-        public override IEnjoyDependenciesBuilder<IComponentContext> WithProjectionSerializer(Type type)
-        {
-            _builder.RegisterType(type).As<IProjectionSerializer>().InstancePerDependency().IfNotRegistered(typeof(IProjectionSerializer));
-
-            return this;
-        }
-
+        
         public override IEnjoyDependenciesBuilder<IComponentContext> WithSnapshotStrategy<TSnapshotStrategy>()
         {
             return WithSnapshotStrategy(typeof(TSnapshotStrategy));
@@ -302,7 +226,7 @@ namespace EnjoyCQRS.DependencyInjection.Autofac
 
         public override IEnjoyDependenciesBuilder<IComponentContext> WithEventUpdateManager(Type type)
         {
-            _builder.RegisterType(type).As<IEventUpdateManager>().SingleInstance().IfNotRegistered(typeof(IEventUpdateManager));;
+            _builder.RegisterType(type).As<IEventUpdateManager>().SingleInstance().IfNotRegistered(typeof(IEventUpdateManager));
 
             return this;
         }

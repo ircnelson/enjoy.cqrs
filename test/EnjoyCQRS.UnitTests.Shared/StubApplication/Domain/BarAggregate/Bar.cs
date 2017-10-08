@@ -1,15 +1,9 @@
 using System;
 using EnjoyCQRS.EventSource;
 using System.Collections.Generic;
-using EnjoyCQRS.Attributes;
-using EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.BarAggregate.Projections;
 
 namespace EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.BarAggregate
 {
-    [ProjectionProvider(typeof(BarOnlyIdProjectionProvider))]
-    [ProjectionProvider(typeof(BarWithoutMessagesProjectionProvider))]
-    [ProjectionProvider(typeof(BarProjectionProvider))]
-    [ProjectionProvider(typeof(BarProjectionProvider))]
     public class Bar : Aggregate
     {
         private List<string> _messages = new List<string>();
@@ -19,9 +13,9 @@ namespace EnjoyCQRS.UnitTests.Shared.StubApplication.Domain.BarAggregate
 
         public IReadOnlyList<string> Messages
         {
-            get { return _messages.AsReadOnly(); }
+            get => _messages.AsReadOnly();
 
-            private set { _messages = new List<string>(value); }
+            private set => _messages = new List<string>(value);
         }
         
         public Bar()
