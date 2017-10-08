@@ -1,29 +1,15 @@
-version: 2.5.0.{build}
-image: Visual Studio 2017
-branches:
-  only:
-  - master
-  - dev
-  - ci
-configuration: Release
-pull_requests:
-  do_not_increment_build_number: true
-skip_tags: true
-services:
-  - mongodb
+version: 3.0.0.{build}
 clone_folder: c:\projects\enjoycqrs
-clone_depth: 1
-environment:
-  MONGODB_HOST: localhost
-  DOTNET_CLI_TELEMETRY_OPTOUT: 1
-  COVERALLS_REPO_TOKEN:
-    secure: k131M9lYqPhmepQEei/Q2U5Pz+PJ+PQ0Suz4s6PYE/E+Ssk+NAjqExcGOGqvtx/B
-  CAKE_SETTINGS_SKIPVERIFICATION: true
 skip_commits:
   message: /\[ci skip\]/
 build_script:
 - ps: .\build.ps1 -Target Default
 test: off
+services:
+  - mongodb
+environment:
+  MONGODB_HOST: localhost
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
 artifacts:
   - path: artifacts\test-results\*.*
     name: test-results
@@ -44,4 +30,5 @@ deploy:
   on:
     branch: 
     - dev
-    - ci
+cache:
+  - tools -> build.cake
