@@ -53,30 +53,14 @@ Task ("Build")
     .IsDependentOn ("Restore-NuGet-Packages")
     .Does (() =>
 {
-	var settings = new DotNetCoreBuildSettings { Configuration = configuration };
-	if(!IsRunningOnWindows()){
-		settings.Framework = "netstandard1.6";
-	}
-	var projects = GetFiles("./src/**/*.csproj");
-    foreach(var project in projects)
+    var settings = new DotNetCoreMSBuildSettings
     {
-        Context.Information("Building Project: " + project.FullPath);
-        DotNetCoreBuild(project.FullPath, settings);
-    }
+        ArgumentCustomization = args => args.Append($"/p:configuration={configuration}"),
+        NoLogo = true,
+        MaxCpuCount = -1
+    };
 
-	projects = GetFiles("./test/**/*.csproj");
-    foreach(var project in projects)
-    {
-		if(!IsRunningOnWindows()){
-			if(project.GetFilenameWithoutExtension().ToString().EndsWith("Shared")){
-				settings.Framework = "netstandard1.6";
-			} else {
-				settings.Framework = "netcoreapp1.1";
-			}
-		}
-        Context.Information("Building Project: " + project.FullPath);
-        DotNetCoreBuild(project.FullPath, settings);
-    }
+    DotNetCoreMSBuild(settings);
 });
 
 Task ("Run-Unit-Tests")
@@ -86,7 +70,14 @@ Task ("Run-Unit-Tests")
     var projects = GetFiles("./test/**/*Tests.csproj");
 
     CreateDirectory(testResultsDir);
-    Context.Information("Found " + projects.Count() + " projects");
+
+    var dotnetCoreTestSettings = new DotNetCoreTestSettings {
+        Configuration = configuration,
+        NoBuild = true,
+        Verbosity = DotNetCoreVerbosity.Quiet
+        //ArgumentCustomization = args =>
+        //    args.Append("-xml").Append(testResultsDir.CombineWithFilePath(project.GetFilenameWithoutExtension()).FullPath + ".xml")
+    };
 
     foreach (var project in projects)
     {
@@ -104,13 +95,7 @@ Task ("Run-Unit-Tests")
                 }
 
                 Action<ICakeContext> testAction = tool => {
-                    tool.DotNetCoreTest(project.FullPath, new DotNetCoreTestSettings {
-                        Configuration = configuration,
-                        NoBuild = true,
-                        Verbosity = DotNetCoreVerbosity.Quiet
-                        //ArgumentCustomization = args =>
-                        //    args.Append("-xml").Append(testResultsDir.CombineWithFilePath(project.GetFilenameWithoutExtension()).FullPath + ".xml")
-                    });
+                    tool.DotNetCoreTest(project.FullPath, dotnetCoreTestSettings);
                 };
 
                 if (!skipOpenCover) {
@@ -141,13 +126,7 @@ Task ("Run-Unit-Tests")
         }
         else
         {
-            var settings = new DotNetCoreTestSettings
-            {
-                Configuration = configuration, 
-                Framework = "netcoreapp1.1"
-            };
-
-            DotNetCoreTest(project.FullPath, settings);
+            DotNetCoreTest(project.FullPath, dotnetCoreTestSettings);
         }
     }
 
@@ -204,7 +183,7 @@ Task ("Code-Coverage")
 // TASK TARGETS
 //////////////////////////////////////////////////////////////////////
 
-Task ("Default")
+Task("Default")
     .IsDependentOn("Run-Unit-Tests");
 
 Task("AppVeyor")
