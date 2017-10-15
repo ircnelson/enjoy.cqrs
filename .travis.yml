@@ -12,19 +12,19 @@ addons:
     - sourceline: 'deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-trusty-prod trusty main'
       key_url: 'https://packages.microsoft.com/keys/microsoft.asc'
     packages:
-    - dotnet-hostfxr-1.0.1
-    - dotnet-sharedframework-microsoft.netcore.app-1.0.5
-    - gettext
-    - libcurl4-openssl-dev
-    - libicu-dev
-    - libssl-dev
-    - libunwind8
+      - dotnet-dev-1.0.1
+      - dotnet-hostfxr-1.0.1
+      - dotnet-sharedframework-microsoft.netcore.app-1.1.2
+      - gettext
+      - libcurl4-openssl-dev
+      - libicu-dev
+      - libssl-dev
+      - libunwind8
 
 # .NET CLI require OSX 10.10
 osx_image: xcode8.3
 
-mono: 
-    - 4.4.2
+mono: 4.4.2
 
 dotnet: 2.0.0
 
