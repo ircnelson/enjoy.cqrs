@@ -1,11 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <PropertyGroup Condition=" '$(OS)' != 'Windows_NT' ">
+    <TargetFrameworks>netstandard1.6;netstandard2.0</TargetFrameworks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' "> 
+    <TargetFrameworks>netstandard1.6;netstandard2.0;net461</TargetFrameworks>
+  </PropertyGroup>
+
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.6;net461</TargetFrameworks>
     <AssemblyName>EnjoyCQRS.EventStore.MongoDB</AssemblyName>
     <AssemblyVersion>3.0.1.0</AssemblyVersion>
     <FileVersion>3.0.1.0</FileVersion>
-    <VersionPrefix>2.5.0</VersionPrefix>
+    <VersionPrefix>3.0.1</VersionPrefix>
+    <Version>3.0.1</Version>
     <Authors>ircnelson</Authors>
     <Company>EnjoyCQRS</Company>
     <Description>EnjoyCQRS.EventStore.MongoDB is an Event Store implementation using MongoDB.</Description>
@@ -17,13 +24,10 @@
     <PackageLicenseUrl>https://raw.githubusercontent.com/ircnelson/enjoy.cqrs/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/ircnelson/enjoy.cqrs</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dotnet5.6</PackageTargetFallback>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.6' ">1.6.1</NetStandardImplicitPackageVersion>
-    <Version>3.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -34,16 +38,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
     <PackageReference Include="MongoDB.Bson" Version="2.4.3" />
     <PackageReference Include="MongoDB.Driver" Version="2.4.3" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.6' ">
-    <PackageReference Include="Microsoft.CSharp" Version="4.3.0" />
     <PackageReference Include="System.Reflection.TypeExtensions" Version="4.3.0" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
-    <Reference Include="System" />
-    <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
 
 </Project>

@@ -3,7 +3,7 @@ clone_folder: c:\projects\enjoycqrs
 skip_commits:
   message: /\[ci skip\]/
 build_script:
-- ps: .\build.ps1 -Target Default
+- ps: .\build.ps1 -Target AppVeyor
 test: off
 services:
   - mongodb

@@ -1,11 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <PropertyGroup Condition=" '$(OS)' != 'Windows_NT' ">
+    <TargetFrameworks>netstandard1.6;netstandard2.0</TargetFrameworks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' "> 
+    <TargetFrameworks>netstandard1.6;netstandard2.0;net461</TargetFrameworks>
+  </PropertyGroup>
+
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.6;net461</TargetFrameworks>
     <AssemblyName>EnjoyCQRS.DependencyInjection.Autofac</AssemblyName>
     <AssemblyVersion>1.2.0.0</AssemblyVersion>
     <FileVersion>1.2.0.0</FileVersion>
-    <VersionPrefix>1.0.0</VersionPrefix>
+    <VersionPrefix>1.2.0</VersionPrefix>
     <Authors>ircnelson</Authors>
     <Company>EnjoyCQRS</Company>
     <Description>EnjoyCQRS.DependencyInjection.Autofac is an Autofac extensions.</Description>

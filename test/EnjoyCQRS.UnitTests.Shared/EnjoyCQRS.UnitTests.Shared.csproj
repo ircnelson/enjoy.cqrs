@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <PropertyGroup Condition=" '$(OS)' != 'Windows_NT' ">
+    <TargetFrameworks>netstandard1.6;netstandard2.0</TargetFrameworks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' "> 
+    <TargetFrameworks>netstandard1.6;netstandard2.0;net461</TargetFrameworks>
+  </PropertyGroup>
+
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.6;net461</TargetFrameworks>
     <AssemblyName>EnjoyCQRS.UnitTests.Shared</AssemblyName>
-    <PackageId>EnjoyCQRS.UnitTests.Shared</PackageId>
-    <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
-    <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
-    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
-    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,11 +22,6 @@
     <PackageReference Include="Moq" Version="4.7.12" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
     <PackageReference Include="FluentAssertions" Version="4.19.3" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
-    <Reference Include="System" />
-    <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
 
 </Project>
