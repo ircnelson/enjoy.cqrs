@@ -26,15 +26,28 @@ using EnjoyCQRS.EventSource.Exceptions;
 
 namespace EnjoyCQRS.EventSource
 {
-    public class Route<T> : Dictionary<Type, Action<T>>
-    {
-        public void Handle(T @event)
-        {
-            var eventType = @event.GetType();
+	public class Route<T> : Dictionary<Type, Action<T>>
+	{
+		private readonly bool _aggregateHandleIsMandatory;
 
-            if (!ContainsKey(eventType)) throw new HandleNotFound(eventType);
+		public Route(bool aggregateHandleIsMandatory = true)
+		{
+			_aggregateHandleIsMandatory = aggregateHandleIsMandatory;
+		}
 
-            this[eventType](@event);
-        }
-    }
+		public void Handle(T @event)
+		{
+			var eventType = @event.GetType();
+
+			if (ContainsKey(eventType) && this.TryGetValue(eventType, out var handler))
+			{
+				handler(@event);
+			}
+
+			else if (_aggregateHandleIsMandatory)
+			{
+				throw new HandleNotFound(eventType);
+			}
+		}
+	}
 }
